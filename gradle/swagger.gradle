@@ -1,0 +1,38 @@
+configurations {
+    doclet
+}
+
+dependencies {
+    dependencies {
+        doclet([group: 'com.carma', name: 'swagger-doclet', version: '1.0.4.+'])
+        doclet([group: 'javax.ws.rs', name: 'javax.ws.rs-api', version: '2.0'])
+
+    }
+}
+
+task testing() {
+    project.subprojects.each { project ->
+        println project
+    }
+}
+
+task generateRestApiDocs(type: Javadoc) {
+    def docsDir = new File("${dropwizardDebian.parentProject}/src/main/resources/apidocs")
+    docsDir.mkdirs()
+
+    project.subprojects.each { project ->
+        source += project.sourceSets.main.allJava
+    }
+
+    destinationDir = docsDir
+    options.classpath = configurations.doclet.files.asType(List)
+    options.docletpath = configurations.doclet.files.asType(List)
+    options.doclet = "com.carma.swagger.doclet.ServiceDoclet"
+    options.docTitle = "Inventory-planner"
+    options.addStringOption("modelFieldsNamingConvention", "LOWER_UNDERSCORE_UNLESS_OVERRIDDEN")
+    options.addStringOption("apiVersion", "1")
+    options.addStringOption("docBasePath", "/apidocs")
+    options.addStringOption("apiBasePath", "/")
+    options.addBooleanOption("skipUiFiles", true)
+    options.addStringOption("stringTypePrefixes", "java.time")
+}

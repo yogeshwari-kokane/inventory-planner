@@ -1,0 +1,78 @@
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+version = '1.0'
+
+allprojects {
+    apply plugin: 'idea'
+    apply plugin: 'java'
+    group = 'fk.sp.inventory-planner'
+}
+
+subprojects {
+    apply plugin: 'java'
+    version = '1.0'
+
+    dependencies {
+        repositories {
+            maven { url 'http://artifactory.nm.flipkart.com:8081/artifactory/libs-releases' }
+            maven { url 'http://artifactory.nm.flipkart.com:8081/artifactory/libs-snapshots' }
+            maven { url "http://oss.sonatype.org/content/repositories/snapshots" }
+            mavenCentral()
+            mavenLocal()
+        }
+
+        compile('fk.sp.common:common-extensions:' + commonExtentions)
+        compile('fk.sp.common:spring-jpa:' + commonExtentions)
+        compile('flipkart.retail.libraries:dropwizard-admin:5.0.3')
+        testCompile group: 'junit', name: 'junit', version: '4.11'
+    }
+
+    configurations {
+        all*.exclude group: 'com.sun.jersey' //dropwizard 9 using jersey 2 which has conflicting packages
+        all*.exclude group: 'com.yammer.dropwizard' //dropwizard < 7 packages
+        all*.exclude group: 'log4j', module: 'log4j'
+        all*.exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+        all*.exclude group: 'org.slf4j', module: 'slf4j-simple'
+        all*.exclude group: 'org.testng', module: 'testng'
+        all*.exclude group: 'org.jadira.usertype', module: 'usertype.jodatime'
+    }
+
+    // this is required for entity scanning to work correctly while
+    // running tests from gradle -
+    // http://forums.gradle.org/gradle/topics/regression_with_classloading_in_the_jetty_plugin_with_gradle_1_0_milestone_6
+    sourceSets.main.output.resourcesDir = sourceSets.main.output.classesDir
+}
+
+
+buildscript {
+    apply from: file('gradle/buildscript.gradle'), to: buildscript
+}
+
+task createWrapper(type: Wrapper) {
+    gradleVersion = '2.1'
+}
+
+apply plugin: 'dropwizard-debian'
+
+dropwizardDebian {
+    adminPort = Integer.valueOf(_adminPort)
+    jmxPort = Integer.valueOf(_jmxPort)
+    applicationName = "fk-sp-inventory-planner"
+    parentProject = "manager"
+    javaOpts = "-Xms1024m -Xmx1024m -XX:MaxPermSize=256m -XX:+UseG1GC -verbose:gc -XX:+PrintGCDateStamps -XX:+PrintGCTimeStamps -XX:+PrintGCDetails -Xloggc:/var/log/flipkart/sp/fk-sp-inventory-planner/gc.log"
+    zip64 = true
+    jreVersion = 8;
+    enableLogAggregation = true
+    enableConfigService = true
+    enableEmpujadorConfig = true
+}
+
+ext.mainClassName = 'fk.sp.inventory-planner.manager.ManagerApplication'
+ext.configFile = '../config/development/config.yaml'
+ext.appName = dropwizardDebian.applicationName
+
+apply from: file('gradle/common.gradle')
+
+
+

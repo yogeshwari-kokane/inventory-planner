@@ -1,0 +1,32 @@
+allprojects {
+    apply plugin: 'jacoco'
+}
+
+subprojects {
+
+    jacocoTestReport {
+        group = "Reporting"
+        description = "Generate Jacoco coverage reports after running tests."
+        additionalSourceDirs = files(sourceSets.main.allJava.srcDirs)
+
+        reports {
+            xml.enabled false
+            csv.enabled false
+            html.destination "${buildDir}/jacocoHtml"
+        }
+    }
+}
+
+task jacocoRootReport(type: JacocoReport, group: 'Coverage reports', dependsOn: subprojects.test) {
+    description = 'Generates an aggregate report from all subprojects'
+
+    additionalSourceDirs = files(subprojects.sourceSets.main.allSource.srcDirs)
+    sourceDirectories = files(subprojects.sourceSets.main.allSource.srcDirs)
+    classDirectories = files(subprojects.sourceSets.main.output)
+    executionData = files(subprojects.jacocoTestReport.executionData).filter { it.exists() }
+
+    reports {
+        html.enabled = true
+        xml.enabled = true
+    }
+}

@@ -1,0 +1,68 @@
+dataSource:
+  # the name of your JDBC driver
+  driverClass: com.mysql.jdbc.Driver
+  # the username
+  user: root
+  # the password
+  password:
+  # the JDBC URL
+  url: jdbc:mysql://localhost/inventory-planner
+  # any properties specific to your JDBC driver:
+  properties:
+    charSet: UTF-8
+  # the maximum amount of time to wait on an empty pool before throwing an exception
+  maxWaitForConnection: 1s
+  # the SQL query to run when validating a connection's liveness
+  validationQuery: "/* MyService Health Check */ SELECT 1"
+  # the minimum number of connections to keep open
+  minSize: 8
+  # the maximum number of connections to keep open
+  maxSize: 32
+  # whether or not idle connections should be validated
+  checkConnectionWhileIdle: true
+  # how long a connection must be held before it can be validated
+  validationInterval: 10s
+  # the maximum lifetime of an idle connection
+  minIdleTime: 1 minute
+  # the maximum lifetime of an idle connection
+  maxConnectionAge: 1 minute
+  # the amount of time to sleep between runs of the idle connection validation, abandoned cleaner and idle pool resizing
+  evictionInterval: 10s
+
+rotationManagementConfig:
+  persistantFilePath: "/var/run/fk-sp-sa-inventory-planner/persistant_state.txt"
+
+logging:
+  level: INFO
+  appenders:
+  - type: file
+    threshold: INFO
+    timeZone: IST
+    logFormat: "%-5p [%d{ISO8601}] [%X{reqId} %X{txnId}] %replace(%c: %m){'\n', '\n '}%n%replace(%ex){'(?m)^(.)',' $1'}%nopex"
+    currentLogFilename: /var/log/flipkart/sp/fk-sp-inventory-planner/app.log
+    archivedLogFilenamePattern: /var/log/flipkart/sp/fk-sp-inventory-planner/app-%d.log.gz
+    archivedFileCount: 30
+  - type: console
+    threshold: INFO
+
+server:
+  applicationConnectors:
+  - type: http
+    port: 9999
+    acceptQueueSize: 0
+  adminConnectors:
+  - type: http
+    port: 9991
+  minThreads: 150
+  maxThreads: 150
+  gzip:
+    enabled: true
+  requestLog:
+    timeZone: IST
+    appenders:
+    - type: file
+      logFormat: "%-5p [%d{ISO8601}] [%X{reqId} %X{txnId}] %replace(%c: %m){'\n', '\n '}%n%replace(%ex){'(?m)^(.)',' $1'}%nopex"
+      currentLogFilename: /var/log/flipkart/sp/fk-sp-inventory-planner/requests.log
+      archive: true
+      archivedLogFilenamePattern: /var/log/flipkart/sp/fk-sp-inventory-planner/requests-%d.log.gz
+      archivedFileCount: 30

@@ -1,0 +1,51 @@
+configurations {
+    jaxDoclet
+}
+
+dependencies {
+    repositories {
+        maven { url 'http://artifactory.nm.flipkart.com:8081/artifactory/libs-releases' }
+        mavenCentral()
+        mavenLocal()
+    }
+
+    jaxDoclet([group: 'fk.sp.bootstrap', name: 'doclet', version: '0.0.1'])
+    jaxDoclet([group: 'javax.ws.rs', name: 'javax.ws.rs-api', version: '2.0'])
+    jaxDoclet([group: 'com.netflix.hystrix', name: 'hystrix-core', version: '1.5.2'])
+}
+
+task generateAlertzScripts(type: Javadoc) {
+    def docsDir = new File("scripts/alertz")
+    docsDir.mkdirs()
+
+    project.subprojects.each { project ->
+        source += project.sourceSets.main.allJava
+    }
+
+    destinationDir = docsDir
+    options.classpath = configurations.jaxDoclet.files.asType(List)
+    options.docletpath = configurations.jaxDoclet.files.asType(List)
+    options.doclet = "fk.sp.bootstrap.doclet.AlertzDoclet"
+    options.addStringOption("metricsPrefix", "spmapi-app-allspark")
+    options.addStringOption("serviceName", "inventory-planner")
+    options.addStringOption("teamName", "sp-bootstrap-test")
+    options.addStringOption("tags", "main")
+
+}
+
+task generateMetricsDocs(type: Javadoc) {
+    def docsDir = new File("${dropwizardDebian.parentProject}/src/main/resources/apidocs")
+    docsDir.mkdirs()
+
+    project.subprojects.each { project ->
+        source += project.sourceSets.main.allJava
+    }
+
+    destinationDir = docsDir
+    options.classpath = configurations.jaxDoclet.files.asType(List)
+    options.docletpath = configurations.jaxDoclet.files.asType(List)
+    options.doclet = "fk.sp.bootstrap.doclet.MetricsDoclet"
+    options.addStringOption("metricsPrefix", "spmapi-app-allspark")
+    options.addStringOption("serviceName", "inventory-planner")
+
+}
