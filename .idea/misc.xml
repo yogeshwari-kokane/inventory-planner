@@ -1,20 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="GradleLocalSettings">
-    <option name="modificationStamps">
-      <map>
-        <entry key="$PROJECT_DIR$/../../analytics-data-service" value="2959627378000" />
-        <entry key="$PROJECT_DIR$/../fk-rp-populator" value="11798945408000" />
-        <entry key="$PROJECT_DIR$" value="5933774010000" />
-        <entry key="$PROJECT_DIR$/inventory-planner" value="5933773488000" />
-        <entry key="$PROJECT_DIR$/../smbc" value="5933766492000" />
-        <entry key="$PROJECT_DIR$/../supplier-selection" value="2949736254000" />
-        <entry key="$PROJECT_DIR$/../../slm-policy/dropwizard9" value="2930411766000" />
-      </map>
-    </option>
-    <option name="externalProjectsViewState">
-      <projects_view />
-    </option>
+  <component name="EntryPointsManager">
+    <entry_points version="2.0" />
   </component>
   <component name="JavacSettings">
     <option name="DEPRECATION" value="false" />

@@ -18,6 +18,15 @@
         <processorPath useClasspath="true" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel target="1.8" />
+    <bytecodeTargetLevel target="1.8">
+      <module name="core_main" target="1.8" />
+      <module name="core_test" target="1.8" />
+      <module name="inventory-planner_main" target="1.8" />
+      <module name="inventory-planner_test" target="1.8" />
+      <module name="manager_main" target="1.8" />
+      <module name="manager_test" target="1.8" />
+      <module name="projection_main" target="1.8" />
+      <module name="projection_test" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>
