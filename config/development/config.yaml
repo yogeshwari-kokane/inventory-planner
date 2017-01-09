@@ -6,7 +6,7 @@ dataSource:
   # the password
   password:
   # the JDBC URL
-  url: jdbc:mysql://localhost/inventory-planner
+  url: jdbc:mysql://localhost/erp_inv_db_development
   # any properties specific to your JDBC driver:
   properties:
     charSet: UTF-8
@@ -41,15 +41,19 @@ logging:
 server:
   applicationConnectors:
   - type: http
-    port: 9999
+    port: 32000
     acceptQueueSize: 0
   adminConnectors:
   - type: http
-    port: 9991
+    port: 32001
   minThreads: 150
   maxThreads: 150
   gzip:
     enabled: true
+    minimumEntitySize: 256 bytes
+    bufferSize: 8KiB
+    excludedUserAgents: []
+    compressedMimeTypes: []
   requestLog:
     timeZone: IST
     appenders:

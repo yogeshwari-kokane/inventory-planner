@@ -3,9 +3,8 @@ apply plugin: 'java'
 sourceCompatibility = 1.8
 version = '1.0'
 
-dependencies {
-    compile project(':projection')
-    compile project(':core')
-    compile 'mysql:mysql-connector-java:5.1.37'
 
+dependencies {
+    compile 'io.dropwizard:dropwizard-forms:0.9.1'
+    compile project(':core')
 }
