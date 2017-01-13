@@ -2,7 +2,6 @@ package fk.retail.ip.projection.internal.repository;
 
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
 
 import fk.retail.ip.projection.internal.entities.Projection;
 import fk.sp.common.extensions.jpa.SimpleJpaGenericRepository;
@@ -16,11 +15,7 @@ public class ProjectionRepository extends SimpleJpaGenericRepository<Projection,
         super(entityManagerProvider);
     }
 
-    public Projection getProjectionById(Long id) {
-        Query query = getEntityManager().createNamedQuery("Projection.findById", Projection.class).
-                                       setParameter("id", id);
-        return (Projection) query.getSingleResult();
-    }
+
 
 
 }

@@ -27,7 +27,7 @@ public class ProjectionOverrideFactory {
     }
 
 
-    public OverrideProjectionCommand getStateOverrideProjectionCommand(String currentState) throws ProjectionOverrideException {
+    public OverrideProjectionCommand getOverrideProjectionCommand(String currentState) throws ProjectionOverrideException {
         if (!ProjectionApprovalState.isValidOverrideState(currentState)) {
             throw new ProjectionOverrideException("Cannot upload projection override in state " + currentState);
         }

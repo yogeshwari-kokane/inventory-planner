@@ -123,9 +123,6 @@ public class Projection extends AbstractEntity {
         return "com.flipkart.ip.db.Projection[ id=" + id + " ]";
     }
 
-    public void overrideProjection(ProjectionOverrideFactory projectionOverrideFactory, Map<String, Object> overrideRow) throws ProjectionOverrideException {
-        OverrideProjectionCommand overrideProjectionCommand = projectionOverrideFactory.getStateOverrideProjectionCommand(this.currentState);
-        overrideProjectionCommand.withOverrideRow(overrideRow).execute();
-    }
+
 }
 

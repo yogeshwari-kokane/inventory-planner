@@ -46,5 +46,4 @@ public class AbstractEntity implements Serializable {
     @Column(name = "version")
     private long version;
 
-
 }

@@ -1,5 +1,7 @@
 package fk.retail.ip.projection.internal.entities;
 
+import java.util.Map;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -11,6 +13,9 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import fk.retail.ip.projection.internal.command.OverrideProjectionCommand;
+import fk.retail.ip.projection.internal.exception.ProjectionOverrideException;
+import fk.retail.ip.projection.internal.factory.ProjectionOverrideFactory;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -28,6 +33,7 @@ import lombok.Setter;
 @NamedQueries({
         @NamedQuery(name = "ProjectionItem.findAll", query = "SELECT p FROM ProjectionItem p")
         , @NamedQuery(name = "ProjectionItem.findById", query = "SELECT p FROM ProjectionItem p WHERE p.id = :id")
+        , @NamedQuery(name = "ProjectionItem.findByIds", query = "SELECT p FROM ProjectionItem p WHERE p.id IN :idList")
         , @NamedQuery(name = "ProjectionItem.findByState", query = "SELECT p FROM ProjectionItem p WHERE p.state = :state")
         , @NamedQuery(name = "ProjectionItem.findByPanIndia", query = "SELECT p FROM ProjectionItem p WHERE p.panIndia = :panIndia")
         , @NamedQuery(name = "ProjectionItem.findByCreatedBy", query = "SELECT p FROM ProjectionItem p WHERE p.createdBy = :createdBy")
@@ -125,6 +131,13 @@ public class ProjectionItem extends AbstractEntity {
     @Override
     public String toString() {
         return "com.flipkart.ip.db.ProjectionItem[ id=" + id + " ]";
+    }
+
+    public void overrideProjection(ProjectionOverrideFactory projectionOverrideFactory, Map<String, Object> overrideRow) throws ProjectionOverrideException {
+        String currentState = this.getProjection().getCurrentState();
+        OverrideProjectionCommand overrideProjectionCommand = projectionOverrideFactory.getOverrideProjectionCommand(currentState);
+        overrideProjectionCommand.withOverrideRow(overrideRow).execute();
+
     }
 }
 
