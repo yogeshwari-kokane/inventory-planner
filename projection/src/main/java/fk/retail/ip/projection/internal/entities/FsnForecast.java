@@ -2,7 +2,6 @@ package fk.retail.ip.projection.internal.entities;
 
 import java.util.Date;
 import java.util.List;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -13,12 +12,9 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-
 
 /**
  *
@@ -31,20 +27,20 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @NamedQueries({
-        @NamedQuery(name = "FsnForecast.findAll", query = "SELECT f FROM FsnForecast f")
-        , @NamedQuery(name = "FsnForecast.findById", query = "SELECT f FROM FsnForecast f WHERE f.id = :id")
-        , @NamedQuery(name = "FsnForecast.findByFsn", query = "SELECT f FROM FsnForecast f WHERE f.fsn = :fsn")
-        , @NamedQuery(name = "FsnForecast.findByState", query = "SELECT f FROM FsnForecast f WHERE f.state = :state")
-        , @NamedQuery(name = "FsnForecast.findByConfirmedT1", query = "SELECT f FROM FsnForecast f WHERE f.confirmedT1 = :confirmedT1")
-        , @NamedQuery(name = "FsnForecast.findByConfirmedT2", query = "SELECT f FROM FsnForecast f WHERE f.confirmedT2 = :confirmedT2")
-        , @NamedQuery(name = "FsnForecast.findByConfirmedT3", query = "SELECT f FROM FsnForecast f WHERE f.confirmedT3 = :confirmedT3")
-        , @NamedQuery(name = "FsnForecast.findByConfirmedT4", query = "SELECT f FROM FsnForecast f WHERE f.confirmedT4 = :confirmedT4")
-        , @NamedQuery(name = "FsnForecast.findBySystemProposedT1", query = "SELECT f FROM FsnForecast f WHERE f.systemProposedT1 = :systemProposedT1")
-        , @NamedQuery(name = "FsnForecast.findBySystemProposedT2", query = "SELECT f FROM FsnForecast f WHERE f.systemProposedT2 = :systemProposedT2")
-        , @NamedQuery(name = "FsnForecast.findBySystemProposedT3", query = "SELECT f FROM FsnForecast f WHERE f.systemProposedT3 = :systemProposedT3")
-        , @NamedQuery(name = "FsnForecast.findBySystemProposedT4", query = "SELECT f FROM FsnForecast f WHERE f.systemProposedT4 = :systemProposedT4")
-        , @NamedQuery(name = "FsnForecast.findByForecastDate", query = "SELECT f FROM FsnForecast f WHERE f.forecastDate = :forecastDate")
-        , @NamedQuery(name = "FsnForecast.findByForecastPeriod", query = "SELECT f FROM FsnForecast f WHERE f.forecastPeriod = :forecastPeriod")
+    @NamedQuery(name = "FsnForecast.findAll", query = "SELECT f FROM FsnForecast f")
+    , @NamedQuery(name = "FsnForecast.findById", query = "SELECT f FROM FsnForecast f WHERE f.id = :id")
+    , @NamedQuery(name = "FsnForecast.findByFsn", query = "SELECT f FROM FsnForecast f WHERE f.fsn = :fsn")
+    , @NamedQuery(name = "FsnForecast.findByState", query = "SELECT f FROM FsnForecast f WHERE f.state = :state")
+    , @NamedQuery(name = "FsnForecast.findByConfirmedT1", query = "SELECT f FROM FsnForecast f WHERE f.confirmedT1 = :confirmedT1")
+    , @NamedQuery(name = "FsnForecast.findByConfirmedT2", query = "SELECT f FROM FsnForecast f WHERE f.confirmedT2 = :confirmedT2")
+    , @NamedQuery(name = "FsnForecast.findByConfirmedT3", query = "SELECT f FROM FsnForecast f WHERE f.confirmedT3 = :confirmedT3")
+    , @NamedQuery(name = "FsnForecast.findByConfirmedT4", query = "SELECT f FROM FsnForecast f WHERE f.confirmedT4 = :confirmedT4")
+    , @NamedQuery(name = "FsnForecast.findBySystemProposedT1", query = "SELECT f FROM FsnForecast f WHERE f.systemProposedT1 = :systemProposedT1")
+    , @NamedQuery(name = "FsnForecast.findBySystemProposedT2", query = "SELECT f FROM FsnForecast f WHERE f.systemProposedT2 = :systemProposedT2")
+    , @NamedQuery(name = "FsnForecast.findBySystemProposedT3", query = "SELECT f FROM FsnForecast f WHERE f.systemProposedT3 = :systemProposedT3")
+    , @NamedQuery(name = "FsnForecast.findBySystemProposedT4", query = "SELECT f FROM FsnForecast f WHERE f.systemProposedT4 = :systemProposedT4")
+    , @NamedQuery(name = "FsnForecast.findByForecastDate", query = "SELECT f FROM FsnForecast f WHERE f.forecastDate = :forecastDate")
+    , @NamedQuery(name = "FsnForecast.findByForecastPeriod", query = "SELECT f FROM FsnForecast f WHERE f.forecastPeriod = :forecastPeriod")
 })
 public class FsnForecast extends AbstractEntity {
 

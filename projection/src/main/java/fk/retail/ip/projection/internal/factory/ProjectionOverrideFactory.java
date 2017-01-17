@@ -1,7 +1,6 @@
 package fk.retail.ip.projection.internal.factory;
 
 import com.google.inject.Provider;
-
 import fk.retail.ip.projection.internal.command.OverrideApprovedProjectionCommand;
 import fk.retail.ip.projection.internal.command.OverrideBDApprovedProjectionCommand;
 import fk.retail.ip.projection.internal.command.OverrideProjectionCommand;
@@ -19,13 +18,12 @@ public class ProjectionOverrideFactory {
     private final Provider<OverrideVerifiedProjectionCommand> overrideVerifiedProjectionCommandProvider;
 
     public ProjectionOverrideFactory(Provider<OverrideApprovedProjectionCommand> overrideApprovedProjectionCommandProvider,
-                                     Provider<OverrideVerifiedProjectionCommand> overrideVerifiedProjectionCommandProvider,
-                                     Provider<OverrideBDApprovedProjectionCommand> overrideBDApprovedProjectionCommandProvider){
+            Provider<OverrideVerifiedProjectionCommand> overrideVerifiedProjectionCommandProvider,
+            Provider<OverrideBDApprovedProjectionCommand> overrideBDApprovedProjectionCommandProvider) {
         this.overrideApprovedProjectionCommandProvider = overrideApprovedProjectionCommandProvider;
         this.overrideBDApprovedProjectionCommandProvider = overrideBDApprovedProjectionCommandProvider;
         this.overrideVerifiedProjectionCommandProvider = overrideVerifiedProjectionCommandProvider;
     }
-
 
     public OverrideProjectionCommand getStateOverrideProjectionCommand(String currentState) throws ProjectionOverrideException {
         if (!ProjectionApprovalState.isValidOverrideState(currentState)) {
@@ -38,7 +36,8 @@ public class ProjectionOverrideFactory {
             return overrideApprovedProjectionCommandProvider.get();
         } else if (currentState.equals(ProjectionApprovalState.BD_APPROVED)) {
             return overrideBDApprovedProjectionCommandProvider.get();
-        } return null;
+        }
+        return null;
     }
 
 }

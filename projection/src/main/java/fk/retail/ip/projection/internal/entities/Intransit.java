@@ -32,8 +32,8 @@ import lombok.Setter;
     , @NamedQuery(name = "Intransit.findByOpenRequirements", query = "SELECT i FROM Intransit i WHERE i.openRequirements = :openRequirements")
 })
 @AttributeOverrides({
-    @AttributeOverride(name = "createdAt", column = @Column("stampCreated"))
-    ,@AttributeOverride(name = "updatedAt", column = @Column("stampCreated"))
+    @AttributeOverride(name = "createdAt", column = @Column(name = "stampCreated"))
+    ,@AttributeOverride(name = "updatedAt", column = @Column(name = "stampCreated"))
 })
 public class Intransit extends AbstractEntity {
 
