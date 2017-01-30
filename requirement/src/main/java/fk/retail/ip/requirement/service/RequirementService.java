@@ -38,7 +38,6 @@ public class RequirementService {
             requirements = requirementRepository.findAllEnabledRequirements(requirementState);
         }
 
-
         StreamingOutput output = requirementManager.withRequirements(requirements).download(requirementState, isLastAppSupplierRequired);
         return  output;
 

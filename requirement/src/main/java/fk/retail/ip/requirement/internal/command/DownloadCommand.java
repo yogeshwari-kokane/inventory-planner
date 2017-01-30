@@ -63,8 +63,6 @@ public abstract class DownloadCommand {
        fetchProductData();
        fetchFsnBandData();
        fetchSalesBucketData();
-       fetchFsnInventoryData();
-       fetchProjectionData();
        fetchRequirementStateData();
        if (isLastAppSupplierRequired) {
            fetchLastAppSupplierDataFromProc();
@@ -77,12 +75,7 @@ public abstract class DownloadCommand {
 
     }
 
-    protected void fetchFsnInventoryData() {
-
-    }
-
     protected void fetchFsnBandData() {
-
         List<FsnBand> bands = fsnBandRepository.fetchBandDataForFSNs(requirementFsns);
         bands.stream().forEach(b -> {
             List<RequirementDownloadLineItem> items = fsnToRequirement.get(b.getFsn());
@@ -99,10 +92,6 @@ public abstract class DownloadCommand {
         requirementDownloadLineItems.forEach(reqItem
                 -> populateSalesData(sales, reqItem, reqItem::setWeek0Sale, reqItem::setWeek1Sale, reqItem::setWeek2Sale, reqItem::setWeek3Sale, reqItem::setWeek4Sale, reqItem::setWeek5Sale, reqItem::setWeek6Sale, reqItem::setWeek7Sale)
         );
-    }
-
-    protected void fetchProjectionData() {
-
     }
 
     protected void fetchLastAppSupplierDataFromProc() {

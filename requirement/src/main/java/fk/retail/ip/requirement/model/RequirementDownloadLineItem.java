@@ -1,10 +1,8 @@
 package fk.retail.ip.requirement.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import javax.xml.bind.annotation.XmlRootElement;
-
 import fk.retail.ip.requirement.internal.entities.Requirement;
+import javax.xml.bind.annotation.XmlRootElement;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -37,10 +35,43 @@ public class RequirementDownloadLineItem {
     private Integer week6Sale;
     @JsonProperty("salesBucket-7")
     private Integer week7Sale;
+    private int inventory;
+    private int qoh;
+    private String forcast;
+    private int pendingPOQty;
+    private int openReqQty;
+    private int iwitIntransitQty;
+    private int quantity;
+    private String supplier;
+    private Integer mrp;
+    private Integer app;
+    private String currency;
+    private Integer sla;
+    private boolean international;
+    private String procType;
+    private String overrideComment;
+
 
 
     public RequirementDownloadLineItem(Requirement req) {
         this.fsn = req.getFsn();
+        this.warehouse = req.getWarehouse();
+        this.inventory = req.getRequirementSnapshot().getInventoryQty();
+        this.qoh = req.getRequirementSnapshot().getQoh();
+        this.pendingPOQty = req.getRequirementSnapshot().getPendingPOQty();
+        this.iwitIntransitQty = req.getRequirementSnapshot().getIwitIntransitQty();
+        this.openReqQty = req.getRequirementSnapshot().getOpenReqQty();
+        this.forcast = req.getRequirementSnapshot().getForecast();
+        this.quantity = req.getQuantity();
+        this.supplier = req.getSupplier();
+        this.mrp = req.getMrp();
+        this.app = req.getApp();
+        this.currency = req.getCurrency();
+        this.sla = req.getSla();
+        this.international = req.isInternational();
+        this.procType = req.getProcType();
+        this.overrideComment = req.getOverrideComment();
+
     }
 
 

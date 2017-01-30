@@ -2,71 +2,20 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d2e005d6-94f2-44bc-a1f3-3d95a5eb24d5" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/entities/AbstractEntity.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/command/DownloadBizFinReviewCommand.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/command/DownloadCDOReviewCommand.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/command/DownloadCommand.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/command/DownloadIPCFinalisedCommand.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/command/DownloadIPCReviewCommand.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/command/DownloadProposedCommand.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/model/DownloadRequirementRequest.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/entities/FsnBand.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/repository/FsnBandRepository.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/entities/FsnForecast.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/entities/Group.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/states/ProposedRequirementState.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/entities/ReadOnlyEntity.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/entities/Requirement.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/model/RequirementDownloadLineItem.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/model/RequirementManager.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/config/RequirementModule.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/repository/RequirementRepository.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/resource/RequirementResource.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/service/RequirementService.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/entities/RequirementSnapshot.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/states/RequirementState.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/factory/RequirementStateFactory.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/entities/WeeklySale.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/repository/WeeklySaleRepository.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/requirement/build.gradle" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/requirement/src/main/resources/fk.retail.ip.requirement/queries.hbm.xml" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/projection/build.gradle" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/projection/src/main/java/fk/retail/ip/projection/ProjectionResource.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/projection/src/main/java/fk/retail/ip/projection/config/ProjectionModule.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/projection/src/main/java/fk/retail/ip/projection/internal/command/OverrideApprovedProjectionCommand.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/projection/src/main/java/fk/retail/ip/projection/internal/command/OverrideBDApprovedProjectionCommand.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/projection/src/main/java/fk/retail/ip/projection/internal/command/OverrideProjectionCommand.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/projection/src/main/java/fk/retail/ip/projection/internal/command/OverrideVerifiedProjectionCommand.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/projection/src/main/java/fk/retail/ip/projection/internal/command/UploadProjectionCommand.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/projection/src/main/java/fk/retail/ip/projection/internal/dao/FsnBandDao.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/projection/src/main/java/fk/retail/ip/projection/internal/dao/ProjectionDAO.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/projection/src/main/java/fk/retail/ip/projection/internal/dao/ProjectionItemDAO.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/projection/src/main/java/fk/retail/ip/projection/internal/dao/WarehouseForecastDAO.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/projection/src/main/java/fk/retail/ip/projection/internal/dao/WeeklySaleDAO.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/projection/src/main/java/fk/retail/ip/projection/internal/entities/AbstractEntity.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/projection/src/main/java/fk/retail/ip/projection/internal/entities/FsnBand.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/projection/src/main/java/fk/retail/ip/projection/internal/entities/FsnForecast.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/projection/src/main/java/fk/retail/ip/projection/internal/entities/Projection.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/projection/src/main/java/fk/retail/ip/projection/internal/entities/ProjectionItem.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/projection/src/main/java/fk/retail/ip/projection/internal/entities/WarehouseForecast.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/projection/src/main/java/fk/retail/ip/projection/internal/entities/WeeklySale.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/projection/src/main/java/fk/retail/ip/projection/internal/enums/ProjectionApprovalState.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/projection/src/main/java/fk/retail/ip/projection/internal/enums/ProjectionUploadHeader.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/projection/src/main/java/fk/retail/ip/projection/internal/exception/ProjectionOverrideException.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/projection/src/main/java/fk/retail/ip/projection/internal/factory/ProjectionOverrideFactory.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/projection/src/main/java/fk/retail/ip/projection/internal/repository/ProjectionRepository.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/projection/src/main/java/fk/retail/ip/projection/models/ProjectionLineItem.java" afterPath="" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/enums/ApprovalState.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/states/BizFinReviewRequirementState.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/states/CDOReviewRequirementState.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/states/IPCFinalisedRequirementState.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/states/IPCReviewRequirementState.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/2.9/taskArtifacts/cache.properties.lock" afterPath="$PROJECT_DIR$/.gradle/2.9/taskArtifacts/cache.properties.lock" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/2.9/taskArtifacts/fileHashes.bin" afterPath="$PROJECT_DIR$/.gradle/2.9/taskArtifacts/fileHashes.bin" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/2.9/taskArtifacts/fileSnapshots.bin" afterPath="$PROJECT_DIR$/.gradle/2.9/taskArtifacts/fileSnapshots.bin" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/2.9/taskArtifacts/outputFileStates.bin" afterPath="$PROJECT_DIR$/.gradle/2.9/taskArtifacts/outputFileStates.bin" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/2.9/taskArtifacts/taskArtifacts.bin" afterPath="$PROJECT_DIR$/.gradle/2.9/taskArtifacts/taskArtifacts.bin" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/manager/src/main/java/fk/retail/ip/manager/ManagerApplication.java" afterPath="$PROJECT_DIR$/manager/src/main/java/fk/retail/ip/manager/ManagerApplication.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/manager/build.gradle" afterPath="$PROJECT_DIR$/manager/build.gradle" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/compiler.xml" afterPath="$PROJECT_DIR$/.idea/compiler.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/settings.gradle" afterPath="$PROJECT_DIR$/settings.gradle" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/command/DownloadCommand.java" afterPath="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/command/DownloadCommand.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/model/RequirementDownloadLineItem.java" afterPath="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/model/RequirementDownloadLineItem.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/service/RequirementService.java" afterPath="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/service/RequirementService.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/factory/RequirementStateFactory.java" afterPath="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/factory/RequirementStateFactory.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/requirement/src/main/resources/fk.retail.ip.requirement/queries.hbm.xml" afterPath="$PROJECT_DIR$/requirement/src/main/resources/fk.retail.ip.requirement/queries.hbm.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="inventory-planner.iws" />
@@ -122,33 +71,41 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
+      <file leaf-file-name="AbstractEntity.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/entities/AbstractEntity.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="23" column="13" selection-start-line="23" selection-start-column="13" selection-end-line="23" selection-end-column="13" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="DownloadBizFinReviewCommand.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/command/DownloadBizFinReviewCommand.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="16" column="14" selection-start-line="16" selection-start-column="14" selection-end-line="16" selection-end-column="14" />
-              <folding>
-                <element signature="imports" expanded="false" />
-              </folding>
+              <caret line="16" column="9" selection-start-line="16" selection-start-column="9" selection-end-line="16" selection-end-column="9" />
+              <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="DownloadProposedCommand.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="DownloadProposedCommand.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/command/DownloadProposedCommand.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="8" column="48" selection-start-line="8" selection-start-column="48" selection-end-line="8" selection-end-column="48" />
+            <state vertical-scroll-proportion="0.60897434">
+              <caret line="20" column="0" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="RequirementStateFactory.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/factory/RequirementStateFactory.java">
+      <file leaf-file-name="FsnBand.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/entities/FsnBand.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.33937824">
-              <caret line="14" column="109" selection-start-line="14" selection-start-column="109" selection-end-line="14" selection-end-column="109" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="37" column="0" selection-start-line="37" selection-start-column="0" selection-end-line="37" selection-end-column="0" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -156,41 +113,21 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ProposedRequirementState.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/states/ProposedRequirementState.java">
+      <file leaf-file-name="FsnForecast.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/entities/FsnForecast.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="14" column="13" selection-start-line="14" selection-start-column="13" selection-end-line="14" selection-end-column="13" />
+              <caret line="25" column="26" selection-start-line="25" selection-start-column="26" selection-end-line="25" selection-end-column="26" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="DownloadCDOReviewCommand.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/command/DownloadCDOReviewCommand.java">
+      <file leaf-file-name="RequirementSnapshot.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/entities/RequirementSnapshot.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="8" column="62" selection-start-line="8" selection-start-column="62" selection-end-line="8" selection-end-column="62" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="RequirementService.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/service/RequirementService.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="38" column="58" selection-start-line="38" selection-start-column="58" selection-end-line="38" selection-end-column="58" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="RequirementManager.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/model/RequirementManager.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="23" column="0" selection-start-line="23" selection-start-column="0" selection-end-line="23" selection-end-column="0" />
+              <caret line="42" column="26" selection-start-line="42" selection-start-column="26" selection-end-line="42" selection-end-column="26" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -198,11 +135,23 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="RequirementResource.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/resource/RequirementResource.java">
+      <file leaf-file-name="Requirement.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/entities/Requirement.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="45" column="60" selection-start-line="45" selection-start-column="60" selection-end-line="45" selection-end-column="60" />
+              <caret line="80" column="24" selection-start-line="80" selection-start-column="24" selection-end-line="80" selection-end-column="24" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="WeeklySale.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/entities/WeeklySale.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="34" column="24" selection-start-line="34" selection-start-column="24" selection-end-line="34" selection-end-column="24" />
               <folding />
             </state>
           </provider>
@@ -212,7 +161,7 @@
         <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/entities/Group.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="18" column="0" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
+              <caret line="7" column="13" selection-start-line="7" selection-start-column="13" selection-end-line="7" selection-end-column="13" />
               <folding />
             </state>
           </provider>
@@ -222,7 +171,7 @@
         <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/command/DownloadCommand.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="71" column="22" selection-start-line="71" selection-start-column="22" selection-end-line="71" selection-end-column="22" />
+              <caret line="62" column="22" selection-start-line="62" selection-start-column="22" selection-end-line="62" selection-end-column="22" />
               <folding />
             </state>
           </provider>
@@ -1733,12 +1682,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/projection/src/main/java/fk/retail/ip/projection/internal/entities/WarehouseForecast.java" />
-        <option value="$PROJECT_DIR$/projection/src/main/java/fk/retail/ip/projection/internal/entities/FsnForecast.java" />
-        <option value="$PROJECT_DIR$/projection/src/main/java/fk/retail/ip/projection/internal/dao/WarehouseForecastDAO.java" />
-        <option value="$PROJECT_DIR$/projection/src/main/java/fk/retail/ip/projection/internal/entities/WeeklySale.java" />
-        <option value="$PROJECT_DIR$/projection/src/main/java/fk/retail/ip/projection/internal/dao/WeeklySaleDAO.java" />
-        <option value="$PROJECT_DIR$/projection/src/main/java/fk/retail/ip/projection/MultiKeyMap.java" />
         <option value="$PROJECT_DIR$/projection/build.gradle" />
         <option value="$PROJECT_DIR$/projection/src/main/java/fk/retail/ip/projection/ProjectionService.java" />
         <option value="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/config/RequirementModule.java" />
@@ -1755,8 +1698,6 @@
         <option value="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/repository/AbstractRepository.java" />
         <option value="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/repository/RequirementRepository.java" />
         <option value="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/entities/WeeklySale.java" />
-        <option value="$PROJECT_DIR$/requirement/src/main/resources/fk.retail.ip.requirement/queries.hbm.xml" />
-        <option value="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/model/RequirementDownloadLineItem.java" />
         <option value="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/repository/FsnBandRepository.java" />
         <option value="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/repository/WeeklySaleRepository.java" />
         <option value="$PROJECT_DIR$/projection/src/main/java/fk/retail/ip/projection/ProjectionResource.java" />
@@ -1775,14 +1716,22 @@
         <option value="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/entities/FsnBand.java" />
         <option value="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/entities/AbstractEntity.java" />
         <option value="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/states/RequirementState.java" />
-        <option value="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/command/DownloadCommand.java" />
         <option value="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/entities/ReadOnlyEntity.java" />
         <option value="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/entities/RequirementSnapshot.java" />
         <option value="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/entities/Requirement.java" />
         <option value="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/entities/Group.java" />
         <option value="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/states/ProposedRequirementState.java" />
-        <option value="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/service/RequirementService.java" />
         <option value="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/model/RequirementManager.java" />
+        <option value="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/service/RequirementService.java" />
+        <option value="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/repository/RequirementSnapshotRepository.java" />
+        <option value="$PROJECT_DIR$/requirement/src/main/resources/fk.retail.ip.requirement/queries.hbm.xml" />
+        <option value="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/model/RequirementDownloadLineItem.java" />
+        <option value="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/command/DownloadCommand.java" />
+        <option value="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/states/BizFinReviewRequirementState.java" />
+        <option value="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/states/CDOReviewRequirementState.java" />
+        <option value="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/states/IPCFinalisedRequirementState.java" />
+        <option value="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/states/IPCReviewRequirementState.java" />
+        <option value="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/enums/ApprovalState.java" />
         <option value="$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/factory/RequirementStateFactory.java" />
       </list>
     </option>
@@ -1918,6 +1867,14 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="resources" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="fk.retail.ip.requirement" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -2056,6 +2013,48 @@
               <option name="myItemId" value="internal" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="states" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="inventory-planner" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="inventory-planner" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="requirement" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="requirement" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="internal" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="repository" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
           </PATH>
           <PATH>
             <PATH_ELEMENT>
@@ -2092,6 +2091,120 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="factory" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="inventory-planner" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="inventory-planner" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="requirement" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="requirement" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="internal" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="enums" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="inventory-planner" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="inventory-planner" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="requirement" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="requirement" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="internal" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="entities" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="inventory-planner" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="inventory-planner" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="requirement" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="requirement" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="internal" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="command" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -2175,6 +2288,8 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="SearchEverywhereHistoryKey" value="&#9;FILE&#9;file:///Users/nidhigupta.m/Desktop/code/rp/inventory-planner/requirement/src/main/java/fk/retail/ip/requirement/internal/factory/RequirementStateFactory.java&#10;RequirementS&#9;PSI&#9;JAVA://fk.retail.ip.requirement.internal.enums.RequirementState" />
     <property name="recentsLimit" value="5" />
+    <property name="OverrideImplement.combined" value="true" />
+    <property name="OverrideImplement.overriding.sorted" value="false" />
   </component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
@@ -2187,7 +2302,7 @@
       <recent name="$PROJECT_DIR$/requirement" />
     </key>
   </component>
-  <component name="RunManager" selected="Groovy.build">
+  <component name="RunManager" selected="Gradle.Tests in 'fk.retail.ip.requirement.internal.repository'">
     <configuration default="false" name="build" type="GroovyScriptRunConfiguration" factoryName="Groovy" temporary="true">
       <module name="requirement" />
       <setting name="path" value="file://$PROJECT_DIR$/requirement/build.gradle" />
@@ -2198,6 +2313,25 @@
       <method>
         <option name="Make" enabled="false" />
       </method>
+    </configuration>
+    <configuration default="false" name="Tests in 'fk.retail.ip.requirement.internal.repository'" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$/requirement" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="--tests fk.retail.ip.requirement.internal.repository.*" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="cleanTest" />
+            <option value="test" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <method />
     </configuration>
     <configuration default="true" type="#org.jetbrains.idea.devkit.run.PluginConfigurationType" factoryName="Plugin">
       <module name="" />
@@ -2269,6 +2403,17 @@
       <envs />
       <method />
     </configuration>
+    <configuration default="true" type="BashConfigurationType" factoryName="Bash">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="INTERPRETER_PATH" value="/bin/bash" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="PARAMETERS" value="" />
+      <module name="" />
+      <envs />
+      <method />
+    </configuration>
     <configuration default="true" type="CucumberJavaRunConfigurationType" factoryName="Cucumber java">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
       <option name="myFilePath" />
@@ -2286,6 +2431,26 @@
       <option name="PASS_PARENT_ENVS" value="true" />
       <module name="" />
       <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="DjangoTestsConfigurationType" factoryName="Django tests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="core" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="TARGET" value="" />
+      <option name="SETTINGS_FILE" value="" />
+      <option name="CUSTOM_SETTINGS" value="false" />
+      <option name="USE_OPTIONS" value="false" />
+      <option name="OPTIONS" value="" />
       <method />
     </configuration>
     <configuration default="true" type="FlashRunConfigurationType" factoryName="Flash App">
@@ -2401,6 +2566,52 @@
     <configuration default="true" type="JavascriptDebugType" factoryName="JavaScript Debug">
       <method />
     </configuration>
+    <configuration default="true" type="PyBehaveRunConfigurationType" factoryName="Behave">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="core" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="ADDITIONAL_ARGS" value="" />
+      <method />
+    </configuration>
+    <configuration default="true" type="PyLettuceRunConfigurationType" factoryName="Lettuce">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="core" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="ADDITIONAL_ARGS" value="" />
+      <method />
+    </configuration>
+    <configuration default="true" type="PythonConfigurationType" factoryName="Python">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="core" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
     <configuration default="true" type="Remote" factoryName="Remote">
       <option name="USE_SOCKET_TRANSPORT" value="true" />
       <option name="SERVER_MODE" value="false" />
@@ -2458,12 +2669,124 @@
     <configuration default="true" type="osgi.bnd.run" factoryName="Test Launcher (JUnit)">
       <method />
     </configuration>
-    <list size="1">
+    <configuration default="true" type="tests" factoryName="Attests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="core" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Doctests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="core" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Nosetests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="core" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <option name="PARAMS" value="" />
+      <option name="USE_PARAM" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Unittests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="core" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <option name="PUREUNITTEST" value="true" />
+      <option name="PARAMS" value="" />
+      <option name="USE_PARAM" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="py.test">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="core" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <option name="testToRun" value="" />
+      <option name="keywords" value="" />
+      <option name="params" value="" />
+      <option name="USE_PARAM" value="false" />
+      <option name="USE_KEYWORD" value="false" />
+      <method />
+    </configuration>
+    <list size="2">
       <item index="0" class="java.lang.String" itemvalue="Groovy.build" />
+      <item index="1" class="java.lang.String" itemvalue="Gradle.Tests in 'fk.retail.ip.requirement.internal.repository'" />
     </list>
     <recent_temporary>
-      <list size="1">
-        <item index="0" class="java.lang.String" itemvalue="Groovy.build" />
+      <list size="2">
+        <item index="0" class="java.lang.String" itemvalue="Gradle.Tests in 'fk.retail.ip.requirement.internal.repository'" />
+        <item index="1" class="java.lang.String" itemvalue="Groovy.build" />
       </list>
     </recent_temporary>
   </component>
@@ -2481,12 +2804,12 @@
       <workItem from="1483942994461" duration="4058000" />
       <workItem from="1485434902183" duration="14940000" />
       <workItem from="1485511000948" duration="11752000" />
-      <workItem from="1485772647043" duration="1051000" />
+      <workItem from="1485772647043" duration="6730000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="53712000" />
+    <option name="totallyTimeSpent" value="59391000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1280" height="773" extended-state="6" />
@@ -2500,7 +2823,8 @@
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32824427" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.369863" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32876712" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2427481" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3263328" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Bean Validation" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -2510,16 +2834,15 @@
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977098" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Spring" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977098" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
@@ -2574,47 +2897,13 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/entities/AbstractEntity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="23" column="13" selection-start-line="23" selection-start-column="13" selection-end-line="23" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/command/DownloadBizFinReviewCommand.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="16" column="14" selection-start-line="16" selection-start-column="14" selection-end-line="16" selection-end-column="14" />
-          <folding>
-            <element signature="imports" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/command/DownloadProposedCommand.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="8" column="48" selection-start-line="8" selection-start-column="48" selection-end-line="8" selection-end-column="48" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/factory/RequirementStateFactory.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/states/ProposedRequirementState.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="14" column="13" selection-start-line="14" selection-start-column="13" selection-end-line="14" selection-end-column="13" />
-          <folding />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -2662,6 +2951,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="76" column="13" selection-start-line="76" selection-start-column="13" selection-end-line="76" selection-end-column="13" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -2719,6 +3009,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="100" column="17" selection-start-line="100" selection-start-column="17" selection-end-line="100" selection-end-column="17" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -2757,52 +3048,19 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/requirement/src/main/resources/fk.retail.ip.requirement/queries.hbm.xml">
+    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/entities/ReadOnlyEntity.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="41" column="42" selection-start-line="41" selection-start-column="42" selection-end-line="41" selection-end-column="42" />
+          <caret line="34" column="0" selection-start-line="34" selection-start-column="0" selection-end-line="34" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/repository/FsnBandRepository.java">
+    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/service/RequirementService.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="20" column="13" selection-start-line="20" selection-start-column="13" selection-end-line="20" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/repository/RequirementRepository.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="45" column="0" selection-start-line="45" selection-start-column="0" selection-end-line="45" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/repository/WeeklySaleRepository.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="21" column="0" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/command/DownloadIPCReviewCommand.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="10" column="4" selection-start-line="10" selection-start-column="4" selection-end-line="10" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/command/DownloadIPCFinalisedCommand.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="11" column="4" selection-start-line="11" selection-start-column="4" selection-end-line="11" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/model/DownloadRequirementRequest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="14" column="36" selection-start-line="14" selection-start-column="36" selection-end-line="14" selection-end-column="36" />
+          <caret line="39" column="0" selection-start-line="39" selection-start-column="0" selection-end-line="39" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -2810,78 +3068,92 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="13" column="20" selection-start-line="13" selection-start-column="20" selection-end-line="13" selection-end-column="20" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/states/ProposedRequirementState.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="30" column="14" selection-start-line="30" selection-start-column="14" selection-end-line="30" selection-end-column="14" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/repository/FsnBandRepository.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="28" column="4" selection-start-line="28" selection-start-column="4" selection-end-line="28" selection-end-column="4" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/repository/WeeklySaleRepository.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="21" column="0" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/model/DownloadRequirementRequest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="14" column="36" selection-start-line="14" selection-start-column="36" selection-end-line="14" selection-end-column="36" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/requirement/src/main/resources/fk.retail.ip.requirement/queries.hbm.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="25" column="19" selection-start-line="25" selection-start-column="19" selection-end-line="25" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/repository/RequirementRepository.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.08974359">
+          <caret line="45" column="0" selection-start-line="45" selection-start-column="0" selection-end-line="45" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/model/RequirementManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="31" column="0" selection-start-line="31" selection-start-column="0" selection-end-line="31" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/model/RequirementDownloadLineItem.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="23" column="16" selection-start-line="23" selection-start-column="16" selection-end-line="23" selection-end-column="16" />
+          <caret line="72" column="56" selection-start-line="72" selection-start-column="56" selection-end-line="72" selection-end-column="56" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/entities/WeeklySale.java">
+    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/resource/RequirementResource.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="34" column="24" selection-start-line="34" selection-start-column="24" selection-end-line="34" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/entities/RequirementSnapshot.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="42" column="14" selection-start-line="42" selection-start-column="14" selection-end-line="42" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/entities/Requirement.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="74" column="35" selection-start-line="74" selection-start-column="35" selection-end-line="74" selection-end-column="35" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/entities/ReadOnlyEntity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="34" column="0" selection-start-line="34" selection-start-column="0" selection-end-line="34" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/entities/FsnForecast.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="25" column="26" selection-start-line="25" selection-start-column="26" selection-end-line="25" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/entities/FsnBand.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="37" column="0" selection-start-line="37" selection-start-column="0" selection-end-line="37" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/entities/AbstractEntity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="23" column="13" selection-start-line="23" selection-start-column="13" selection-end-line="23" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/entities/Group.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="18" column="0" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/command/DownloadCommand.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="71" column="22" selection-start-line="71" selection-start-column="22" selection-end-line="71" selection-end-column="22" />
+          <caret line="57" column="0" selection-start-line="57" selection-start-column="0" selection-end-line="57" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -2894,65 +3166,167 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/command/DownloadBizFinReviewCommand.java">
+    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/command/DownloadIPCReviewCommand.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="16" column="14" selection-start-line="16" selection-start-column="14" selection-end-line="16" selection-end-column="14" />
+          <caret line="10" column="4" selection-start-line="10" selection-start-column="4" selection-end-line="10" selection-end-column="4" />
           <folding>
-            <element signature="imports" expanded="false" />
+            <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/states/ProposedRequirementState.java">
+    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/command/DownloadIPCFinalisedCommand.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="14" column="13" selection-start-line="14" selection-start-column="13" selection-end-line="14" selection-end-column="13" />
+          <caret line="17" column="0" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/states/BizFinReviewRequirementState.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="12" column="8" selection-start-line="12" selection-start-column="8" selection-end-line="12" selection-end-column="20" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/states/CDOReviewRequirementState.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="12" column="8" selection-start-line="12" selection-start-column="8" selection-end-line="12" selection-end-column="20" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/states/IPCFinalisedRequirementState.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="12" column="8" selection-start-line="12" selection-start-column="8" selection-end-line="12" selection-end-column="20" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/states/IPCReviewRequirementState.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="12" column="8" selection-start-line="12" selection-start-column="8" selection-end-line="12" selection-end-column="20" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/enums/ApprovalState.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="13" column="0" selection-start-line="13" selection-start-column="0" selection-end-line="13" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/factory/RequirementStateFactory.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="46" column="48" selection-start-line="46" selection-start-column="48" selection-end-line="46" selection-end-column="48" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/entities/AbstractEntity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="23" column="13" selection-start-line="23" selection-start-column="13" selection-end-line="23" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/entities/FsnBand.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="37" column="0" selection-start-line="37" selection-start-column="0" selection-end-line="37" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/entities/FsnForecast.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="25" column="26" selection-start-line="25" selection-start-column="26" selection-end-line="25" selection-end-column="26" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/entities/RequirementSnapshot.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="42" column="26" selection-start-line="42" selection-start-column="26" selection-end-line="42" selection-end-column="26" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/entities/WeeklySale.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="34" column="24" selection-start-line="34" selection-start-column="24" selection-end-line="34" selection-end-column="24" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/entities/Group.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="7" column="13" selection-start-line="7" selection-start-column="13" selection-end-line="7" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/entities/Requirement.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="80" column="24" selection-start-line="80" selection-start-column="24" selection-end-line="80" selection-end-column="24" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/command/DownloadCommand.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="62" column="22" selection-start-line="62" selection-start-column="22" selection-end-line="62" selection-end-column="22" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/command/DownloadBizFinReviewCommand.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="16" column="9" selection-start-line="16" selection-start-column="9" selection-end-line="16" selection-end-column="9" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/command/DownloadProposedCommand.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="8" column="48" selection-start-line="8" selection-start-column="48" selection-end-line="8" selection-end-column="48" />
+        <state vertical-scroll-proportion="0.60897434">
+          <caret line="20" column="0" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/resource/RequirementResource.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="45" column="60" selection-start-line="45" selection-start-column="60" selection-end-line="45" selection-end-column="60" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/service/RequirementService.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="38" column="58" selection-start-line="38" selection-start-column="58" selection-end-line="38" selection-end-column="58" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/model/RequirementManager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="23" column="0" selection-start-line="23" selection-start-column="0" selection-end-line="23" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/requirement/src/main/java/fk/retail/ip/requirement/internal/factory/RequirementStateFactory.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33937824">
-          <caret line="14" column="109" selection-start-line="14" selection-start-column="109" selection-end-line="14" selection-end-column="109" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
