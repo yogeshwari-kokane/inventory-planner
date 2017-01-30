@@ -9,7 +9,7 @@ import java.util.Properties;
 
 import fk.retail.ip.manager.config.ManagerConfiguration;
 import fk.retail.ip.manager.config.ManagerModule;
-import fk.retail.ip.projection.config.ProjectionModule;
+import fk.retail.ip.requirement.config.RequirementModule;
 import fk.sp.common.extensions.guice.jpa.spring.JpaWithSpringModule;
 import flipkart.retail.server.admin.bundle.RotationManagementBundle;
 import flipkart.retail.server.admin.config.RotationManagementConfig;
@@ -32,7 +32,7 @@ public class ManagerApplication extends Application<ManagerConfiguration> {
     this.guiceBundle = GuiceBundle.<ManagerConfiguration>newBuilder()
         .setConfigClass(ManagerConfiguration.class)
         .addModule(new ManagerModule())
-        .addModule(new ProjectionModule())
+        .addModule(new RequirementModule())
         .addModule(new JpaWithSpringModule(
             Sets.newHashSet(
                 "fk.retail.ip"

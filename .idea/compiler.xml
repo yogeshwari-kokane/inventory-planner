@@ -27,6 +27,11 @@
       <module name="manager_test" target="1.8" />
       <module name="projection_main" target="1.8" />
       <module name="projection_test" target="1.8" />
+      <module name="requirement_main" target="1.8" />
+      <module name="requirement_test" target="1.8" />
     </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="DEPRECATION" value="false" />
   </component>
 </project>
