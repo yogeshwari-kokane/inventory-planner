@@ -1,5 +1,5 @@
 rootProject.name = 'inventory-planner'
 
 include 'manager'
-include 'projection'
 include 'core'
+include 'requirement'

@@ -24,7 +24,7 @@ Network Trash Folder
 Temporary Items
 .apdisk
 ### Gradle template
-.gradle
+.gradle/
 build/
 
 # Ignore Gradle GUI config
