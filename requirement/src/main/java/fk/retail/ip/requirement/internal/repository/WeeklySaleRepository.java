@@ -27,6 +27,7 @@ public class WeeklySaleRepository extends SimpleJpaGenericRepository<WeeklySale,
     public WeeklySaleRepository(Provider<EntityManager> entityManagerProvider) {
         super(entityManagerProvider);
     }
+
     public List<WeeklySale> fetchWeeklySalesForFsns(Set<String> fsns) {
         List<WeeklySale> weeklySales = Lists.newArrayList();
         int pageNo = 0;

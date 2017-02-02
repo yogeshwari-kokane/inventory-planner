@@ -27,11 +27,10 @@ public class RequirementService {
     }
 
     public StreamingOutput downloadRequirement(DownloadRequirementRequest downloadRequirementRequest) {
-        List<Requirement> requirements;
         List<Long> requirementIds = downloadRequirementRequest.getRequirementIds();
         String requirementState = downloadRequirementRequest.getState();
         boolean isLastAppSupplierRequired = downloadRequirementRequest.isLastAppSupplierRequired();
-
+        List<Requirement> requirements;
         if (!requirementIds.isEmpty()) {
             requirements = requirementRepository.findRequirementByIds(requirementIds);
         } else {

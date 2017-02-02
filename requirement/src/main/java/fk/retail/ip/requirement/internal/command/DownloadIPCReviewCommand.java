@@ -15,6 +15,11 @@ public class DownloadIPCReviewCommand extends DownloadCommand {
     }
 
     @Override
+    protected String getTemplateName() {
+        return "IPCReview.xlsx";
+    }
+
+    @Override
     void fetchRequirementStateData() {
 
     }

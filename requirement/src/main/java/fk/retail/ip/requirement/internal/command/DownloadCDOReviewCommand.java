@@ -15,6 +15,11 @@ public class DownloadCDOReviewCommand extends DownloadCommand {
     }
 
     @Override
+    protected String getTemplateName() {
+        return "CDOReview.xlsx";
+    }
+
+    @Override
     void fetchRequirementStateData() {
 
     }

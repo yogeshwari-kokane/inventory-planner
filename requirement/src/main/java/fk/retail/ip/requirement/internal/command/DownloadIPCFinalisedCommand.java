@@ -15,6 +15,11 @@ public class DownloadIPCFinalisedCommand extends DownloadCommand{
     }
 
     @Override
+    protected String getTemplateName() {
+        return "IPCFinalised.xlsx";
+    }
+
+    @Override
     void fetchRequirementStateData() {
 
     }
