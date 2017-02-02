@@ -16,10 +16,7 @@ public class RequirementManager {
     public StreamingOutput download(String downloadState, boolean isLastAppSupplierRequired) {
         RequirementState requirementState = RequirementState.valueOf(downloadState);
         StreamingOutput output = requirementState.getDownloadCommand()
-                .withRequirements(requirements)
-                .withLastAppSupplierRequired(isLastAppSupplierRequired)
-                .withTemplateFile(requirementState.getDownloadTemplate())
-                .execute();
+                .execute(requirements, isLastAppSupplierRequired);
         return output;
     }
 

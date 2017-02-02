@@ -39,10 +39,8 @@ import static java.util.stream.Collectors.toList;
  */
 public abstract class DownloadCommand {
 
-   private List<Requirement> requirements;
+
    private Set<String> requirementFsns;
-   private boolean isLastAppSupplierRequired;
-   private String templateFile;
    private final FsnBandRepository fsnBandRepository;
    private final WeeklySaleRepository weeklySaleRepository;
    private List<RequirementDownloadLineItem> requirementDownloadLineItems;
@@ -55,7 +53,7 @@ public abstract class DownloadCommand {
        this.weeklySaleRepository = weeklySaleRepository;
    }
 
-   public StreamingOutput execute() {
+   public StreamingOutput execute(List<Requirement> requirements, boolean isLastAppSupplierRequired) {
 
        requirementDownloadLineItems = requirements.stream().map(RequirementDownloadLineItem::new).collect(toList());
        fsnToRequirement = requirementDownloadLineItems.stream().collect(groupingBy(RequirementDownloadLineItem::getFsn));
@@ -90,7 +88,7 @@ public abstract class DownloadCommand {
         List<WeeklySale> sales = weeklySaleRepository.fetchWeeklySalesForFsns(requirementFsns);
 
         requirementDownloadLineItems.forEach(reqItem
-                -> populateSalesData(sales, reqItem, reqItem::setWeek0Sale, reqItem::setWeek1Sale, reqItem::setWeek2Sale, reqItem::setWeek3Sale, reqItem::setWeek4Sale, reqItem::setWeek5Sale, reqItem::setWeek6Sale, reqItem::setWeek7Sale)
+                        -> populateSalesData(sales, reqItem, reqItem::setWeek0Sale, reqItem::setWeek1Sale, reqItem::setWeek2Sale, reqItem::setWeek3Sale, reqItem::setWeek4Sale, reqItem::setWeek5Sale, reqItem::setWeek6Sale, reqItem::setWeek7Sale)
         );
     }
 
@@ -101,7 +99,7 @@ public abstract class DownloadCommand {
     protected StreamingOutput generateExcel(List<RequirementDownloadLineItem> requirementDownloadLineItems) {
         SpreadSheetWriter spreadsheet = new SpreadSheetWriter();
         ObjectMapper mapper = new ObjectMapper();
-        InputStream template = getClass().getResourceAsStream(templateFile);
+        InputStream template = getClass().getResourceAsStream(getTemplateName());
         StreamingOutput output  = (OutputStream out) -> {
             try {
                 spreadsheet.populateTemplate(template, out, mapper.convertValue(requirementDownloadLineItems, new TypeReference<List<Map>>() {
@@ -126,22 +124,7 @@ public abstract class DownloadCommand {
         }
     }
 
-    public DownloadCommand withRequirements(List<Requirement> requirements) {
-        this.requirements = requirements;
-        return this;
-    }
-
-    public DownloadCommand withLastAppSupplierRequired(boolean lastAppSupplierRequired) {
-        this.isLastAppSupplierRequired = lastAppSupplierRequired;
-        return this;
-    }
-
-    public DownloadCommand withTemplateFile(String templateFile) {
-        this.templateFile = templateFile;
-        return this;
-    }
-
-
+    protected abstract String getTemplateName();
 
     abstract void fetchRequirementStateData();
 }

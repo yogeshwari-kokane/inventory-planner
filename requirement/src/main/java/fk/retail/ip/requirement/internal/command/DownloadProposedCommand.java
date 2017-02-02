@@ -16,6 +16,11 @@ public class DownloadProposedCommand extends DownloadCommand {
     }
 
     @Override
+    protected String getTemplateName() {
+        return "proposed.xlsx";
+    }
+
+    @Override
     void fetchRequirementStateData() {
 
     }

@@ -15,6 +15,11 @@ public class DownloadBizFinReviewCommand extends DownloadCommand {
     }
 
     @Override
+    protected String getTemplateName() {
+        return "BizFinReview.xlsx";
+    }
+
+    @Override
     void fetchRequirementStateData() {
 
     }
