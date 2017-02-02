@@ -42,7 +42,7 @@ public abstract class DownloadCommand {
    private List<Requirement> requirements;
    private Set<String> requirementFsns;
    private boolean isLastAppSupplierRequired;
-   private String requirementState;
+   private String templateFile;
    private final FsnBandRepository fsnBandRepository;
    private final WeeklySaleRepository weeklySaleRepository;
    private List<RequirementDownloadLineItem> requirementDownloadLineItems;
@@ -101,8 +101,7 @@ public abstract class DownloadCommand {
     protected StreamingOutput generateExcel(List<RequirementDownloadLineItem> requirementDownloadLineItems) {
         SpreadSheetWriter spreadsheet = new SpreadSheetWriter();
         ObjectMapper mapper = new ObjectMapper();
-        String templateName = "/" + requirementState + ".xlsx";
-        InputStream template = getClass().getResourceAsStream(templateName);
+        InputStream template = getClass().getResourceAsStream(templateFile);
         StreamingOutput output  = (OutputStream out) -> {
             try {
                 spreadsheet.populateTemplate(template, out, mapper.convertValue(requirementDownloadLineItems, new TypeReference<List<Map>>() {
@@ -137,8 +136,8 @@ public abstract class DownloadCommand {
         return this;
     }
 
-    public DownloadCommand withRequirementState(String requirementState) {
-        this.requirementState = requirementState;
+    public DownloadCommand withTemplateFile(String templateFile) {
+        this.templateFile = templateFile;
         return this;
     }
 
