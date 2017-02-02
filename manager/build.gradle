@@ -4,7 +4,7 @@ sourceCompatibility = 1.8
 version = '1.0'
 
 dependencies {
-    compile project(':projection')
+    compile project(':requirement')
     compile project(':core')
     compile 'mysql:mysql-connector-java:5.1.37'
 
