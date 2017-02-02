@@ -10,9 +10,9 @@ import org.hibernate.SessionFactory;
  *
  * @author Pragalathan M
  */
-public class WeeklySaleDAO extends AbstractDAO<WeeklySale> {
+public class IpGroupDAO extends AbstractDAO<WeeklySale> {
 
-    public WeeklySaleDAO(SessionFactory factory) {
+    public IpGroupDAO(SessionFactory factory) {
         super(factory);
     }
 

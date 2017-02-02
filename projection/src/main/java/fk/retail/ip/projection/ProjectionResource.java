@@ -1,38 +1,10 @@
 package fk.retail.ip.projection;
 
-import com.google.inject.Inject;
-import com.google.inject.Provider;
-
 import com.codahale.metrics.annotation.Timed;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import org.apache.commons.collections4.map.MultiKeyMap;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
-import org.glassfish.jersey.media.multipart.FormDataParam;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.temporal.TemporalField;
-import java.time.temporal.WeekFields;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Consumer;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.StreamingOutput;
-
+import com.google.inject.Inject;
+import com.google.inject.Provider;
 import fk.retail.ip.core.poi.SpreadSheetWriter;
 import fk.retail.ip.projection.internal.command.UploadProjectionCommand;
 import fk.retail.ip.projection.internal.dao.FsnBandDAO;
@@ -45,14 +17,36 @@ import fk.retail.ip.projection.internal.entities.WeeklySale;
 import fk.retail.ip.projection.internal.exception.ProjectionOverrideException;
 import fk.retail.ip.projection.models.ProjectionLineItem;
 import io.dropwizard.hibernate.UnitOfWork;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.temporal.TemporalField;
+import java.time.temporal.WeekFields;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
+import org.apache.commons.collections4.map.MultiKeyMap;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 
-import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 
 /**
  * Created by nidhigupta.m on 06/01/17.
  */
-
 @Path("/projection")
 public class ProjectionResource {
 
@@ -64,7 +58,6 @@ public class ProjectionResource {
     private final FsnBandDAO fsnBandDAO;
     private final WarehouseForecastDAO warehouseForecastDAO;
     private final WeeklySaleDAO weeklySaleDAO;
-
 
     @Inject
     public ProjectionResource(
@@ -93,7 +86,7 @@ public class ProjectionResource {
                     SpreadSheetWriter spreadsheet = new SpreadSheetWriter();
                     // collect projections
                     List<ProjectionLineItem> projectionLineItems = projectionItemDAO.findAll().stream().map(ProjectionLineItem::new).collect(toList());
-                    Map<String, List<ProjectionLineItem>> fsnToProjection = projectionLineItems.stream().collect(groupingBy(ProjectionLineItem::getFsn));
+                    Map<String, List<ProjectionLineItem>> fsnToProjection = projectionLineItems.stream().collect(Collectors.groupingBy(ProjectionLineItem::getFsn));
                     Set<String> fsns = Collections.unmodifiableSet(fsnToProjection.keySet());
 
                     // collect band info
@@ -152,17 +145,15 @@ public class ProjectionResource {
         return Response.ok(name).build();
     }
 
-
     @POST
     @Path("/upload")
-    public Response uploadProjectionOverride(@FormDataParam("file")InputStream inputStream,
-                                             @FormDataParam("file")FormDataContentDisposition fileDetails,
-                                             Map<String, Object> params) throws IOException, InvalidFormatException, ProjectionOverrideException {
+    public Response uploadProjectionOverride(@FormDataParam("file") InputStream inputStream,
+            @FormDataParam("file") FormDataContentDisposition fileDetails,
+            Map<String, Object> params) throws IOException, InvalidFormatException, ProjectionOverrideException {
 
         overrideProjectionCommandProvider.get().uploadProjectionOverride(inputStream, params);
         return Response.ok().build();
 
     }
-
 
 }

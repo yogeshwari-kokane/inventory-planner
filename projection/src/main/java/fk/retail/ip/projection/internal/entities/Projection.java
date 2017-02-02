@@ -1,11 +1,12 @@
 package fk.retail.ip.projection.internal.entities;
 
-
+import fk.retail.ip.projection.internal.command.OverrideProjectionCommand;
+import fk.retail.ip.projection.internal.exception.ProjectionOverrideException;
+import fk.retail.ip.projection.internal.factory.ProjectionOverrideFactory;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,10 +17,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import fk.retail.ip.projection.internal.command.OverrideProjectionCommand;
-import fk.retail.ip.projection.internal.exception.ProjectionOverrideException;
-import fk.retail.ip.projection.internal.factory.ProjectionOverrideFactory;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -33,16 +30,16 @@ import lombok.Setter;
 @Getter
 @Setter
 @NamedQueries({
-        @NamedQuery(name = "Projection.findAll", query = "SELECT p FROM Projection p")
-        , @NamedQuery(name = "Projection.findById", query = "SELECT p FROM Projection p WHERE p.id = :id")
-        , @NamedQuery(name = "Projection.findByFsn", query = "SELECT p FROM Projection p WHERE p.fsn = :fsn")
-        , @NamedQuery(name = "Projection.findByCurrentState", query = "SELECT p FROM Projection p WHERE p.currentState = :currentState")
-        , @NamedQuery(name = "Projection.findByEnabled", query = "SELECT p FROM Projection p WHERE p.enabled = :enabled")
-        , @NamedQuery(name = "Projection.findBySku", query = "SELECT p FROM Projection p WHERE p.sku = :sku")
-        , @NamedQuery(name = "Projection.findByProcType", query = "SELECT p FROM Projection p WHERE p.procType = :procType")
-        , @NamedQuery(name = "Projection.findByForecastId", query = "SELECT p FROM Projection p WHERE p.forecastId = :forecastId")
-        , @NamedQuery(name = "Projection.findByPolicyId", query = "SELECT p FROM Projection p WHERE p.policyId = :policyId")
-        , @NamedQuery(name = "Projection.findByGroupId", query = "SELECT p FROM Projection p WHERE p.groupId = :groupId")
+    @NamedQuery(name = "Projection.findAll", query = "SELECT p FROM Projection p")
+    , @NamedQuery(name = "Projection.findById", query = "SELECT p FROM Projection p WHERE p.id = :id")
+    , @NamedQuery(name = "Projection.findByFsn", query = "SELECT p FROM Projection p WHERE p.fsn = :fsn")
+    , @NamedQuery(name = "Projection.findByCurrentState", query = "SELECT p FROM Projection p WHERE p.currentState = :currentState")
+    , @NamedQuery(name = "Projection.findByEnabled", query = "SELECT p FROM Projection p WHERE p.enabled = :enabled")
+    , @NamedQuery(name = "Projection.findBySku", query = "SELECT p FROM Projection p WHERE p.sku = :sku")
+    , @NamedQuery(name = "Projection.findByProcType", query = "SELECT p FROM Projection p WHERE p.procType = :procType")
+    , @NamedQuery(name = "Projection.findByForecastId", query = "SELECT p FROM Projection p WHERE p.forecastId = :forecastId")
+    , @NamedQuery(name = "Projection.findByPolicyId", query = "SELECT p FROM Projection p WHERE p.policyId = :policyId")
+    , @NamedQuery(name = "Projection.findByGroupId", query = "SELECT p FROM Projection p WHERE p.groupId = :groupId")
 })
 public class Projection extends AbstractEntity {
 
@@ -128,4 +125,3 @@ public class Projection extends AbstractEntity {
         overrideProjectionCommand.withOverrideRow(overrideRow).execute();
     }
 }
-

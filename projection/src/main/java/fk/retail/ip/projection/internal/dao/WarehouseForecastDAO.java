@@ -1,12 +1,10 @@
 package fk.retail.ip.projection.internal.dao;
 
-import org.hibernate.SessionFactory;
-
-import java.util.Collection;
-import java.util.List;
-
 import fk.retail.ip.projection.internal.entities.WarehouseForecast;
 import io.dropwizard.hibernate.AbstractDAO;
+import java.util.Collection;
+import java.util.List;
+import org.hibernate.SessionFactory;
 
 /**
  *
@@ -30,4 +28,3 @@ public class WarehouseForecastDAO extends AbstractDAO<WarehouseForecast> {
         return list(namedQuery("WarehouseForecast.findByFsn").setParameterList("fsns", fsns));
     }
 }
-

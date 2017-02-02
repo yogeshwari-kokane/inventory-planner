@@ -10,7 +10,6 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -26,17 +25,17 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @NamedQueries({
-        @NamedQuery(name = "ProjectionItem.findAll", query = "SELECT p FROM ProjectionItem p")
-        , @NamedQuery(name = "ProjectionItem.findById", query = "SELECT p FROM ProjectionItem p WHERE p.id = :id")
-        , @NamedQuery(name = "ProjectionItem.findByState", query = "SELECT p FROM ProjectionItem p WHERE p.state = :state")
-        , @NamedQuery(name = "ProjectionItem.findByPanIndia", query = "SELECT p FROM ProjectionItem p WHERE p.panIndia = :panIndia")
-        , @NamedQuery(name = "ProjectionItem.findByCreatedBy", query = "SELECT p FROM ProjectionItem p WHERE p.createdBy = :createdBy")
-        , @NamedQuery(name = "ProjectionItem.findByWarehouse", query = "SELECT p FROM ProjectionItem p WHERE p.warehouse = :warehouse")
-        , @NamedQuery(name = "ProjectionItem.findBySupplier", query = "SELECT p FROM ProjectionItem p WHERE p.supplier = :supplier")
-        , @NamedQuery(name = "ProjectionItem.findByInternational", query = "SELECT p FROM ProjectionItem p WHERE p.international = :international")
-        , @NamedQuery(name = "ProjectionItem.findBySla", query = "SELECT p FROM ProjectionItem p WHERE p.sla = :sla")
-        , @NamedQuery(name = "ProjectionItem.findByEnabled", query = "SELECT p FROM ProjectionItem p WHERE p.projection.enabled = :enabled")
-        , @NamedQuery(name = "ProjectionItem.findByPrevStateId", query = "SELECT p FROM ProjectionItem p WHERE p.prevStateId = :prevStateId")
+    @NamedQuery(name = "ProjectionItem.findAll", query = "SELECT p FROM ProjectionItem p")
+    , @NamedQuery(name = "ProjectionItem.findById", query = "SELECT p FROM ProjectionItem p WHERE p.id = :id")
+    , @NamedQuery(name = "ProjectionItem.findByState", query = "SELECT p FROM ProjectionItem p WHERE p.state = :state")
+    , @NamedQuery(name = "ProjectionItem.findByPanIndia", query = "SELECT p FROM ProjectionItem p WHERE p.panIndia = :panIndia")
+    , @NamedQuery(name = "ProjectionItem.findByCreatedBy", query = "SELECT p FROM ProjectionItem p WHERE p.createdBy = :createdBy")
+    , @NamedQuery(name = "ProjectionItem.findByWarehouse", query = "SELECT p FROM ProjectionItem p WHERE p.warehouse = :warehouse")
+    , @NamedQuery(name = "ProjectionItem.findBySupplier", query = "SELECT p FROM ProjectionItem p WHERE p.supplier = :supplier")
+    , @NamedQuery(name = "ProjectionItem.findByInternational", query = "SELECT p FROM ProjectionItem p WHERE p.international = :international")
+    , @NamedQuery(name = "ProjectionItem.findBySla", query = "SELECT p FROM ProjectionItem p WHERE p.sla = :sla")
+    , @NamedQuery(name = "ProjectionItem.findByEnabled", query = "SELECT p FROM ProjectionItem p WHERE p.projection.enabled = :enabled")
+    , @NamedQuery(name = "ProjectionItem.findByPrevStateId", query = "SELECT p FROM ProjectionItem p WHERE p.prevStateId = :prevStateId")
 })
 public class ProjectionItem extends AbstractEntity {
 
@@ -127,4 +126,3 @@ public class ProjectionItem extends AbstractEntity {
         return "com.flipkart.ip.db.ProjectionItem[ id=" + id + " ]";
     }
 }
-
