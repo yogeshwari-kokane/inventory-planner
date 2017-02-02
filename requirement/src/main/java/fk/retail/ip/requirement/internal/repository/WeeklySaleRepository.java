@@ -3,6 +3,7 @@ package fk.retail.ip.requirement.internal.repository;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import com.google.inject.Inject;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -22,9 +23,11 @@ public class WeeklySaleRepository extends SimpleJpaGenericRepository<WeeklySale,
 
     protected static final int pageSize = 20;
 
+    @Inject
     public WeeklySaleRepository(Provider<EntityManager> entityManagerProvider) {
         super(entityManagerProvider);
     }
+
     public List<WeeklySale> fetchWeeklySalesForFsns(Set<String> fsns) {
         List<WeeklySale> weeklySales = Lists.newArrayList();
         int pageNo = 0;

@@ -4,7 +4,7 @@
                  xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"
                  version="1.0">
 
-    <named-query name="findAllRequirementByIds">
+    <named-query name="findRequirementByIds">
         <query>
             <![CDATA[
             SELECT r
@@ -15,7 +15,7 @@
         </query>
     </named-query>
 
-    <named-query name="findEnabledRequirementsForState">
+    <named-query name="findEnabledRequirementsByState">
         <query>
             <![CDATA[
             SELECT r
@@ -30,7 +30,7 @@
     <named-query name="fetchBandDataForFSNs">
         <query>
             <![CDATA[
-            SELECT r
+            SELECT fb
             FROM FsnBand fb
             WHERE
                 fb.fsn IN :fsns

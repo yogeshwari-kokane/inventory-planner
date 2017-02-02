@@ -3,6 +3,7 @@ package fk.retail.ip.requirement.internal.repository;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import com.google.inject.Inject;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -22,6 +23,7 @@ public class FsnBandRepository extends SimpleJpaGenericRepository<FsnBand, Long>
 
     protected static final int pageSize = 20;
 
+    @Inject
     public FsnBandRepository(Provider<EntityManager> entityManagerProvider) {
         super(entityManagerProvider);
     }

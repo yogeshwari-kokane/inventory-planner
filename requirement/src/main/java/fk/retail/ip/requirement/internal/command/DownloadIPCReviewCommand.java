@@ -1,5 +1,6 @@
 package fk.retail.ip.requirement.internal.command;
 
+import com.google.inject.Inject;
 import fk.retail.ip.requirement.internal.repository.FsnBandRepository;
 import fk.retail.ip.requirement.internal.repository.WeeklySaleRepository;
 
@@ -8,8 +9,14 @@ import fk.retail.ip.requirement.internal.repository.WeeklySaleRepository;
  */
 public class DownloadIPCReviewCommand extends DownloadCommand {
 
+    @Inject
     public DownloadIPCReviewCommand(FsnBandRepository fsnBandRepository, WeeklySaleRepository weeklySaleRepository) {
         super(fsnBandRepository, weeklySaleRepository);
+    }
+
+    @Override
+    protected String getTemplateName() {
+        return "IPCReview.xlsx";
     }
 
     @Override

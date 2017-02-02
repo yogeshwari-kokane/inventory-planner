@@ -4,6 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -28,56 +29,44 @@ public class Requirement extends AbstractEntity {
     private static final long serialVersionUID = 1L;
 
     @NotNull
-    @Column(name = "fsn")
     private String fsn;
 
     @NotNull
-    @Column(name = "warehouse")
     private String warehouse;
 
     @NotNull
-    @Column(name = "quantity")
     private int quantity;
 
-    @Column(name = "supplier")
     private String supplier;
 
-    @Column(name = "mrp")
     private Integer mrp;
 
-    @Column(name = "app")
     private Integer app;
 
-    @Column(name = "currency")
     private String currency;
 
-    @Column(name = "sla")
     private Integer sla;
 
-    @Column(name = "international")
     private boolean international;
 
     @NotNull
-    @Column(name = "state")
     private String state;
 
-    @Column(name = "proc_type")
     private String procType;
 
     @Column(name = "is_enabled")
-    private boolean isEnabled;
+    private boolean enabled;
 
     @Column(name = "is_current")
-    private boolean isCurrent;
+    private boolean current;
 
     @Size(max = 100)
-    @Column(name = "override_comment")
     private String overrideComment;
 
-    @Column(name = "created_by")
     private String createdBy;
 
-    @OneToOne(mappedBy = "requirement_snapshot_id", fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
+    @PrimaryKeyJoinColumn
     private RequirementSnapshot requirementSnapshot;
 
     public Requirement(Long id) {
