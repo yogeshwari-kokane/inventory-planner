@@ -1,5 +1,6 @@
 package fk.retail.ip.requirement.model;
 
+import com.google.inject.Inject;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.factory.RequirementStateFactory;
 import fk.retail.ip.requirement.internal.states.RequirementState;
@@ -16,6 +17,7 @@ public class RequirementManager {
     private List<Requirement> requirements;
     private final RequirementStateFactory requirementStateFactory;
 
+    @Inject
     public RequirementManager(RequirementStateFactory requirementStateFactory) {
         this.requirementStateFactory = requirementStateFactory;
     }
