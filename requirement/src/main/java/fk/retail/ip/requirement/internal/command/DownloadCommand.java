@@ -1,13 +1,15 @@
 package fk.retail.ip.requirement.internal.command;
 
-import com.google.inject.Inject;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import org.apache.commons.collections4.map.MultiKeyMap;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-
+import com.google.inject.Inject;
+import fk.retail.ip.core.poi.SpreadSheetWriter;
+import fk.retail.ip.requirement.internal.entities.FsnBand;
+import fk.retail.ip.requirement.internal.entities.Requirement;
+import fk.retail.ip.requirement.internal.entities.WeeklySale;
+import fk.retail.ip.requirement.internal.repository.FsnBandRepository;
+import fk.retail.ip.requirement.internal.repository.WeeklySaleRepository;
+import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.time.DayOfWeek;
@@ -19,19 +21,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
-
+import java.util.stream.Collectors;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.StreamingOutput;
+import org.apache.commons.collections4.map.MultiKeyMap;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
-import fk.retail.ip.core.poi.SpreadSheetWriter;
-import fk.retail.ip.requirement.internal.entities.FsnBand;
-import fk.retail.ip.requirement.internal.entities.Requirement;
-import fk.retail.ip.requirement.internal.entities.WeeklySale;
-import fk.retail.ip.requirement.internal.repository.FsnBandRepository;
-import fk.retail.ip.requirement.internal.repository.WeeklySaleRepository;
-import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
-
-import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -39,35 +34,32 @@ import static java.util.stream.Collectors.toList;
  */
 public abstract class DownloadCommand {
 
+    private Set<String> requirementFsns;
+    private final FsnBandRepository fsnBandRepository;
+    private final WeeklySaleRepository weeklySaleRepository;
+    private List<RequirementDownloadLineItem> requirementDownloadLineItems;
+    private Map<String, List<RequirementDownloadLineItem>> fsnToRequirement;
 
-   private Set<String> requirementFsns;
-   private final FsnBandRepository fsnBandRepository;
-   private final WeeklySaleRepository weeklySaleRepository;
-   private List<RequirementDownloadLineItem> requirementDownloadLineItems;
-   private Map<String, List<RequirementDownloadLineItem>> fsnToRequirement;
+    @Inject
+    public DownloadCommand(FsnBandRepository fsnBandRepository, WeeklySaleRepository weeklySaleRepository) {
+        this.fsnBandRepository = fsnBandRepository;
+        this.weeklySaleRepository = weeklySaleRepository;
+    }
 
+    public StreamingOutput execute(List<Requirement> requirements, boolean isLastAppSupplierRequired) {
 
-   @Inject
-   public DownloadCommand(FsnBandRepository fsnBandRepository, WeeklySaleRepository weeklySaleRepository) {
-       this.fsnBandRepository = fsnBandRepository;
-       this.weeklySaleRepository = weeklySaleRepository;
-   }
-
-   public StreamingOutput execute(List<Requirement> requirements, boolean isLastAppSupplierRequired) {
-
-       requirementDownloadLineItems = requirements.stream().map(RequirementDownloadLineItem::new).collect(toList());
-       fsnToRequirement = requirementDownloadLineItems.stream().collect(groupingBy(RequirementDownloadLineItem::getFsn));
-       requirementFsns = Collections.unmodifiableSet(fsnToRequirement.keySet());
-       fetchProductData();
-       fetchFsnBandData();
-       fetchSalesBucketData();
-       fetchRequirementStateData();
-       if (isLastAppSupplierRequired) {
-           fetchLastAppSupplierDataFromProc();
-       }
-       return generateExcel(requirementDownloadLineItems);
-
-   }
+        requirementDownloadLineItems = requirements.stream().map(RequirementDownloadLineItem::new).collect(toList());
+        fsnToRequirement = requirementDownloadLineItems.stream().collect(Collectors.groupingBy(RequirementDownloadLineItem::getFsn));
+        requirementFsns = Collections.unmodifiableSet(fsnToRequirement.keySet());
+        fetchProductData();
+        fetchFsnBandData();
+        fetchSalesBucketData();
+        fetchRequirementStateData();
+        if (isLastAppSupplierRequired) {
+            fetchLastAppSupplierDataFromProc();
+        }
+        return generateExcel(requirementDownloadLineItems);
+    }
 
     protected void fetchProductData() {
 
@@ -88,7 +80,7 @@ public abstract class DownloadCommand {
         List<WeeklySale> sales = weeklySaleRepository.fetchWeeklySalesForFsns(requirementFsns);
 
         requirementDownloadLineItems.forEach(reqItem
-                        -> populateSalesData(sales, reqItem, reqItem::setWeek0Sale, reqItem::setWeek1Sale, reqItem::setWeek2Sale, reqItem::setWeek3Sale, reqItem::setWeek4Sale, reqItem::setWeek5Sale, reqItem::setWeek6Sale, reqItem::setWeek7Sale)
+                -> populateSalesData(sales, reqItem, reqItem::setWeek0Sale, reqItem::setWeek1Sale, reqItem::setWeek2Sale, reqItem::setWeek3Sale, reqItem::setWeek4Sale, reqItem::setWeek5Sale, reqItem::setWeek6Sale, reqItem::setWeek7Sale)
         );
     }
 
@@ -100,7 +92,7 @@ public abstract class DownloadCommand {
         SpreadSheetWriter spreadsheet = new SpreadSheetWriter();
         ObjectMapper mapper = new ObjectMapper();
         InputStream template = getClass().getResourceAsStream(getTemplateName());
-        StreamingOutput output  = (OutputStream out) -> {
+        StreamingOutput output = (OutputStream out) -> {
             try {
                 spreadsheet.populateTemplate(template, out, mapper.convertValue(requirementDownloadLineItems, new TypeReference<List<Map>>() {
                 }));
