@@ -13,8 +13,6 @@ import org.hibernate.annotations.Immutable;
 /**
  * Created by nidhigupta.m on 27/01/17.
  */
-
-
 @Entity
 @XmlRootElement
 @Getter
@@ -40,6 +38,5 @@ public class RequirementSnapshot extends ReadOnlyEntity {
     @OneToOne(fetch = FetchType.LAZY)
     @PrimaryKeyJoinColumn
     private Group group;
-
 
 }

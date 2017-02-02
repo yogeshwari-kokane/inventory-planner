@@ -1,35 +1,28 @@
 package fk.retail.ip.requirement.resource;
 
-import com.google.inject.Inject;
-
 import com.codahale.metrics.annotation.Timed;
-
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
-import org.glassfish.jersey.media.multipart.FormDataParam;
-
+import com.google.inject.Inject;
+import fk.retail.ip.requirement.model.DownloadRequirementRequest;
+import fk.retail.ip.requirement.service.RequirementService;
+import io.dropwizard.hibernate.UnitOfWork;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
-
-import fk.retail.ip.requirement.model.DownloadRequirementRequest;
-import fk.retail.ip.requirement.service.RequirementService;
-import io.dropwizard.hibernate.UnitOfWork;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 
 /**
  * Created by nidhigupta.m on 26/01/17.
  */
-
 @Path("/requirement")
 public class RequirementResource {
-
 
     private final RequirementService requirementService;
 
@@ -52,14 +45,12 @@ public class RequirementResource {
 
     @POST
     @Path("/upload")
-    public Response uploadProjectionOverride(@FormDataParam("file")InputStream inputStream,
-                                             @FormDataParam("file")FormDataContentDisposition fileDetails,
-                                             Map<String, Object> params) throws IOException, InvalidFormatException {
-
+    public Response uploadProjectionOverride(@FormDataParam("file") InputStream inputStream,
+            @FormDataParam("file") FormDataContentDisposition fileDetails,
+            Map<String, Object> params) throws IOException, InvalidFormatException {
 
         return Response.ok().build();
 
     }
-
 
 }

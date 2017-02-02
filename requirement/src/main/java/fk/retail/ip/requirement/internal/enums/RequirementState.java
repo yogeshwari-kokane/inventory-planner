@@ -20,11 +20,9 @@ public enum RequirementState {
     IPC_REVIEW(DownloadIPCReviewCommand.class),
     IPC_FINALIZED(DownloadIPCReviewCommand.class);
 
-
     private DownloadCommand downloadCommand;
 
-
-    RequirementState (Class<? extends DownloadCommand> type) {
+    RequirementState(Class<? extends DownloadCommand> type) {
         Injector INJECTOR = Guice.createInjector(new RequirementModule());
         downloadCommand = INJECTOR.getInstance(type);
     }
@@ -32,7 +30,5 @@ public enum RequirementState {
     public DownloadCommand getDownloadCommand() {
         return this.downloadCommand;
     }
-
-
 
 }

@@ -15,7 +15,6 @@ import org.hibernate.annotations.Immutable;
 /**
  * Created by nidhigupta.m on 26/01/17.
  */
-
 @MappedSuperclass
 @Getter
 @Immutable
