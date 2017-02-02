@@ -9,7 +9,6 @@ import lombok.Setter;
 /**
  * Created by nidhigupta.m on 26/01/17.
  */
-
 @XmlRootElement
 @Getter
 @Setter
@@ -51,14 +50,12 @@ public class RequirementDownloadLineItem {
     private String procType;
     private String overrideComment;
 
-
-
     public RequirementDownloadLineItem(Requirement req) {
         this.fsn = req.getFsn();
         this.warehouse = req.getWarehouse();
         this.inventory = req.getRequirementSnapshot().getInventoryQty();
         this.qoh = req.getRequirementSnapshot().getQoh();
-        this.pendingPOQty = req.getRequirementSnapshot().getPendingPOQty();
+        this.pendingPOQty = req.getRequirementSnapshot().getPendingPoQty();
         this.iwitIntransitQty = req.getRequirementSnapshot().getIwitIntransitQty();
         this.openReqQty = req.getRequirementSnapshot().getOpenReqQty();
         this.forcast = req.getRequirementSnapshot().getForecast();
@@ -73,6 +70,5 @@ public class RequirementDownloadLineItem {
         this.overrideComment = req.getOverrideComment();
 
     }
-
 
 }

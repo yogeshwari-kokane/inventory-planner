@@ -1,14 +1,11 @@
 package fk.retail.ip.requirement.internal.entities;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-
+import org.hibernate.annotations.Immutable;
 
 /**
  *
@@ -18,21 +15,16 @@ import lombok.Setter;
 @Table(name = "FDP_FSN_BAND")
 @XmlRootElement
 @Getter
-@Setter
 @NoArgsConstructor
+@Immutable
 public class FsnBand extends ReadOnlyEntity {
 
-    @Column(name = "fsn", insertable = false, updatable = false)
     private String fsn;
 
-    @Column(name = "sales_band", insertable = false, updatable = false)
     private int salesBand;
 
-
-    @Column(name = "pv_band", insertable = false, updatable = false)
     private int pvBand;
 
-    @Column(name = "time_frame", insertable = false, updatable = false)
     private String timeFrame;
 
     @Override
@@ -60,4 +52,3 @@ public class FsnBand extends ReadOnlyEntity {
         return "com.flipkart.ip.db.entity.FsnBand[ id=" + id + " ]";
     }
 }
-
