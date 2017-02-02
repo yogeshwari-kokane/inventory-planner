@@ -21,7 +21,7 @@
             SELECT r
             FROM Requirement r
             WHERE
-                r.isEnabled = 1 and
+                r.enabled = 1 and
                 r.state = :state
                 ]]>
         </query>

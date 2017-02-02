@@ -58,7 +58,7 @@ public class RequirementDownloadLineItem {
         this.warehouse = req.getWarehouse();
         this.inventory = req.getRequirementSnapshot().getInventoryQty();
         this.qoh = req.getRequirementSnapshot().getQoh();
-        this.pendingPOQty = req.getRequirementSnapshot().getPendingPOQty();
+        this.pendingPOQty = req.getRequirementSnapshot().getPendingPoQty();
         this.iwitIntransitQty = req.getRequirementSnapshot().getIwitIntransitQty();
         this.openReqQty = req.getRequirementSnapshot().getOpenReqQty();
         this.forcast = req.getRequirementSnapshot().getForecast();

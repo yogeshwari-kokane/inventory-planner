@@ -3,6 +3,7 @@ package fk.retail.ip.requirement.internal.repository;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import com.google.inject.Inject;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +22,7 @@ public class RequirementRepository extends SimpleJpaGenericRepository<Requiremen
 
     protected static final int pageSize = 20;
 
+    @Inject
     public RequirementRepository(Provider<EntityManager> entityManagerProvider) {
         super(entityManagerProvider);
     }
@@ -32,12 +34,12 @@ public class RequirementRepository extends SimpleJpaGenericRepository<Requiremen
         PageRequest pageRequest = getPageRequest(pageNo, pageSize);
         Map<String, Object> params = Maps.newHashMap();
         params.put("ids",requirementIds);
-        Page<Requirement> page =  findAllByNamedQuery("findAllRequirementByIds", params, pageRequest);
+        Page<Requirement> page =  findAllByNamedQuery("findRequirementByIds", params, pageRequest);
         requirements.addAll(page.getContent());
         if (page.isHasMore()) {
             pageNo += 1;
             pageRequest = getPageRequest(pageNo, pageSize);
-            page =  findAllByNamedQuery("findAllRequirementByIds", params, pageRequest);
+            page =  findAllByNamedQuery("findRequirementByIds", params, pageRequest);
             requirements.addAll(page.getContent());
         }
         return requirements;
@@ -49,12 +51,12 @@ public class RequirementRepository extends SimpleJpaGenericRepository<Requiremen
         PageRequest pageRequest = getPageRequest(pageNo, pageSize);
         Map<String, Object> params = Maps.newHashMap();
         params.put("state",state);
-        Page<Requirement> page =  findAllByNamedQuery("findEnabledRequirementsForState", params, pageRequest);
+        Page<Requirement> page =  findAllByNamedQuery("findEnabledRequirementsByState", params, pageRequest);
         requirements.addAll(page.getContent());
         if (page.isHasMore()) {
             pageNo += 1;
             pageRequest = getPageRequest(pageNo, pageSize);
-            page =  findAllByNamedQuery("findEnabledRequirementsForState", params, pageRequest);
+            page =  findAllByNamedQuery("findEnabledRequirementsByState", params, pageRequest);
             requirements.addAll(page.getContent());
         }
         return requirements;
