@@ -9,7 +9,6 @@ import fk.retail.ip.requirement.internal.repository.WeeklySaleRepository;
  */
 public class DownloadProposedCommand extends DownloadCommand {
 
-
     @Inject
     public DownloadProposedCommand(FsnBandRepository fsnBandRepository, WeeklySaleRepository weeklySaleRepository) {
         super(fsnBandRepository, weeklySaleRepository);

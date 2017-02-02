@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Immutable;
 
-
 /**
  *
  * @author Pragalathan M
@@ -53,4 +52,3 @@ public class FsnBand extends ReadOnlyEntity {
         return "com.flipkart.ip.db.entity.FsnBand[ id=" + id + " ]";
     }
 }
-

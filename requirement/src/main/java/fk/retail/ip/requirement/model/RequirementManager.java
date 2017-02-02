@@ -8,7 +8,6 @@ import javax.ws.rs.core.StreamingOutput;
 /**
  * Created by nidhigupta.m on 26/01/17.
  */
-
 public class RequirementManager {
 
     private List<Requirement> requirements;
@@ -27,8 +26,6 @@ public class RequirementManager {
     public void calculate() {
 
     }
-
-
 
     public RequirementManager withRequirements(List<Requirement> requirements) {
         this.requirements = requirements;

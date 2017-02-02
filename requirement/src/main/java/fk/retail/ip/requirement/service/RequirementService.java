@@ -1,15 +1,12 @@
 package fk.retail.ip.requirement.service;
 
 import com.google.inject.Inject;
-
-import java.util.List;
-
-import javax.ws.rs.core.StreamingOutput;
-
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.model.DownloadRequirementRequest;
 import fk.retail.ip.requirement.model.RequirementManager;
+import java.util.List;
+import javax.ws.rs.core.StreamingOutput;
 
 /**
  * Created by nidhigupta.m on 26/01/17.
@@ -38,7 +35,7 @@ public class RequirementService {
         }
 
         StreamingOutput output = requirementManager.withRequirements(requirements).download(requirementState, isLastAppSupplierRequired);
-        return  output;
+        return output;
 
     }
 
