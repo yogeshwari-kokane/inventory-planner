@@ -55,7 +55,7 @@ buildscript {
 }
 
 task createWrapper(type: Wrapper) {
-    gradleVersion = '2.1'
+    gradleVersion = '2.0'
 }
 
 apply plugin: 'dropwizard-debian'
@@ -65,7 +65,7 @@ dropwizardDebian {
     jmxPort = Integer.valueOf(_jmxPort)
     applicationName = "fk-ip-inventory-planner"
     parentProject = "manager"
-    javaOpts = "-Xms1024m -Xmx1024m -XX:MaxPermSize=256m -XX:+UseG1GC -verbose:gc -XX:+PrintGCDateStamps -XX:+PrintGCTimeStamps -XX:+PrintGCDetails -Xloggc:/var/log/flipkart/ip/fk-ip-inventory-planner/gc.log"
+    javaOpts = "-Xms1024m -Xmx4096m -XX:MaxPermSize=256m -XX:+UseG1GC -verbose:gc -XX:+PrintGCDateStamps -XX:+PrintGCTimeStamps -XX:+PrintGCDetails -Xloggc:/var/log/flipkart/ip/fk-ip-inventory-planner/gc.log"
     zip64 = true
     jreVersion = 8;
     enableLogAggregation = true
