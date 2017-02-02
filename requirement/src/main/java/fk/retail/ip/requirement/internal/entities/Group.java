@@ -14,10 +14,9 @@ public class Group extends AbstractEntity {
 
     private String name;
 
-    @Column(name = "proc_type")
     private String procType;
 
     @Column(name = "is_enabled")
-    private boolean isEnabled;
+    private boolean enabled;
 
 }

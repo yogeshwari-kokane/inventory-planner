@@ -1,13 +1,11 @@
 package fk.retail.ip.requirement.internal.entities;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import org.hibernate.annotations.Immutable;
 
 
 /**
@@ -18,20 +16,16 @@ import lombok.Setter;
 @Table(name = "FDP_FSN_SALES_BUCKET")
 @XmlRootElement
 @Getter
-@Setter
+@Immutable
 @NoArgsConstructor
 public class WeeklySale extends ReadOnlyEntity {
 
-    @Column(insertable = false, updatable = false)
     private String fsn;
 
-    @Column(insertable = false, updatable = false)
     private String warehouse;
 
-    @Column(insertable = false, updatable = false)
     private int week;
 
-    @Column(name = "sale_qty", insertable = false, updatable = false)
     private int saleQty;
 
     @Override
