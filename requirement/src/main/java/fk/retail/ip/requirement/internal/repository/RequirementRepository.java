@@ -2,17 +2,15 @@ package fk.retail.ip.requirement.internal.repository;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
-import java.util.List;
-import java.util.Map;
-
-import javax.inject.Provider;
-import javax.persistence.EntityManager;
-
+import com.google.inject.Inject;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.sp.common.extensions.jpa.Page;
 import fk.sp.common.extensions.jpa.PageRequest;
 import fk.sp.common.extensions.jpa.SimpleJpaGenericRepository;
+import java.util.List;
+import java.util.Map;
+import javax.inject.Provider;
+import javax.persistence.EntityManager;
 
 /**
  * Created by nidhigupta.m on 26/01/17.
@@ -21,6 +19,7 @@ public class RequirementRepository extends SimpleJpaGenericRepository<Requiremen
 
     protected static final int pageSize = 20;
 
+    @Inject
     public RequirementRepository(Provider<EntityManager> entityManagerProvider) {
         super(entityManagerProvider);
     }
