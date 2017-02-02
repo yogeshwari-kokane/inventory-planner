@@ -130,4 +130,3 @@ local.properties
 *.pyc
 
 # Created by .ignore support plugin (hsz.mobi)
-/.nb-gradle/

@@ -1,10 +1,12 @@
 package fk.retail.ip.projection.internal.dao;
 
-import fk.retail.ip.projection.internal.entities.WeeklySale;
-import io.dropwizard.hibernate.AbstractDAO;
+import org.hibernate.SessionFactory;
+
 import java.util.Collection;
 import java.util.List;
-import org.hibernate.SessionFactory;
+
+import fk.retail.ip.projection.internal.entities.WeeklySale;
+import io.dropwizard.hibernate.AbstractDAO;
 
 /**
  *
@@ -20,3 +22,4 @@ public class WeeklySaleDAO extends AbstractDAO<WeeklySale> {
         return list(namedQuery("WeeklySale.findByFsn").setParameterList("fsns", fsns));
     }
 }
+

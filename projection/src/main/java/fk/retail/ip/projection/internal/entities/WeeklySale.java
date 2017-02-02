@@ -6,9 +6,13 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+
+
 
 /**
  *
@@ -21,7 +25,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @NamedQueries({
-    @NamedQuery(name = "WeeklySale.findByFsn", query = "SELECT f FROM WeeklySale f WHERE f.fsn IN (:fsns)")
+        @NamedQuery(name = "WeeklySale.findByFsn", query = "SELECT f FROM WeeklySale f WHERE f.fsn IN (:fsns)")
 })
 public class WeeklySale extends AbstractEntity {
 

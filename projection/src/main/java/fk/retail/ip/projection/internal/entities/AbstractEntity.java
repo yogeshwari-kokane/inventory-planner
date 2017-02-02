@@ -2,6 +2,7 @@ package fk.retail.ip.projection.internal.entities;
 
 import java.io.Serializable;
 import java.util.Date;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
@@ -11,6 +12,7 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
+
 import lombok.Getter;
 
 /**
@@ -43,5 +45,6 @@ public class AbstractEntity implements Serializable {
     @NotNull
     @Column(name = "version")
     private long version;
+
 
 }
