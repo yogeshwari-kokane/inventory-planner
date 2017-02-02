@@ -1,9 +1,12 @@
 package fk.retail.ip.projection.internal.dao;
 
+
+import org.hibernate.SessionFactory;
+
+import java.util.List;
+
 import fk.retail.ip.projection.internal.entities.Projection;
 import io.dropwizard.hibernate.AbstractDAO;
-import java.util.List;
-import org.hibernate.SessionFactory;
 
 /**
  *

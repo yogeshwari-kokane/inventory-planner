@@ -9,9 +9,12 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+
 
 /**
  *
@@ -24,10 +27,10 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @NamedQueries({
-    @NamedQuery(name = "WarehouseForecast.findAll", query = "SELECT f FROM WarehouseForecast f")
-    , @NamedQuery(name = "WarehouseForecast.findByFsn", query = "SELECT f FROM WarehouseForecast f WHERE f.fsn IN (:fsns)")
-    , @NamedQuery(name = "WarehouseForecast.findByWarehouse", query = "SELECT f FROM WarehouseForecast f WHERE f.warehouse = :warehouse")
-    , @NamedQuery(name = "WarehouseForecast.findByForecast", query = "SELECT f FROM WarehouseForecast f WHERE f.forecast = :forecast")
+        @NamedQuery(name = "WarehouseForecast.findAll", query = "SELECT f FROM WarehouseForecast f")
+        , @NamedQuery(name = "WarehouseForecast.findByFsn", query = "SELECT f FROM WarehouseForecast f WHERE f.fsn IN (:fsns)")
+        , @NamedQuery(name = "WarehouseForecast.findByWarehouse", query = "SELECT f FROM WarehouseForecast f WHERE f.warehouse = :warehouse")
+        , @NamedQuery(name = "WarehouseForecast.findByForecast", query = "SELECT f FROM WarehouseForecast f WHERE f.forecast = :forecast")
 })
 public class WarehouseForecast extends AbstractEntity {
 

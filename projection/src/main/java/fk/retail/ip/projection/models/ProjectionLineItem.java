@@ -1,9 +1,11 @@
 package fk.retail.ip.projection.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import javax.xml.bind.annotation.XmlRootElement;
+
 import fk.retail.ip.projection.internal.entities.Projection;
 import fk.retail.ip.projection.internal.entities.ProjectionItem;
-import javax.xml.bind.annotation.XmlRootElement;
 import lombok.Getter;
 import lombok.Setter;
 

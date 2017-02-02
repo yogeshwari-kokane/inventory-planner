@@ -1,5 +1,14 @@
 package fk.retail.ip.core.poi;
 
+import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.openxml4j.opc.OPCPackage;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -11,23 +20,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.openxml4j.opc.OPCPackage;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 /**
  *
  * @author pragalathan.m
  */
 public class SpreadSheetWriter {
-
     private static final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd_HHmmss.S");
-
     public void populateTemplate(InputStream template, OutputStream out, List<Map<String, Object>> records) throws InvalidFormatException, IOException {
         Path tempFile = Files.createTempFile(null, format.format(new Date()));
         Files.copy(template, tempFile, StandardCopyOption.REPLACE_EXISTING);
@@ -78,3 +77,4 @@ public class SpreadSheetWriter {
         }
     }
 }
+

@@ -1,10 +1,12 @@
 package fk.retail.ip.projection.internal.dao;
 
-import fk.retail.ip.projection.internal.entities.FsnBand;
-import io.dropwizard.hibernate.AbstractDAO;
+import org.hibernate.SessionFactory;
+
 import java.util.Collection;
 import java.util.List;
-import org.hibernate.SessionFactory;
+
+import fk.retail.ip.projection.internal.entities.FsnBand;
+import io.dropwizard.hibernate.AbstractDAO;
 
 /**
  *
@@ -20,3 +22,4 @@ public class FsnBandDAO extends AbstractDAO<FsnBand> {
         return list(namedQuery("FsnBand.findByFsn").setParameterList("fsns", fsns));
     }
 }
+

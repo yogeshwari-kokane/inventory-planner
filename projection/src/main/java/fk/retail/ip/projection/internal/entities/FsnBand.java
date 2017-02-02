@@ -9,9 +9,13 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+
+
 
 /**
  *
@@ -24,7 +28,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @NamedQueries({
-    @NamedQuery(name = "FsnBand.findByFsn", query = "SELECT f FROM FsnBand f WHERE timeFrame='Last 30 Days' AND f.fsn IN (:fsns)")
+        @NamedQuery(name = "FsnBand.findByFsn", query = "SELECT f FROM FsnBand f WHERE timeFrame='Last 30 Days' AND f.fsn IN (:fsns)")
 })
 public class FsnBand extends AbstractEntity {
 
@@ -73,3 +77,4 @@ public class FsnBand extends AbstractEntity {
         return "com.flipkart.ip.db.entity.FsnBand[ id=" + id + " ]";
     }
 }
+
