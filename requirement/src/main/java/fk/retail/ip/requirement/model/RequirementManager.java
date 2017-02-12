@@ -2,7 +2,9 @@ package fk.retail.ip.requirement.model;
 
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.enums.RequirementState;
+
 import java.util.List;
+import java.util.Map;
 import javax.ws.rs.core.StreamingOutput;
 
 /**
@@ -19,7 +21,13 @@ public class RequirementManager {
         return output;
     }
 
-    public void upload() {
+    public List<RequirementUploadLineItem> upload(String uploadState, List<Map<String, Object>> parsedJson) {
+        RequirementState requirementState = RequirementState.valueOf(uploadState);
+        if (requirementState == null) {
+            //log => unknown state
+            return null;
+        }
+        return requirementState.getUploadCommand().execute(parsedJson, requirements);
 
     }
 

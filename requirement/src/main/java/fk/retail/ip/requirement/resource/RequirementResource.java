@@ -3,11 +3,14 @@ package fk.retail.ip.requirement.resource;
 import com.codahale.metrics.annotation.Timed;
 import com.google.inject.Inject;
 import fk.retail.ip.requirement.model.DownloadRequirementRequest;
+import fk.retail.ip.requirement.model.RequirementUploadLineItem;
 import fk.retail.ip.requirement.service.RequirementService;
 import io.dropwizard.hibernate.UnitOfWork;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -49,7 +52,9 @@ public class RequirementResource {
             @FormDataParam("file") FormDataContentDisposition fileDetails,
             Map<String, Object> params) throws IOException, InvalidFormatException {
 
-        return Response.ok().build();
+        List<RequirementUploadLineItem> result = requirementService.uploadRequirement(inputStream, fileDetails, params);
+
+        return Response.ok(result).build();
 
     }
 
