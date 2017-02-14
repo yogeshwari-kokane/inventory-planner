@@ -2,6 +2,8 @@ package fk.retail.ip.requirement.internal.command.upload;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -123,10 +125,14 @@ public class UploadCDOReviewCommand extends UploadCommand {
         Object quantityOverridden = row.get("bd_quantity");
         Object originalQuantity = row.get("quantity");
 
+        JSONArray commentsArray = new JSONArray();
+
 
         if (quantityOverridden != null && quantityOverridden != originalQuantity) {
             Integer proposedQuantity = (Integer) quantityOverridden;
             overriddenValues.put("quantity", proposedQuantity);
+            JSONObject quantityOverrideComment = new JSONObject();
+            quantityOverrideComment.put("quantityOverrideComment", quantityOverrideComment);
         }
 
         Object supplierOverridden = row.get("bd_supplier");
@@ -134,7 +140,9 @@ public class UploadCDOReviewCommand extends UploadCommand {
         if (supplierOverridden != null && supplierOverridden != originalSupplier) {
             String proposedSupplier = supplierOverridden.toString();
             overriddenValues.put("supplier", proposedSupplier);
-
+            JSONObject supplierOverrideComment = new JSONObject();
+            supplierOverrideComment.put("supplierOverrideComment", row.get("bd_supplier_override_reason"));
+            commentsArray.put(supplierOverrideComment);
         }
 
         Object appOverridden = row.get("bd_app");
@@ -143,6 +151,9 @@ public class UploadCDOReviewCommand extends UploadCommand {
         if (appOverridden != null && appOverridden != originalApp) {
             Integer proposedApp = (Integer) appOverridden;
             overriddenValues.put("app", proposedApp);
+            JSONObject appOverrideComment = new JSONObject();
+            appOverrideComment.put("appOverrideComment", row.get("bd_app_override_reason"));
+            commentsArray.put(appOverrideComment);
         }
 
         Object slaOverridden = row.get("new_sla");
@@ -151,7 +162,11 @@ public class UploadCDOReviewCommand extends UploadCommand {
         if (slaOverridden != null && originalSla != slaOverridden) {
             Integer proposedSla = (Integer) slaOverridden;
             overriddenValues.put("sla", proposedSla);
+            JSONObject slaOverrideComment = new JSONObject();
+            slaOverrideComment.put("slaOverrideComment", row.get("bd_sla_override_reason"));
+            commentsArray.put(slaOverrideComment);
         }
+        overriddenValues.put("overrideComment", commentsArray);
         return overriddenValues;
     }
 

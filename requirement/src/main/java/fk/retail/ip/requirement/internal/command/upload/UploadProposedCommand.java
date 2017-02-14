@@ -1,6 +1,8 @@
 package fk.retail.ip.requirement.internal.command.upload;
 
 import com.google.inject.Inject;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,10 +43,16 @@ public class UploadProposedCommand extends UploadCommand {
         Map<String, Object> overriddenValues = new HashMap<>();
         Object quantityOverridden = row.get("ipc_qty");
         Object originalQuantity = row.get("quantity");
+        Object overrideComment = row.get("ipc_qty_override_reason");
+        JSONArray commentsArray = new JSONArray();
 
         if (quantityOverridden != null && quantityOverridden != originalQuantity) {
             Integer proposedQuantity = (Integer) quantityOverridden;
             overriddenValues.put("quantity", proposedQuantity);
+            JSONObject comment = new JSONObject();
+            comment.put("quantityOverrideComment", overrideComment);
+            commentsArray.put(comment);
+            overriddenValues.put("overrideComment", commentsArray);
         }
         return overriddenValues;
     }

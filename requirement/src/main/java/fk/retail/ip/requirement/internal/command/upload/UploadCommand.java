@@ -1,11 +1,14 @@
 package fk.retail.ip.requirement.internal.command.upload;
 
-import com.sun.tools.javac.util.Pair;
+//import com.sun.tools.javac.util.Pair;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
 import fk.retail.ip.requirement.model.RequirementUploadLineItem;
 
 import org.apache.commons.collections4.map.HashedMap;
+import org.apache.commons.collections4.map.MultiKeyMap;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 import javax.ws.rs.core.StreamingOutput;
 import java.util.*;
@@ -26,8 +29,11 @@ public abstract class UploadCommand {
 
     public List<RequirementUploadLineItem> execute(List<Map<String, Object>> parsedJson, List<Requirement> requirements) {
 
-        requirements = requirements;
-        HashMap<Pair<String, String>, Map<String, Object>> uploadMap = new HashMap<>();
+//        HashMap<Pair<String, String>, Map<String, Object>> uploadMap = new HashMap<>();
+
+        Map<Pair<String,String>,Requirement> requirementMap = requirements.stream().collect(Collectors.toMap(requirement -> {
+            return new ImmutablePair<String, String>(requirement.getFsn(), requirement.getWarehouse());
+        }, requirement -> requirement));
 
         ArrayList<RequirementUploadLineItem> requirementUploadLineItems = new ArrayList<>();
         for(Map<String, Object> row : parsedJson) {
@@ -53,21 +59,28 @@ public abstract class UploadCommand {
             }
 
             Map<String, Object> overriddenValues = getOverriddenFields(row);
-            Pair keyPair = new Pair<>(fsn, warehouse);
-            uploadMap.put(keyPair, overriddenValues);
+            Requirement requirement = requirementMap.get(new ImmutablePair<String, String>(fsn, warehouse));
+            if (overriddenValues.containsKey("quantity")) {
+                requirement.setQuantity((Integer) overriddenValues.get("quantity"));
+            }
 
-            requirements.forEach(
-                    item -> item.setFsn("")
-            );
-            //get projection data
+            if (overriddenValues.containsKey("sla")) {
+                requirement.setSla((Integer) overriddenValues.get("sla"));
+            }
 
+            if (overriddenValues.containsKey("app")) {
+                requirement.setApp((Integer) overriddenValues.get("app"));
+            }
+
+            if (overriddenValues.containsKey("supplier")) {
+                requirement.setSupplier(overriddenValues.get("supplier").toString());
+            }
+
+            if (overriddenValues.containsKey("overrideComment")) {
+                requirement.setOverrideComment(overriddenValues.get("overrideComment").toString());
+            }
         }
-        updateRecord(uploadMap);
         return requirementUploadLineItems;
-    }
-
-    private void updateRecord(Map<Pair<String, String>, Map<String, Object>> overriddenValues) {
-
     }
 
     private String validateGenericRowColumns(Map<String, Object> row) {
