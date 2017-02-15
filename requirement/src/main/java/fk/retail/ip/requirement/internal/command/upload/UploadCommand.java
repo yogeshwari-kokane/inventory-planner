@@ -1,6 +1,6 @@
 package fk.retail.ip.requirement.internal.command.upload;
 
-//import com.sun.tools.javac.util.Pair;
+
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
 import fk.retail.ip.requirement.model.RequirementUploadLineItem;
@@ -22,14 +22,9 @@ public abstract class UploadCommand {
     private List<Requirement> requirements;
 
     abstract String validateStateSpecific(Map<String, Object> row);
-    //abstract Integer quantityOverridden(Integer stateQuantity, Integer rowQuantity);
-    //abstract boolean isOverrideCommentPresent(String overrideComment);
-    //abstract boolean isValidOverrideQuantity(Object stateQuantity, String overrideComment);
     abstract Map<String, Object> getOverriddenFields(Map<String, Object> row);
 
     public List<RequirementUploadLineItem> execute(List<Map<String, Object>> parsedJson, List<Requirement> requirements) {
-
-//        HashMap<Pair<String, String>, Map<String, Object>> uploadMap = new HashMap<>();
 
         Map<Pair<String,String>,Requirement> requirementMap = requirements.stream().collect(Collectors.toMap(requirement -> {
             return new ImmutablePair<String, String>(requirement.getFsn(), requirement.getWarehouse());
@@ -52,10 +47,11 @@ public abstract class UploadCommand {
                 continue;
             }
             if (stateSpecificComment != null) {
-                requirementUploadLineItem.setFailureReason("");
+                requirementUploadLineItem.setFailureReason(stateSpecificComment);
                 requirementUploadLineItem.setFsn(fsn);
                 requirementUploadLineItem.setRowId(rowId);
                 requirementUploadLineItems.add(requirementUploadLineItem);
+                continue;
             }
 
             Map<String, Object> overriddenValues = getOverriddenFields(row);

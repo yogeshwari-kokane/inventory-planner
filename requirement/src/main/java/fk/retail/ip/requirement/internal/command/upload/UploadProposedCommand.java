@@ -17,7 +17,6 @@ public class UploadProposedCommand extends UploadCommand {
         Object stateQuantity = row.get("ipc_qty");
         Object proposedQuantity = row.get("quantity");
         String quantityOverrideComment = (String) row.get("ipc_qty_override_reason");
-        boolean valid = true;
         String comment;
         comment = isValidOverrideQuantity(stateQuantity, proposedQuantity, quantityOverrideComment);
         return comment;

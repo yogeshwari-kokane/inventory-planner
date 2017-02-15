@@ -1,7 +1,5 @@
 package fk.retail.ip.requirement.internal.command.upload;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -17,10 +15,10 @@ public class UploadCDOReviewCommand extends UploadCommand {
     @Override
     String validateStateSpecific(Map<String, Object> row) {
         String supplierOverrideReason = row.get("bd_supplier_override_reason").toString();
-        Object stateQuantity = row.get("bd_quantity");
-        Object stateSlaQuantity = row.get("new_sla");
-        Object stateAppQuantity = row.get("bd_app");
-        Object stateSupplier = row.get("bd_supplier");
+        Object bdProposedQuantity = row.get("bd_quantity");
+        Object bdProposedSla = row.get("new_sla");
+        Object bdProposedApp = row.get("bd_app");
+        Object bdProposedSupplier = row.get("bd_supplier");
         Object currentSupplier = row.get("supplier");
         Object currentQuantity =  row.get("quantity");
         Object currentApp = row.get("app");
@@ -28,23 +26,22 @@ public class UploadCDOReviewCommand extends UploadCommand {
         String appOverrideComment = row.get("bd_app_override_reason").toString();
         String comment;
 
-        boolean valid = true;
-        comment = isValidOverrideQuantity(stateQuantity, currentQuantity, quantityOverrideComment);
+        comment = isValidOverrideQuantity(bdProposedQuantity, currentQuantity, quantityOverrideComment);
         if (comment != null) {
             return comment;
         }
 
-        comment = isValidOverrideSla(stateSlaQuantity);
+        comment = isValidOverrideSla(bdProposedSla);
         if (comment != null) {
             return comment;
         }
 
-        comment = isValidOverrideApp(stateAppQuantity, currentApp, appOverrideComment);
+        comment = isValidOverrideApp(bdProposedApp, currentApp, appOverrideComment);
         if (comment != null) {
             return comment;
         }
 
-        comment = isValidOverrideSupplier(stateSupplier, currentSupplier, supplierOverrideReason);
+        comment = isValidOverrideSupplier(bdProposedSupplier, currentSupplier, supplierOverrideReason);
         if (comment != null) {
             return comment;
         }
