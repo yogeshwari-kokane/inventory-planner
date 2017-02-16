@@ -19,10 +19,7 @@ import java.util.stream.Collectors;
  */
 public abstract class UploadCommand {
 
-    private List<Requirement> requirements;
-
-    abstract String validateStateSpecific(Map<String, Object> row);
-    abstract Map<String, Object> getOverriddenFields(Map<String, Object> row);
+    abstract Map<String, Object> validateAndSetStateSpecific(Map<String, Object> row);
 
     public List<RequirementUploadLineItem> execute(List<Map<String, Object>> parsedJson, List<Requirement> requirements) {
 
@@ -37,7 +34,6 @@ public abstract class UploadCommand {
             String fsn = row.get("fsn").toString();
             String warehouse = row.get("warehouse").toString();
             String genericComment = validateGenericRowColumns(row);
-            String stateSpecificComment = validateStateSpecific(row);
 
             if (genericComment != null) {
                 requirementUploadLineItem.setFailureReason(genericComment);
@@ -46,35 +42,38 @@ public abstract class UploadCommand {
                 requirementUploadLineItems.add(requirementUploadLineItem);
                 continue;
             }
-            if (stateSpecificComment != null) {
-                requirementUploadLineItem.setFailureReason(stateSpecificComment);
+
+            Map<String, Object> overriddenValues = validateAndSetStateSpecific(row);
+
+            if (overriddenValues.containsKey("failure")) {
+                requirementUploadLineItem.setFailureReason(overriddenValues.get("failure").toString());
                 requirementUploadLineItem.setFsn(fsn);
                 requirementUploadLineItem.setRowId(rowId);
                 requirementUploadLineItems.add(requirementUploadLineItem);
-                continue;
+            } else {
+
+                Requirement requirement = requirementMap.get(new ImmutablePair<String, String>(fsn, warehouse));
+                if (overriddenValues.containsKey("quantity")) {
+                    requirement.setQuantity((Integer) overriddenValues.get("quantity"));
+                }
+
+                if (overriddenValues.containsKey("sla")) {
+                    requirement.setSla((Integer) overriddenValues.get("sla"));
+                }
+
+                if (overriddenValues.containsKey("app")) {
+                    requirement.setApp((Integer) overriddenValues.get("app"));
+                }
+
+                if (overriddenValues.containsKey("supplier")) {
+                    requirement.setSupplier(overriddenValues.get("supplier").toString());
+                }
+
+                if (overriddenValues.containsKey("overrideComment")) {
+                    requirement.setOverrideComment(overriddenValues.get("overrideComment").toString());
+                }
             }
 
-            Map<String, Object> overriddenValues = getOverriddenFields(row);
-            Requirement requirement = requirementMap.get(new ImmutablePair<String, String>(fsn, warehouse));
-            if (overriddenValues.containsKey("quantity")) {
-                requirement.setQuantity((Integer) overriddenValues.get("quantity"));
-            }
-
-            if (overriddenValues.containsKey("sla")) {
-                requirement.setSla((Integer) overriddenValues.get("sla"));
-            }
-
-            if (overriddenValues.containsKey("app")) {
-                requirement.setApp((Integer) overriddenValues.get("app"));
-            }
-
-            if (overriddenValues.containsKey("supplier")) {
-                requirement.setSupplier(overriddenValues.get("supplier").toString());
-            }
-
-            if (overriddenValues.containsKey("overrideComment")) {
-                requirement.setOverrideComment(overriddenValues.get("overrideComment").toString());
-            }
         }
         return requirementUploadLineItems;
     }

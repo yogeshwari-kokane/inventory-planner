@@ -11,46 +11,46 @@ import java.util.Map;
  */
 public class UploadBizFinReviewCommand extends UploadCommand {
     @Override
-    String validateStateSpecific(Map<String, Object> row) {
+    Map<String, Object> validateAndSetStateSpecific(Map<String, Object> row) {
 
-        boolean valid = true;
         String quantityOverrideComment = row.get("bizfin_comments").toString();
-        Object proposedQuantity = row.get("quantity");
-        Object stateQuantity = row.get("bizfin_quantity");
-        String comment;
-        comment = isValidOverrideQuantity(proposedQuantity, stateQuantity, quantityOverrideComment);
-        return comment;
+        Object currentQuantity = row.get("quantity");
+        Object bizfinProposedQuantity = row.get("bizfin_quantity");
+        Map<String, Object> overriddenValues;
+        overriddenValues = isValidOverrideQuantity(bizfinProposedQuantity, currentQuantity, quantityOverrideComment);
+        if (overriddenValues.isEmpty()) {
+            overriddenValues = getOverriddenFields(bizfinProposedQuantity, currentQuantity, quantityOverrideComment);
+        }
+        return overriddenValues;
     }
 
-    @Override
-    Map<String, Object> getOverriddenFields(Map<String, Object> row) {
+    private Map<String, Object> getOverriddenFields(Object bizfinProposedQuantity, Object currentQuantity, String quantityOverrideComment) {
         Map<String, Object> overriddenValues = new HashMap<>();
-        Object quantityOverridden = row.get("bizfin_quantity");
         JSONArray commentsArray = new JSONArray();
 
-        if (quantityOverridden != null) {
-            Integer proposedQuantity = (Integer) quantityOverridden;
-            overriddenValues.put("quantity", proposedQuantity);
-            JSONObject quantityOverrideComment = new JSONObject();
-            quantityOverrideComment.put("quantityOverrideComment", row.get("bizfin_comments"));
-            commentsArray.put(quantityOverrideComment);
+        if (bizfinProposedQuantity != null) {
+            Integer quantityToUse = (Integer) bizfinProposedQuantity;
+            overriddenValues.put("quantity", quantityToUse);
+            JSONObject quantityOverrideJson = new JSONObject();
+            quantityOverrideJson.put("quantityOverrideComment", quantityOverrideComment);
+            commentsArray.put(quantityOverrideJson);
             overriddenValues.put("overrideComment", commentsArray);
         }
         return overriddenValues;
     }
 
-    String isValidOverrideQuantity(Object proposedQuantity, Object stateQuantity, String quantityOverrideComment) {
+    private Map<String, Object> isValidOverrideQuantity(Object proposedQuantity, Object stateQuantity, String quantityOverrideComment) {
+        Map<String, Object> validOverride = new HashMap<>();
         if ((stateQuantity instanceof Integer) && (Integer) stateQuantity > 0) {
             if (quantityOverrideComment.isEmpty() && stateQuantity != proposedQuantity) {
                 //log => comment is absent
-                return "quantity override comment is absent";
-            } else {
-                return null;
+                validOverride.put("failure", "quantity override comment is absent");
             }
         } else {
             //log => quantity is less than zero or not integer
-            return "quantity is less than zero or not integer";
+            validOverride.put("failure", "quantity is less than zero or not integer");
 
         }
+        return validOverride;
     }
 }

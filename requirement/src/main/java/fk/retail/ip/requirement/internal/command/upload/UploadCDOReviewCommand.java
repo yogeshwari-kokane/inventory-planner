@@ -13,7 +13,7 @@ import java.util.Map;
 public class UploadCDOReviewCommand extends UploadCommand {
 
     @Override
-    String validateStateSpecific(Map<String, Object> row) {
+    Map<String, Object> validateAndSetStateSpecific(Map<String, Object> row) {
         String supplierOverrideReason = row.get("bd_supplier_override_reason").toString();
         Object bdProposedQuantity = row.get("bd_quantity");
         Object bdProposedSla = row.get("new_sla");
@@ -22,146 +22,166 @@ public class UploadCDOReviewCommand extends UploadCommand {
         Object currentSupplier = row.get("supplier");
         Object currentQuantity =  row.get("quantity");
         Object currentApp = row.get("app");
+        Object currentSla = row.get("sla");
         String quantityOverrideComment = row.get("bd_quantity_override_reason").toString();
         String appOverrideComment = row.get("bd_app_override_reason").toString();
-        String comment;
+        String slaOverrideComment = row.get("sla_override_comment").toString();
+        Map<String, Object> overriddenValues;
 
-        comment = isValidOverrideQuantity(bdProposedQuantity, currentQuantity, quantityOverrideComment);
-        if (comment != null) {
-            return comment;
+        overriddenValues = isValidOverrideQuantity(bdProposedQuantity, currentQuantity, quantityOverrideComment);
+        if (!overriddenValues.isEmpty()) {
+            return overriddenValues;
         }
 
-        comment = isValidOverrideSla(bdProposedSla);
-        if (comment != null) {
-            return comment;
+        overriddenValues = isValidOverrideSla(bdProposedSla);
+        if (!overriddenValues.isEmpty()) {
+            return overriddenValues;
         }
 
-        comment = isValidOverrideApp(bdProposedApp, currentApp, appOverrideComment);
-        if (comment != null) {
-            return comment;
+        overriddenValues = isValidOverrideApp(bdProposedApp, currentApp, appOverrideComment);
+        if (!overriddenValues.isEmpty()) {
+            return overriddenValues;
         }
 
-        comment = isValidOverrideSupplier(bdProposedSupplier, currentSupplier, supplierOverrideReason);
-        if (comment != null) {
-            return comment;
+        overriddenValues = isValidOverrideSupplier(bdProposedSupplier, currentSupplier, supplierOverrideReason);
+        if (!overriddenValues.isEmpty()) {
+            return overriddenValues;
         }
 
-        return comment;
+        overriddenValues = getOverriddenFields(
+                currentQuantity,
+                currentSupplier,
+                currentApp,
+                currentSla,
+                bdProposedQuantity,
+                bdProposedApp,
+                bdProposedSla,
+                bdProposedSupplier,
+                quantityOverrideComment,
+                appOverrideComment,
+                supplierOverrideReason,
+                slaOverrideComment
+        );
+
+        return overriddenValues;
     }
 
-    String isValidOverrideQuantity(Object stateQuantity, Object currentQuantity, String quantityOverrideComment) {
+    private Map<String, Object> isValidOverrideQuantity(Object stateQuantity, Object currentQuantity, String quantityOverrideComment) {
+        Map<String, Object> mp = new HashMap<>();
         if (stateQuantity == null) {
-            return null;
+            return mp;
         }
         if ((stateQuantity instanceof Integer) && (Integer) stateQuantity > 0) {
             if (quantityOverrideComment.isEmpty() && stateQuantity != currentQuantity) {
                 //log => override comment is missing
-                return "quantity override comment is missing";
+                mp.put("failure", "quantity override comment is missing");
             }
-            return null;
         } else {
+            mp.put("failure", "quantity is less than zero or not integer");
             //log => quantity is less than zero or not integer
-            return "quantity is less than zero or not integer";
         }
+        return mp;
     }
 
-    private String isValidOverrideApp(Object stateApp, Object currentApp, String appOverrideComment) {
-
+    private Map<String, Object> isValidOverrideApp(Object stateApp, Object currentApp, String appOverrideComment) {
+        Map<String, Object> validOverride = new HashMap<>();
         if (stateApp == null) {
-            return null;
+            return validOverride;
         }
         if ((stateApp instanceof Integer) && (Integer) stateApp > 0) {
             if (appOverrideComment.isEmpty() && currentApp != stateApp) {
                 //log => comment is not present
-                return "app override comment is missing";
+                validOverride.put("failure", "app override comment is missing");
             }
             //log => app is not a positive number or not integer
-            return null;
         } else {
             //log => quantity is less than zero or not integer
-            return "quantity is less zero or not integer";
+            validOverride.put("failure", "quantity is less zero or not integer");
         }
+        return validOverride;
     }
 
-    private String isValidOverrideSupplier(Object stateSupplier, Object currentSupplier, String supplierOverrideReason) {
+    private Map<String, Object> isValidOverrideSupplier(Object stateSupplier, Object currentSupplier, String supplierOverrideReason) {
+        Map<String, Object> validOverride = new HashMap<>();
         if (stateSupplier == null) {
-            return null;
+            return validOverride;
         }
         if (supplierOverrideReason.isEmpty() && stateSupplier != currentSupplier) {
             if (currentSupplier == null) {
-                return "override comment is missing and supplier overridden from blank";
+                validOverride.put("failure", "override comment is missing and supplier overridden from blank");
                 //log => override comment is missing and supplier overridden from blank
             } else {
-                return "override comment is missing";
+                validOverride.put("failure", "override comment is missing");
                 //log => override comment is missing
             }
         }
-        return null;
+        return validOverride;
     }
 
-    private String isValidOverrideSla(Object stateSla) {
+    private Map<String, Object> isValidOverrideSla(Object stateSla) {
+        Map<String, Object> validOverride = new HashMap<>();
         if (stateSla == null) {
-            return null;
+            return validOverride;
         }
         if ((stateSla instanceof Integer) && (Integer) stateSla > 0) {
-            return null;
+            return validOverride;
         } else {
             //log => sla is less than zero or not integer
-            return "sla is less than zero or not Integer";
+            validOverride.put("failure", "sla is less than zero or not Integer");
         }
+        return validOverride;
     }
 
-    @Override
-    Map<String, Object> getOverriddenFields(Map<String, Object> row) {
+    private Map<String, Object> getOverriddenFields(
+            Object currentQuantity,
+            Object currentSupplier,
+            Object currentApp,
+            Object currentSla,
+            Object bdProposedQuantity,
+            Object bdProposedApp,
+            Object bdProposedSla,
+            Object bdProposedSupplier,
+            String quantityOverrideComment,
+            String appOverrideComment,
+            String supplierOverrideComment,
+            String slaOverrideComment
+    ) {
 
         Map<String, Object> overriddenValues = new HashMap<>();
-        String fsn = row.get("fsn").toString();
-        String sku = row.get("sku").toString();
-        String supplier = row.get("supplier").toString();
-
-        Object quantityOverridden = row.get("bd_quantity");
-        Object originalQuantity = row.get("quantity");
 
         JSONArray commentsArray = new JSONArray();
 
 
-        if (quantityOverridden != null && quantityOverridden != originalQuantity) {
-            Integer proposedQuantity = (Integer) quantityOverridden;
-            overriddenValues.put("quantity", proposedQuantity);
-            JSONObject quantityOverrideComment = new JSONObject();
-            quantityOverrideComment.put("quantityOverrideComment", quantityOverrideComment);
+        if (bdProposedQuantity != null && bdProposedQuantity != currentQuantity) {
+            Integer quantityToUse = (Integer) bdProposedQuantity;
+            overriddenValues.put("quantity", quantityToUse);
+            JSONObject quantityOverrideJson = new JSONObject();
+            quantityOverrideJson.put("quantityOverrideComment", quantityOverrideComment);
+            commentsArray.put(quantityOverrideJson);
         }
 
-        Object supplierOverridden = row.get("bd_supplier");
-        Object originalSupplier = row.get("supplier");
-        if (supplierOverridden != null && supplierOverridden != originalSupplier) {
-            String proposedSupplier = supplierOverridden.toString();
-            overriddenValues.put("supplier", proposedSupplier);
-            JSONObject supplierOverrideComment = new JSONObject();
-            supplierOverrideComment.put("supplierOverrideComment", row.get("bd_supplier_override_reason"));
-            commentsArray.put(supplierOverrideComment);
+        if (bdProposedSupplier != null && bdProposedSupplier != currentSupplier) {
+            String supplierToUse = bdProposedSupplier.toString();
+            overriddenValues.put("supplier",supplierToUse);
+            JSONObject supplierOverrideJson = new JSONObject();
+            supplierOverrideJson.put("supplierOverrideComment", supplierOverrideComment);
+            commentsArray.put(supplierOverrideJson);
         }
 
-        Object appOverridden = row.get("bd_app");
-        Object originalApp = row.get("app");
-
-        if (appOverridden != null && appOverridden != originalApp) {
-            Integer proposedApp = (Integer) appOverridden;
-            overriddenValues.put("app", proposedApp);
-            JSONObject appOverrideComment = new JSONObject();
-            appOverrideComment.put("appOverrideComment", row.get("bd_app_override_reason"));
-            commentsArray.put(appOverrideComment);
+        if (bdProposedApp != null && bdProposedApp != currentApp) {
+            Integer appToUse = (Integer) bdProposedApp;
+            overriddenValues.put("app", appToUse);
+            JSONObject appOverrideJson = new JSONObject();
+            appOverrideJson.put("appOverrideComment", appOverrideComment);
+            commentsArray.put(appOverrideJson);
         }
 
-        Object slaOverridden = row.get("new_sla");
-        Object originalSla = row.get("sla");
-
-        if (slaOverridden != null && originalSla != slaOverridden) {
-            Integer proposedSla = (Integer) slaOverridden;
-            overriddenValues.put("sla", proposedSla);
-            JSONObject slaOverrideComment = new JSONObject();
-            slaOverrideComment.put("slaOverrideComment", row.get("bd_sla_override_reason"));
-            commentsArray.put(slaOverrideComment);
+        if (bdProposedSla != null && bdProposedSla != currentSla) {
+            Integer slaToUse = (Integer) bdProposedSla;
+            overriddenValues.put("sla", slaToUse);
+            JSONObject slaOverrideJson = new JSONObject();
+            slaOverrideJson.put("slaOverrideComment", slaOverrideComment);
+            commentsArray.put(slaOverrideJson);
         }
         overriddenValues.put("overrideComment", commentsArray);
         return overriddenValues;

@@ -13,43 +13,42 @@ import java.util.Map;
 public class UploadProposedCommand extends UploadCommand {
 
     @Override
-    String validateStateSpecific(Map<String, Object> row) {
-        Object stateQuantity = row.get("ipc_qty");
+    public Map<String, Object> validateAndSetStateSpecific(Map<String, Object> row) {
+        Object currentQuantity = row.get("ipc_qty");
         Object proposedQuantity = row.get("quantity");
         String quantityOverrideComment = (String) row.get("ipc_qty_override_reason");
-        String comment;
-        comment = isValidOverrideQuantity(stateQuantity, proposedQuantity, quantityOverrideComment);
-        return comment;
+        Map<String, Object> overriddenFields;
+        overriddenFields = isValidOverrideQuantity(currentQuantity, proposedQuantity, quantityOverrideComment);
+        if (!overriddenFields.isEmpty()) {
+            overriddenFields = getOverriddenFields(currentQuantity, proposedQuantity, quantityOverrideComment);
+        }
+        return overriddenFields;
     }
 
-    private String isValidOverrideQuantity(Object stateQuantity, Object proposedQuantity, String quantityOverrideComment) {
+    private Map<String, Object> isValidOverrideQuantity(Object stateQuantity, Object proposedQuantity, String quantityOverrideComment) {
+        Map<String, Object> validOverride = new HashMap<>();
         if ((stateQuantity instanceof Integer) && (Integer) stateQuantity > 0) {
             if (quantityOverrideComment.isEmpty() && stateQuantity != proposedQuantity) {
                 //log => comment is absent
-                return "quantity override comment is absent";
-            } else {
-                return null;
+                validOverride.put("failure", "quantity override comment is absent");
             }
         } else {
             //log => quantity is less than zero or not integer
-            return "quantity is less than zero or not integer";
+            validOverride.put("failure", "quantity is less than zero or not integer");
 
         }
+        return validOverride;
     }
 
-    @Override
-    Map<String, Object> getOverriddenFields(Map<String, Object> row) {
+    private Map<String, Object> getOverriddenFields(Object currentQuantity, Object proposedQuantity, String quantityOverrideComment) {
         Map<String, Object> overriddenValues = new HashMap<>();
-        Object quantityOverridden = row.get("ipc_qty");
-        Object originalQuantity = row.get("quantity");
-        Object overrideComment = row.get("ipc_qty_override_reason");
         JSONArray commentsArray = new JSONArray();
 
-        if (quantityOverridden != null && quantityOverridden != originalQuantity) {
-            Integer proposedQuantity = (Integer) quantityOverridden;
-            overriddenValues.put("quantity", proposedQuantity);
+        if (proposedQuantity != null && proposedQuantity != currentQuantity) {
+            Integer quantityToUse = (Integer) proposedQuantity;
+            overriddenValues.put("quantity", quantityToUse);
             JSONObject comment = new JSONObject();
-            comment.put("quantityOverrideComment", overrideComment);
+            comment.put("quantityOverrideComment", quantityOverrideComment);
             commentsArray.put(comment);
             overriddenValues.put("overrideComment", commentsArray);
         }
