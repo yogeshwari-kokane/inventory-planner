@@ -25,15 +25,17 @@ public class ManagerApplication extends Application<ManagerConfiguration> {
     @Override
     public void initialize(Bootstrap<ManagerConfiguration> bootstrap) {
         super.initialize(bootstrap);
-
+        Properties jpaProperties = new Properties();
+        jpaProperties.put(JpaWithSpringModule.HIBERNATE_EJB_NAMING_STRATEGY,
+                "fk.retail.ip.manager.config.AnnotationRespectfulNamingStrategy");
         this.guiceBundle = GuiceBundle.<ManagerConfiguration>newBuilder()
                 .setConfigClass(ManagerConfiguration.class)
                 .addModule(new ManagerModule())
                 .addModule(new RequirementModule())
                 .addModule(new JpaWithSpringModule(
                         Sets.newHashSet(
-                                "fk.retail.ip.requirement.internal.entities","fk.retail.ip.requirement.sql"
-                        ), new Properties()))
+                                "fk.retail.ip"
+                        ), jpaProperties))
                 .enableAutoConfig(
                         "fk.sp.common.extensions.exception",
                         "fk.sp.common.extensions.dropwizard.hystrix",
