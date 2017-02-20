@@ -7,12 +7,14 @@ import fk.retail.ip.requirement.internal.repository.FsnBandRepository;
 import fk.retail.ip.requirement.internal.repository.LastAppSupplierRepository;
 import fk.retail.ip.requirement.internal.repository.ProductInfoRepository;
 import fk.retail.ip.requirement.internal.repository.WeeklySaleRepository;
+import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
 import fk.retail.ip.zulu.client.ZuluClient;
 
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import org.apache.commons.collections4.map.MultiKeyMap;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by nidhigupta.m on 26/01/17.
@@ -32,11 +34,11 @@ public class DownloadIPCReviewCommand extends DownloadCommand {
     }
 
     @Override
-    void fetchRequirementStateData(boolean isLastAppSupplierRequired) {
+    void fetchRequirementStateData(boolean isLastAppSupplierRequired, Set<String> requirementFsns, List<RequirementDownloadLineItem> requirementDownloadLineItems) {
 
-        populateBizFinData();
-        populateCdoData();
-        populateIpcQuantity();
+        populateBizFinData(requirementFsns,requirementDownloadLineItems);
+        populateCdoData(requirementFsns,requirementDownloadLineItems);
+        populateIpcQuantity(requirementFsns,requirementDownloadLineItems);
     }
 
 

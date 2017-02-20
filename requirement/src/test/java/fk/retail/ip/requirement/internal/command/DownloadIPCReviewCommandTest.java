@@ -6,10 +6,7 @@ import fk.retail.ip.requirement.internal.entities.FsnBand;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.entities.RequirementSnapshot;
 import fk.retail.ip.requirement.internal.entities.WeeklySale;
-import fk.retail.ip.requirement.internal.repository.JPAFsnBandRepository;
-import fk.retail.ip.requirement.internal.repository.RequirementRepository;
-import fk.retail.ip.requirement.internal.repository.TestHelper;
-import fk.retail.ip.requirement.internal.repository.WeeklySaleRepository;
+import fk.retail.ip.requirement.internal.repository.*;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
 import java.io.IOException;
 import java.time.DayOfWeek;
@@ -19,6 +16,8 @@ import java.time.temporal.WeekFields;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
+
+import fk.retail.ip.zulu.client.ZuluClient;
 import org.jukito.JukitoRunner;
 import org.jukito.UseModules;
 import org.junit.Assert;
@@ -52,7 +51,13 @@ public class DownloadIPCReviewCommandTest {
     WeeklySaleRepository weeklySaleRepository;
 
     @Mock
+    ProductInfoRepository productInfoRepository;
+
+    @Mock
     RequirementRepository requirementRepository;
+
+    @Mock
+    ZuluClient zuluClient;
 
     @Captor
     private ArgumentCaptor<List<RequirementDownloadLineItem>> captor;
@@ -67,6 +72,8 @@ public class DownloadIPCReviewCommandTest {
         List<Requirement> requirements = getRequirements();
         Mockito.when(fsnBandRepository.fetchBandDataForFSNs(Mockito.anySetOf(String.class))).thenReturn(Arrays.asList(getFsnBand()));
         Mockito.when(weeklySaleRepository.fetchWeeklySalesForFsns(Mockito.anySetOf(String.class))).thenReturn(getWeeklySale());
+        Mockito.when(productInfoRepository.getProductInfo(Mockito.anyList())).thenReturn(TestHelper.getProductInfo());
+        Mockito.doReturn(TestHelper.getZuluData()).when(zuluClient).getRetailProductAttributes(Mockito.anyList());
         Mockito.when(requirementRepository.findEnabledRequirementsByStateFsn(Mockito.matches("bizfin_review"),Mockito.anySetOf(String.class))).thenReturn(getBizFinData());
         Mockito.when(requirementRepository.findEnabledRequirementsByStateFsn(Mockito.matches("cdo_review"),Mockito.anySetOf(String.class))).thenReturn(getCdoData());
         Mockito.when(requirementRepository.findEnabledRequirementsByStateFsn(Mockito.matches("proposed"),Mockito.anySetOf(String.class))).thenReturn(getIpcQuantity());

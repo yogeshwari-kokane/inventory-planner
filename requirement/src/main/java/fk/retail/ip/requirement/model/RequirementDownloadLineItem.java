@@ -2,6 +2,7 @@ package fk.retail.ip.requirement.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fk.retail.ip.requirement.internal.entities.Requirement;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,8 +12,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * Created by nidhigupta.m on 26/01/17.
  */
 @XmlRootElement
-@Getter
-@Setter
+@Data
 public class RequirementDownloadLineItem {
 
     //todo: verify with excel columns
@@ -26,7 +26,7 @@ public class RequirementDownloadLineItem {
     private String superCategory;
     private String title;
     private String brand;
-    private int fsp;
+    private Integer fsp;
     @JsonProperty("PV Band")
     private Integer pvBand;
     @JsonProperty("Sales Band")

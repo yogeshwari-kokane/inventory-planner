@@ -204,14 +204,14 @@
         </query>
     </named-query>
 
-    <named-query name="getProductData">
+    <named-query name="getProductInfo">
         <query>
             <![CDATA[
             SELECT pd
-            FROM product_detail pd
+            FROM ProductInfo pd
             WHERE
                 pd.fsn IN :fsns
-            ]]
+            ]]>
         </query>
     </named-query>
 

@@ -7,7 +7,11 @@ import fk.retail.ip.requirement.internal.repository.ProductInfoRepository;
 
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.internal.repository.WeeklySaleRepository;
+import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
 import fk.retail.ip.zulu.client.ZuluClient;
+
+import java.util.List;
+import java.util.Set;
 
 /**
  * Created by nidhigupta.m on 26/01/17.
@@ -27,7 +31,7 @@ public class DownloadProposedCommand extends DownloadCommand {
     }
 
     @Override
-    void fetchRequirementStateData(boolean isLastAppSupplierRequired) {
+    void fetchRequirementStateData(boolean isLastAppSupplierRequired, Set<String> requirementFsns, List<RequirementDownloadLineItem> requirementDownloadLineItems) {
 
     }
 
