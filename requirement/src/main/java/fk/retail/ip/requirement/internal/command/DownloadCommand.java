@@ -5,23 +5,33 @@ import fk.retail.ip.requirement.internal.entities.FsnBand;
 import fk.retail.ip.requirement.internal.entities.LastAppSupplier;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.entities.WeeklySale;
-import fk.retail.ip.requirement.internal.enums.RequirementState;
+
+import com.google.common.collect.Lists;
+
+
+import fk.retail.ip.requirement.internal.entities.*;
 import fk.retail.ip.requirement.internal.repository.FsnBandRepository;
 import fk.retail.ip.requirement.internal.repository.LastAppSupplierRepository;
+import fk.retail.ip.requirement.internal.repository.ProductInfoRepository;
+import fk.retail.ip.requirement.internal.enums.RequirementState;
+
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.internal.repository.WeeklySaleRepository;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
+
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalField;
 import java.time.temporal.WeekFields;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
 import javax.ws.rs.core.StreamingOutput;
+
+import fk.retail.ip.zulu.client.ZuluClient;
+import fk.retail.ip.zulu.internal.entities.RetailProductAttributeResponse;
+
 import org.apache.commons.collections4.map.MultiKeyMap;
 
 import static java.util.stream.Collectors.toList;
@@ -34,26 +44,33 @@ public abstract class DownloadCommand {
     protected Set<String> requirementFsns;
     private final FsnBandRepository fsnBandRepository;
     private final WeeklySaleRepository weeklySaleRepository;
+    private final ProductInfoRepository productInfoRepository;
     protected List<RequirementDownloadLineItem> requirementDownloadLineItems;
     private Map<String, List<RequirementDownloadLineItem>> fsnToRequirement;
     private final LastAppSupplierRepository lastAppSupplierRepository;
     private final GenerateExcelCommand generateExcelCommand;
     private final RequirementRepository requirementRepository;
 
+    private final ZuluClient zuluClient;
 
-    public DownloadCommand(FsnBandRepository fsnBandRepository, WeeklySaleRepository weeklySaleRepository, GenerateExcelCommand generateExcelCommand, LastAppSupplierRepository lastAppSupplierRepository, RequirementRepository requirementRepository) {
+    public DownloadCommand(FsnBandRepository fsnBandRepository, WeeklySaleRepository weeklySaleRepository, GenerateExcelCommand generateExcelCommand, LastAppSupplierRepository lastAppSupplierRepository,
+                           ProductInfoRepository productInfoRepository, ZuluClient zuluClient, RequirementRepository requirementRepository) {
+
         this.fsnBandRepository = fsnBandRepository;
         this.weeklySaleRepository = weeklySaleRepository;
         this.generateExcelCommand = generateExcelCommand;
+        this.productInfoRepository = productInfoRepository;
+        this.zuluClient = zuluClient;
         this.lastAppSupplierRepository = lastAppSupplierRepository;
         this.requirementRepository = requirementRepository;
+
     }
 
     public StreamingOutput execute(List<Requirement> requirements, boolean isLastAppSupplierRequired) {
 
         requirementDownloadLineItems = requirements.stream().map(RequirementDownloadLineItem::new).collect(toList());
         fsnToRequirement = requirementDownloadLineItems.stream().collect(Collectors.groupingBy(RequirementDownloadLineItem::getFsn));
-        requirementFsns = Collections.unmodifiableSet(fsnToRequirement.keySet());
+        requirementFsns = fsnToRequirement.keySet();
         fetchProductData();
         fetchFsnBandData();
         fetchSalesBucketData();
@@ -62,8 +79,13 @@ public abstract class DownloadCommand {
         return generateExcelCommand.generateExcel(requirementDownloadLineItems, getTemplateName(isLastAppSupplierRequired));
     }
 
+    /*
+    Fetch product data for list of fsns from db. If not found from db fetch the data from zulu.
+    *
+    * */
     protected void fetchProductData() {
-
+        List<String> cachedFsns = fetchDataFromProductInfo();
+        fetchDataFromZulu(cachedFsns);
     }
 
     protected void fetchFsnBandData() {
@@ -116,6 +138,7 @@ public abstract class DownloadCommand {
         );
     }
 
+
     protected void populateBizFinData() {
         List<Requirement> requirements = requirementRepository.findEnabledRequirementsByStateFsn("bizfin_review",requirementFsns);
         MultiKeyMap<String,Integer> fsnWhBizFinRecommended = new MultiKeyMap();
@@ -149,6 +172,52 @@ public abstract class DownloadCommand {
         });
     }
 
+    private void fetchDataFromZulu(List<String> cachedFsns) {
+        RetailProductAttributeResponse retailProductAttributeResponse = zuluClient.getRetailProductAttributes(cachedFsns);
+        retailProductAttributeResponse.getEntityViews().forEach(entityView -> {
+            String fsn = entityView.getEntityId();
+            List<RequirementDownloadLineItem> items = fsnToRequirement.get(fsn);
+            Map<String, String> analyticalInfo = (Map<String, String>)entityView.getView().get("analytics_info");
+            HashMap<Object, Object> supplyChain = (HashMap<Object, Object>)entityView.getView().get("supply_chain");
+            String vertical = analyticalInfo.get("vertical");
+            String category = analyticalInfo.get("category");
+            String superCategory = analyticalInfo.get("super_category");
+            Map<String, String> productAttributes = (Map<String, String>)(supplyChain.get("product_attributes"));
+            String brand = productAttributes.get("brand");
+            int fsp = Integer.parseInt(productAttributes.get("flipkart_selling_price"));
+            String title = supplyChain.get("procurement_title").toString();
+                items.forEach(i -> {
+                    i.setVertical(vertical);
+                    i.setCategory(category);
+                    i.setSuperCategory(superCategory);
+                    i.setBrand(brand);
+                    i.setFsp(fsp);
+                    i.setTitle(title);
+                });
+        });
+    }
+
+    private List<String> fetchDataFromProductInfo() {
+        List<ProductInfo> productInfo = productInfoRepository.getProductInfo(Lists.newArrayList(requirementFsns));
+        List<String> cachedFsns = Lists.newArrayList();
+        productInfo.stream().forEach(pi -> {
+        cachedFsns.add(pi.getFsn());
+        List<RequirementDownloadLineItem> items = fsnToRequirement.get(pi.getFsn());
+        items.forEach(i -> {
+            i.setVertical(pi.getVertical());
+            i.setCategory(pi.getCategory());
+            i.setSuperCategory(pi.getSuperCategory());
+            i.setTitle(pi.getTitle());
+            i.setFsp(pi.getFsp());
+            i.setBrand(pi.getBrand());
+            });
+        });
+        List<String> leftOverFsns = Lists.newArrayList();
+        requirementFsns.removeAll(cachedFsns);
+        leftOverFsns.addAll(requirementFsns);
+        return leftOverFsns;
+      
+      
     protected void populateCdoData() {
         List<Requirement> requirements = requirementRepository.findEnabledRequirementsByStateFsn("cdo_review",requirementFsns);
         MultiKeyMap<String,String> fsnWhCdoComment = new MultiKeyMap();

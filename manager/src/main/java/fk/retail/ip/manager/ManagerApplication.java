@@ -6,6 +6,7 @@ import com.hubspot.dropwizard.guice.GuiceBundle;
 import fk.retail.ip.manager.config.ManagerConfiguration;
 import fk.retail.ip.manager.config.ManagerModule;
 import fk.retail.ip.requirement.config.RequirementModule;
+import fk.retail.ip.zulu.config.ZuluModule;
 import fk.sp.common.extensions.guice.jpa.spring.JpaWithSpringModule;
 import flipkart.retail.server.admin.bundle.RotationManagementBundle;
 import flipkart.retail.server.admin.config.RotationManagementConfig;
@@ -16,6 +17,7 @@ import io.dropwizard.forms.MultiPartBundle;
 import io.dropwizard.migrations.MigrationsBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+
 import java.util.Properties;
 
 public class ManagerApplication extends Application<ManagerConfiguration> {
@@ -32,6 +34,7 @@ public class ManagerApplication extends Application<ManagerConfiguration> {
                 .setConfigClass(ManagerConfiguration.class)
                 .addModule(new ManagerModule())
                 .addModule(new RequirementModule())
+                .addModule(new ZuluModule())
                 .addModule(new JpaWithSpringModule(
                         Sets.newHashSet(
                                 "fk.retail.ip"
