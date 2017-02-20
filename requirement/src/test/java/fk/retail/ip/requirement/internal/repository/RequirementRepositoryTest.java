@@ -6,7 +6,6 @@ import fk.retail.ip.requirement.config.TestModule;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.sp.common.extensions.jpa.TransactionalJpaRepositoryTest;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
@@ -71,14 +70,10 @@ public class RequirementRepositoryTest extends TransactionalJpaRepositoryTest {
     }
 
     private Requirement getRequirement(int i) {
-        Requirement requirement = new Requirement();
-        requirement.setFsn("fsn" + String.valueOf(i));
-        requirement.setState("proposed");
-        requirement.setEnabled(true);
-        requirement.setCurrent(true);
-        requirement.setWarehouse("dummy_warehouse");
-        requirement.setCreatedAt(new Date());
-        requirement.setUpdatedAt(new Date());
+        String fsn = "fsn" + String.valueOf(i);
+        Requirement requirement = TestHelper.getRequirement(fsn, "dummy_warehouse","proposed", true, null, 10, "supplier",
+                10, 11, "INR",2,"comment", "daily"  );
+
         return requirement;
     }
 
