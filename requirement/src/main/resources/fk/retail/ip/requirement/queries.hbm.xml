@@ -204,4 +204,15 @@
         </query>
     </named-query>
 
+    <named-query name="getProductData">
+        <query>
+            <![CDATA[
+            SELECT pd
+            FROM product_detail pd
+            WHERE
+                pd.fsn IN :fsns
+            ]]
+        </query>
+    </named-query>
+
 </entity-mappings>

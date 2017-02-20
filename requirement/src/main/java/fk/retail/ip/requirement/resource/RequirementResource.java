@@ -9,6 +9,7 @@ import io.dropwizard.hibernate.UnitOfWork;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
+
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.HttpHeaders;
@@ -47,8 +48,8 @@ public class RequirementResource {
     @POST
     @Path("/upload")
     public Response uploadProjectionOverride(@FormDataParam("file") InputStream inputStream,
-                                             @FormDataParam("file") FormDataContentDisposition fileDetails,
-                                             Map<String, Object> params) throws IOException, InvalidFormatException {
+            @FormDataParam("file") FormDataContentDisposition fileDetails,
+            Map<String, Object> params) throws IOException, InvalidFormatException {
 
         return Response.ok().build();
 
