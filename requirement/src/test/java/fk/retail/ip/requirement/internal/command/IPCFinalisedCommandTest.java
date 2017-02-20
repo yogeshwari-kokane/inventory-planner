@@ -7,6 +7,7 @@ import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.entities.RequirementSnapshot;
 import fk.retail.ip.requirement.internal.entities.WeeklySale;
 import fk.retail.ip.requirement.internal.repository.JPAFsnBandRepository;
+import fk.retail.ip.requirement.internal.repository.ProductInfoRepository;
 import fk.retail.ip.requirement.internal.repository.TestHelper;
 import fk.retail.ip.requirement.internal.repository.WeeklySaleRepository;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
@@ -18,6 +19,8 @@ import java.time.temporal.WeekFields;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
+
+import fk.retail.ip.zulu.client.ZuluClient;
 import org.jukito.JukitoRunner;
 import org.jukito.UseModules;
 import org.junit.Assert;
@@ -50,6 +53,12 @@ public class IPCFinalisedCommandTest {
     @Mock
     WeeklySaleRepository weeklySaleRepository;
 
+    @Mock
+    ProductInfoRepository productInfoRepository;
+
+    @Mock
+    ZuluClient zuluClient;
+
     @Captor
     private ArgumentCaptor<List<RequirementDownloadLineItem>> captor;
 
@@ -63,6 +72,8 @@ public class IPCFinalisedCommandTest {
         List<Requirement> requirements = getRequirements();
         Mockito.when(fsnBandRepository.fetchBandDataForFSNs(Mockito.anySetOf(String.class))).thenReturn(Arrays.asList(getFsnBand()));
         Mockito.when(weeklySaleRepository.fetchWeeklySalesForFsns(Mockito.anySetOf(String.class))).thenReturn(getWeeklySale());
+        Mockito.when(productInfoRepository.getProductInfo(Mockito.anyList())).thenReturn(TestHelper.getProductInfo());
+        Mockito.doReturn(TestHelper.getZuluData()).when(zuluClient).getRetailProductAttributes(Mockito.anyList());
         downloadIPCFinalisedCommand.execute(requirements,false);
         Mockito.verify(generateExcelCommand).generateExcel(captor.capture(), Mockito.eq("/templates/IPCFinalised.xlsx"));
         Assert.assertEquals(2, captor.getValue().size());

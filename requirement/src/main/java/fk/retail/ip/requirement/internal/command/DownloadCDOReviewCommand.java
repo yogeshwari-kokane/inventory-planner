@@ -15,6 +15,7 @@ import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
 import org.apache.commons.collections4.map.MultiKeyMap;
 
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 
 /**
@@ -39,11 +40,11 @@ public class DownloadCDOReviewCommand extends DownloadCommand {
     }
 
     @Override
-    void fetchRequirementStateData(boolean isLastAppSupplierRequired) {
+    void fetchRequirementStateData(boolean isLastAppSupplierRequired, Set<String> requirementFsns, List<RequirementDownloadLineItem> requirementDownloadLineItems) {
         if (isLastAppSupplierRequired) {
-            fetchLastAppSupplierDataFromProc();
+            fetchLastAppSupplierDataFromProc(requirementFsns,requirementDownloadLineItems);
         }
-        populateBizFinData();
+        populateBizFinData(requirementFsns,requirementDownloadLineItems);
     }
 
 }

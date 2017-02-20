@@ -2,10 +2,10 @@ package fk.retail.ip.requirement.internal.repository;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
+import fk.retail.ip.requirement.config.TestModule;
 import fk.retail.ip.requirement.internal.entities.ProductInfo;
 import fk.sp.common.extensions.jpa.TransactionalJpaRepositoryTest;
 import org.jukito.JukitoRunner;
-import org.jukito.TestModule;
 import org.jukito.UseModules;
 import org.junit.After;
 import org.junit.Assert;
@@ -24,15 +24,15 @@ public class ProductInfoRepositoryTest extends TransactionalJpaRepositoryTest{
     @Inject
     ProductInfoRepository productInfoRepository;
 
-    @After
-    public void resetAutoIncrement() {
-        entityManagerProvider.get()
-                .createNativeQuery("TRUNCATE SCHEMA PUBLIC RESTART IDENTITY AND COMMIT NO CHECK")
-                .executeUpdate();
-    }
+//    @After
+//    public void resetAutoIncrement() {
+//        entityManagerProvider.get()
+//                .createNativeQuery("TRUNCATE SCHEMA PUBLIC RESTART IDENTITY AND COMMIT NO CHECK")
+//                .executeUpdate();
+//    }
 
     @Test
-    public void testgetProductInfo() {
+    public void testGetProductInfo() {
         ProductInfo productInfo = getProductInfo(1);
         productInfoRepository.persist(productInfo);
         List<ProductInfo> productInfoList = productInfoRepository.getProductInfo(Lists.newArrayList(String.valueOf(1)));
