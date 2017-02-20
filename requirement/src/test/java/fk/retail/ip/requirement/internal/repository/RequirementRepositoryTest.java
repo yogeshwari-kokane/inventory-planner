@@ -60,13 +60,13 @@ public class RequirementRepositoryTest extends TransactionalJpaRepositoryTest {
     }
 
     @Test
-    public void testFindAllEnabledRequirements() {
+    public void testFindAllCurrentRequirements() {
 
         IntStream.rangeClosed(1, 24).forEach(i -> {
             requirementRepository.persist(getRequirement(i));
         });
         List<Requirement>
-                requirements = requirementRepository.findAllEnabledRequirements("proposed");
+                requirements = requirementRepository.findAllCurrentRequirements("proposed");
         Assert.assertEquals(24, requirements.size());
     }
 
@@ -75,6 +75,7 @@ public class RequirementRepositoryTest extends TransactionalJpaRepositoryTest {
         requirement.setFsn("fsn" + String.valueOf(i));
         requirement.setState("proposed");
         requirement.setEnabled(true);
+        requirement.setCurrent(true);
         requirement.setWarehouse("dummy_warehouse");
         requirement.setCreatedAt(new Date());
         requirement.setUpdatedAt(new Date());

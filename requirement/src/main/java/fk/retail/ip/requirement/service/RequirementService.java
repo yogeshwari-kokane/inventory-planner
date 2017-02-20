@@ -31,7 +31,7 @@ public class RequirementService {
         if (!requirementIds.isEmpty()) {
             requirements = requirementRepository.findRequirementByIds(requirementIds);
         } else {
-            requirements = requirementRepository.findAllEnabledRequirements(requirementState);
+            requirements = requirementRepository.findAllCurrentRequirements(requirementState);
         }
 
         StreamingOutput output = requirementManager.withRequirements(requirements).download(requirementState, isLastAppSupplierRequired);
