@@ -4,11 +4,14 @@ import com.google.common.collect.Lists;
 import fk.retail.ip.requirement.config.TestModule;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.entities.RequirementSnapshot;
+import fk.retail.ip.requirement.internal.entities.Warehouse;
 import fk.retail.ip.requirement.internal.entities.WeeklySale;
-import fk.retail.ip.requirement.internal.repository.*;
-import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
-import fk.retail.ip.requirement.internal.entities.*;
 import fk.retail.ip.requirement.internal.enums.RequirementApprovalStates;
+import fk.retail.ip.requirement.internal.repository.JPAFsnBandRepository;
+import fk.retail.ip.requirement.internal.repository.ProductInfoRepository;
+import fk.retail.ip.requirement.internal.repository.TestHelper;
+import fk.retail.ip.requirement.internal.repository.WarehouseRepository;
+import fk.retail.ip.requirement.internal.repository.WeeklySaleRepository;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
 import fk.retail.ip.zulu.client.ZuluClient;
 import java.io.IOException;
@@ -167,7 +170,7 @@ public class DownloadProposedCommandTest {
 
     private List<WeeklySale> getWeeklySale() {
         LocalDate date = LocalDate.now();
-        TemporalField weekOfYear = WeekFields.of(DayOfWeek.MONDAY, 1).weekOfWeekBasedYear();
+        TemporalField weekOfYear = WeekFields.of(DayOfWeek.MONDAY, 2).weekOfWeekBasedYear();
 
         List<WeeklySale> weeklySales = Lists.newArrayList();
 
