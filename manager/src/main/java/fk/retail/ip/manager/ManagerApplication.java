@@ -1,5 +1,7 @@
 package fk.retail.ip.manager;
 
+import com.codahale.metrics.JmxReporter;
+import com.fasterxml.jackson.datatype.jdk7.Jdk7Module;
 import com.google.common.collect.Sets;
 import com.google.inject.Stage;
 import com.hubspot.dropwizard.guice.GuiceBundle;
@@ -7,6 +9,10 @@ import fk.retail.ip.manager.config.ManagerConfiguration;
 import fk.retail.ip.manager.config.ManagerModule;
 import fk.retail.ip.requirement.config.RequirementModule;
 import fk.retail.ip.zulu.config.ZuluModule;
+import fk.sp.common.extensions.RequestContextFilter;
+import fk.sp.common.extensions.config.CustomEnumModule;
+import fk.sp.common.extensions.dropwizard.jersey.JerseyClientModule;
+import fk.sp.common.extensions.dropwizard.jersey.LoggingFilter;
 import fk.sp.common.extensions.guice.jpa.spring.JpaWithSpringModule;
 import flipkart.retail.server.admin.bundle.RotationManagementBundle;
 import flipkart.retail.server.admin.config.RotationManagementConfig;
@@ -18,7 +24,10 @@ import io.dropwizard.migrations.MigrationsBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 
+import java.util.EnumSet;
 import java.util.Properties;
+import java.util.TimeZone;
+import javax.servlet.DispatcherType;
 
 public class ManagerApplication extends Application<ManagerConfiguration> {
 
@@ -33,6 +42,7 @@ public class ManagerApplication extends Application<ManagerConfiguration> {
         this.guiceBundle = GuiceBundle.<ManagerConfiguration>newBuilder()
                 .setConfigClass(ManagerConfiguration.class)
                 .addModule(new ManagerModule())
+                .addModule(new JerseyClientModule())
                 .addModule(new RequirementModule())
                 .addModule(new ZuluModule())
                 .addModule(new JpaWithSpringModule(
@@ -77,11 +87,24 @@ public class ManagerApplication extends Application<ManagerConfiguration> {
         //For swagger UI
         AssetsBundle assetsBundle = new AssetsBundle("/apidocs", "/apidocs", "index.html", "/apidocs");
         assetsBundle.run(environment);
+        environment.jersey().register(LoggingFilter.class);
+
+        environment.getObjectMapper().registerModule(new Jdk7Module());
+        environment.getObjectMapper().setTimeZone(TimeZone.getTimeZone("UTC"));
+        environment.getObjectMapper().registerModule(new CustomEnumModule());
+
+        environment.servlets().addFilter("request context filter",
+                new RequestContextFilter())
+                .addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
+
+        JmxReporter reporter = JmxReporter.forRegistry(environment.metrics()).build();
+        reporter.start();
 
     }
 
     public static void main(String[] args) throws Exception {
         ManagerApplication managerApplication = new ManagerApplication();
         managerApplication.run(args);
+
     }
 }

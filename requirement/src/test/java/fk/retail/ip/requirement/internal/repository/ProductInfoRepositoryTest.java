@@ -5,14 +5,12 @@ import com.google.inject.Inject;
 import fk.retail.ip.requirement.config.TestModule;
 import fk.retail.ip.requirement.internal.entities.ProductInfo;
 import fk.sp.common.extensions.jpa.TransactionalJpaRepositoryTest;
+import java.util.List;
 import org.jukito.JukitoRunner;
 import org.jukito.UseModules;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import java.util.List;
 
 /**
  * Created by agarwal.vaibhav on 16/02/17.

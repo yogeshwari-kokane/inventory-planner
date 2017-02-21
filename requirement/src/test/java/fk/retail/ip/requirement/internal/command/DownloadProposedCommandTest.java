@@ -2,35 +2,23 @@ package fk.retail.ip.requirement.internal.command;
 
 import com.google.common.collect.Lists;
 import fk.retail.ip.requirement.config.TestModule;
-
-import fk.retail.ip.requirement.internal.entities.FsnBand;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.entities.RequirementSnapshot;
 import fk.retail.ip.requirement.internal.entities.WeeklySale;
+import fk.retail.ip.requirement.internal.enums.RequirementApprovalStates;
 import fk.retail.ip.requirement.internal.repository.JPAFsnBandRepository;
+import fk.retail.ip.requirement.internal.repository.ProductInfoRepository;
 import fk.retail.ip.requirement.internal.repository.TestHelper;
 import fk.retail.ip.requirement.internal.repository.WeeklySaleRepository;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
-import fk.retail.ip.requirement.internal.entities.*;
-import fk.retail.ip.requirement.internal.repository.ProductInfoRepository;
-
 import fk.retail.ip.zulu.client.ZuluClient;
-import fk.retail.ip.zulu.internal.entities.EntityView;
-import fk.retail.ip.zulu.internal.entities.RetailProductAttributeResponse;
-import org.jukito.JukitoRunner;
-import org.jukito.UseModules;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.Assert;
-import org.junit.runner.RunWith;
-import org.mockito.*;
-
 import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalField;
 import java.time.temporal.WeekFields;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.IntStream;
 import org.jukito.JukitoRunner;
 import org.jukito.UseModules;
@@ -161,11 +149,11 @@ public class DownloadProposedCommandTest {
 
         List<Requirement> requirements = Lists.newArrayList();
 
-        Requirement requirement = TestHelper.getRequirement("fsn", "dummy_warehouse1","proposed", true, snapshot , 21, "ABC",
+        Requirement requirement = TestHelper.getRequirement("fsn", "dummy_warehouse1", RequirementApprovalStates.PROPOSED.toString(), true, snapshot , 21, "ABC",
                 100, 101, "INR", 3, "", "Daily planning");
         requirements.add(requirement);
 
-        requirement = TestHelper.getRequirement("fsn", "dummy_warehouse2","proposed", true, snapshot1 , 22, "DEF",
+        requirement = TestHelper.getRequirement("fsn", "dummy_warehouse2",RequirementApprovalStates.PROPOSED.toString(), true, snapshot1 , 22, "DEF",
                 10, 9, "USD", 4, "", "Daily planning");
         requirements.add(requirement);
         return requirements;

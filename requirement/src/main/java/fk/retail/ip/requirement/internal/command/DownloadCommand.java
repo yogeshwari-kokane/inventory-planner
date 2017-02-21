@@ -1,8 +1,6 @@
 package fk.retail.ip.requirement.internal.command;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
-import com.google.inject.Inject;
 import fk.retail.ip.requirement.internal.entities.FsnBand;
 import fk.retail.ip.requirement.internal.entities.LastAppSupplier;
 import fk.retail.ip.requirement.internal.entities.Requirement;
@@ -12,10 +10,10 @@ import com.google.common.collect.Lists;
 
 
 import fk.retail.ip.requirement.internal.entities.*;
+import fk.retail.ip.requirement.internal.enums.RequirementApprovalStates;
 import fk.retail.ip.requirement.internal.repository.FsnBandRepository;
 import fk.retail.ip.requirement.internal.repository.LastAppSupplierRepository;
 import fk.retail.ip.requirement.internal.repository.ProductInfoRepository;
-import fk.retail.ip.requirement.internal.enums.RequirementState;
 
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.internal.repository.WeeklySaleRepository;
@@ -74,7 +72,6 @@ public abstract class DownloadCommand {
         fetchFsnBandData(requirementFsns,fsnToRequirement);
         fetchSalesBucketData(requirementFsns,requirementDownloadLineItems);
         fetchRequirementStateData(isLastAppSupplierRequired, requirementFsns,requirementDownloadLineItems);
-
         return generateExcelCommand.generateExcel(requirementDownloadLineItems, getTemplateName(isLastAppSupplierRequired));
     }
 
@@ -139,7 +136,7 @@ public abstract class DownloadCommand {
 
 
     protected void populateBizFinData(Set<String> requirementFsns, List<RequirementDownloadLineItem> requirementDownloadLineItems) {
-        List<Requirement> requirements = requirementRepository.findEnabledRequirementsByStateFsn("bizfin_review",requirementFsns);
+        List<Requirement> requirements = requirementRepository.findEnabledRequirementsByStateFsn(RequirementApprovalStates.BIZFIN_REVIEW.toString(),requirementFsns);
         MultiKeyMap<String,Integer> fsnWhBizFinRecommended = new MultiKeyMap();
         MultiKeyMap<String,String> fsnWhBizFinComment = new MultiKeyMap();
         requirements.forEach(r -> {
@@ -158,7 +155,7 @@ public abstract class DownloadCommand {
 
 
     protected void populateIpcQuantity(Set<String> requirementFsns, List<RequirementDownloadLineItem> requirementDownloadLineItems) {
-        List<Requirement> requirements = requirementRepository.findEnabledRequirementsByStateFsn("proposed",requirementFsns);
+        List<Requirement> requirements = requirementRepository.findEnabledRequirementsByStateFsn(RequirementApprovalStates.PROPOSED.toString(),requirementFsns);
         MultiKeyMap<String,Integer> fsnWhIpcProposedQuantity = new MultiKeyMap();
         requirements.forEach(r -> {
             fsnWhIpcProposedQuantity.put(r.getFsn(),r.getWarehouse(),r.getQuantity());
@@ -171,9 +168,9 @@ public abstract class DownloadCommand {
         });
     }
 
-    private void fetchDataFromZulu(Set<String> cachedFsns, Map<String, List<RequirementDownloadLineItem>> fsnToRequirement ) {
-        List<String> zuluFsns = Lists.newArrayList(cachedFsns);
-        RetailProductAttributeResponse retailProductAttributeResponse = zuluClient.getRetailProductAttributes(zuluFsns);
+    private void fetchDataFromZulu(Set<String> zuluFsns, Map<String, List<RequirementDownloadLineItem>> fsnToRequirement ) {
+        List<String> zuluFsnList = Lists.newArrayList(zuluFsns);
+        RetailProductAttributeResponse retailProductAttributeResponse = zuluClient.getRetailProductAttributes(zuluFsnList);
         retailProductAttributeResponse.getEntityViews().forEach(entityView -> {
             String fsn = entityView.getEntityId();
             List<RequirementDownloadLineItem> items = fsnToRequirement.get(fsn);
@@ -217,10 +214,10 @@ public abstract class DownloadCommand {
         requirementFsnsCopy.removeAll(cachedFsnSet);
         return requirementFsnsCopy;
     }
-      
-      
+
+
     protected void populateCdoData(Set<String> requirementFsns, List<RequirementDownloadLineItem> requirementDownloadLineItems) {
-        List<Requirement> requirements = requirementRepository.findEnabledRequirementsByStateFsn("cdo_review",requirementFsns);
+        List<Requirement> requirements = requirementRepository.findEnabledRequirementsByStateFsn(RequirementApprovalStates.CDO_REVIEW.toString(),requirementFsns);
         MultiKeyMap<String,String> fsnWhCdoComment = new MultiKeyMap();
         MultiKeyMap<String,Integer> fsnWhQuantity = new MultiKeyMap();
         requirements.forEach(r -> {
