@@ -2,11 +2,7 @@ package fk.retail.ip.requirement.internal.command;
 
 import com.google.common.collect.Lists;
 import fk.retail.ip.requirement.config.TestModule;
-import fk.retail.ip.requirement.internal.entities.FsnBand;
-import fk.retail.ip.requirement.internal.entities.LastAppSupplier;
-import fk.retail.ip.requirement.internal.entities.Requirement;
-import fk.retail.ip.requirement.internal.entities.RequirementSnapshot;
-import fk.retail.ip.requirement.internal.entities.WeeklySale;
+import fk.retail.ip.requirement.internal.entities.*;
 import fk.retail.ip.requirement.internal.enums.RequirementApprovalStates;
 import fk.retail.ip.requirement.internal.repository.*;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
@@ -64,6 +60,9 @@ public class DownloadCDOReviewCommandTest {
     @Mock
     ZuluClient zuluClient;
 
+    @Mock
+    WarehouseRepository warehouseRepository;
+  
     @Captor
     private ArgumentCaptor<List<RequirementDownloadLineItem>> captor;
 
@@ -77,6 +76,7 @@ public class DownloadCDOReviewCommandTest {
         List<Requirement> requirements = getRequirements();
         Mockito.when(fsnBandRepository.fetchBandDataForFSNs(Mockito.anySetOf(String.class))).thenReturn(Arrays.asList(getFsnBand()));
         Mockito.when(weeklySaleRepository.fetchWeeklySalesForFsns(Mockito.anySetOf(String.class))).thenReturn(getWeeklySale());
+        Mockito.when(warehouseRepository.fetchWarehouseNameByCode(Mockito.anySetOf(String.class))).thenReturn(getWarehouse());
         Mockito.when(productInfoRepository.getProductInfo(Mockito.anyList())).thenReturn(TestHelper.getProductInfo());
         Mockito.doReturn(TestHelper.getZuluData()).when(zuluClient).getRetailProductAttributes(Mockito.anyList());
         Mockito.when(lastAppSupplierRepository.fetchLastAppSupplierForFsns(Mockito.anySetOf(String.class))).thenReturn(getLasAppSupplier());
@@ -131,6 +131,7 @@ public class DownloadCDOReviewCommandTest {
         List<Requirement> requirements = getRequirements();
         Mockito.when(fsnBandRepository.fetchBandDataForFSNs(Mockito.anySetOf(String.class))).thenReturn(Arrays.asList(getFsnBand()));
         Mockito.when(weeklySaleRepository.fetchWeeklySalesForFsns(Mockito.anySetOf(String.class))).thenReturn(getWeeklySale());
+        Mockito.when(warehouseRepository.fetchWarehouseNameByCode(Mockito.anySetOf(String.class))).thenReturn(getWarehouse());
         Mockito.when(productInfoRepository.getProductInfo(Mockito.anyList())).thenReturn(TestHelper.getProductInfo());
         Mockito.doReturn(TestHelper.getZuluData()).when(zuluClient).getRetailProductAttributes(Mockito.anyList());
         Mockito.when(lastAppSupplierRepository.fetchLastAppSupplierForFsns(Mockito.anySetOf(String.class))).thenReturn(getLasAppSupplier());
@@ -254,6 +255,15 @@ public class DownloadCDOReviewCommandTest {
         requirements.add(requirement);
 
         return requirements;
+    }
+
+    private List<Warehouse> getWarehouse() {
+        List<Warehouse> warehouses = Lists.newArrayList();
+        Warehouse warehouse = TestHelper.getWarehouse("dummy_warehouse1","dummy_warehouse_name1");
+        warehouses.add(warehouse);
+        warehouse = TestHelper.getWarehouse("dummy_warehouse2","dummy_warehouse_name2");
+        warehouses.add(warehouse);
+        return warehouses;
     }
 
 }
