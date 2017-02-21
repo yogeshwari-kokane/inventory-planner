@@ -2,6 +2,7 @@ package fk.retail.ip.zulu.internal.command;
 
 import fk.retail.ip.zulu.config.ZuluConfiguration;
 import fk.retail.ip.zulu.internal.entities.RetailProductAttributeResponse;
+import fk.sp.common.extensions.dropwizard.jersey.NoAuthClient;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
@@ -14,13 +15,13 @@ import java.util.List;
 /**
  * Created by nidhigupta.m on 03/02/17.
  */
-public class GetRetailProductAttributesCommand extends BaseZuluCommand<RetailProductAttributeResponse>{
+public class GetRetailProductAttributesCommand extends BaseZuluCommand<RetailProductAttributeResponse> {
 
     private final String viewName = "retail_product_attributes";
     private List<String> fsns;
 
     @Inject
-    GetRetailProductAttributesCommand(Client client,ZuluConfiguration configuration) {
+    GetRetailProductAttributesCommand(@NoAuthClient Client client, ZuluConfiguration configuration) {
         super(client,configuration);
     }
 

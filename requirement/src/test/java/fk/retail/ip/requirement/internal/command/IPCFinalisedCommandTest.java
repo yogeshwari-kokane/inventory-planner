@@ -6,6 +6,7 @@ import fk.retail.ip.requirement.internal.entities.FsnBand;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.entities.RequirementSnapshot;
 import fk.retail.ip.requirement.internal.entities.WeeklySale;
+import fk.retail.ip.requirement.internal.enums.RequirementApprovalStates;
 import fk.retail.ip.requirement.internal.repository.JPAFsnBandRepository;
 import fk.retail.ip.requirement.internal.repository.ProductInfoRepository;
 import fk.retail.ip.requirement.internal.repository.TestHelper;
@@ -123,12 +124,12 @@ public class IPCFinalisedCommandTest {
         RequirementSnapshot snapshot1 = TestHelper.getRequirementSnapshot("[3,4]", 7,8,9,10,11);
 
         List<Requirement> requirements = Lists.newArrayList();
-        Requirement requirement = TestHelper.getRequirement("fsn", "dummy_warehouse1", "proposed", true, snapshot, 21,
+        Requirement requirement = TestHelper.getRequirement("fsn", "dummy_warehouse1", RequirementApprovalStates.PROPOSED.toString(), true, snapshot, 21,
                 "ABC",100,101,"INR", 3, "", "Daily planning" );
 
         requirements.add(requirement);
 
-        requirement = TestHelper.getRequirement("fsn", "dummy_warehouse2", "proposed", true, snapshot1, 22,
+        requirement = TestHelper.getRequirement("fsn", "dummy_warehouse2", RequirementApprovalStates.PROPOSED.toString(), true, snapshot1, 22,
                 "DEF",10,9,"USD", 4, "", "Daily planning" );
 
         requirements.add(requirement);
