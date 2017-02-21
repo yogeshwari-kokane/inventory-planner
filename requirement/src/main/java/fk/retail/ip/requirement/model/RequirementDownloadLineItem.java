@@ -3,11 +3,8 @@ package fk.retail.ip.requirement.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.inject.Inject;
 import fk.retail.ip.requirement.internal.entities.Requirement;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-
 import javax.xml.bind.annotation.XmlRootElement;
+import lombok.Data;
 
 /**
  * Created by nidhigupta.m on 26/01/17.
@@ -98,17 +95,17 @@ public class RequirementDownloadLineItem {
 
         //todo: display warehouse as full name
         this.warehouse = req.getWarehouse();
-        this.inventory = req.getRequirementSnapshot().getInventoryQty();
-        this.qoh = req.getRequirementSnapshot().getQoh();
-
-        Integer iwitQuantity = req.getRequirementSnapshot().getIwitIntransitQty();
-        Integer pendingPOQty = req.getRequirementSnapshot().getPendingPoQty();
-        Integer openReqQty = req.getRequirementSnapshot().getOpenReqQty();
-        this.intransitQty = (iwitQuantity != null? iwitQuantity : 0);
-        this.intransitQty += (pendingPOQty != null? pendingPOQty : 0);
-        this.intransitQty += (openReqQty != null? openReqQty : 0);
-
-        this.forecast = req.getRequirementSnapshot().getForecast();
+        if (req.getRequirementSnapshot() != null) {
+            this.inventory = req.getRequirementSnapshot().getInventoryQty();
+            this.qoh = req.getRequirementSnapshot().getQoh();
+            Integer iwitQuantity = req.getRequirementSnapshot().getIwitIntransitQty();
+            Integer pendingPOQty = req.getRequirementSnapshot().getPendingPoQty();
+            Integer openReqQty = req.getRequirementSnapshot().getOpenReqQty();
+            this.intransitQty = (iwitQuantity != null ? iwitQuantity : 0);
+            this.intransitQty += (pendingPOQty != null ? pendingPOQty : 0);
+            this.intransitQty += (openReqQty != null ? openReqQty : 0);
+            this.forecast = req.getRequirementSnapshot().getForecast();
+        }
         this.quantity = req.getQuantity()!= null ? req.getQuantity():0;
         this.supplier = req.getSupplier();
         this.mrp = req.getMrp();
