@@ -1,6 +1,7 @@
 package fk.retail.ip.requirement.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.inject.Inject;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import lombok.Data;
 import lombok.Getter;
@@ -19,33 +20,38 @@ public class RequirementDownloadLineItem {
 
     @JsonProperty("FSN")
     private String fsn;
-    @JsonProperty("Warehouse")
     private String warehouse;
+    @JsonProperty("Vertical")
     private String vertical;
+    @JsonProperty("Category")
     private String category;
+    @JsonProperty("Super Category")
     private String superCategory;
+    @JsonProperty("Title")
     private String title;
+    @JsonProperty("Brand")
     private String brand;
+    @JsonProperty("Flipkart Selling Price")
     private Integer fsp;
     @JsonProperty("PV Band")
     private Integer pvBand;
     @JsonProperty("Sales Band")
     private Integer salesBand;
-    @JsonProperty("Sales_bucket_0")
+    @JsonProperty("Sales bucket-0")
     private Integer week0Sale;
-    @JsonProperty("Sales_bucket_1")
+    @JsonProperty("Sales bucket-1")
     private Integer week1Sale;
-    @JsonProperty("Sales_bucket_2")
+    @JsonProperty("Sales bucket-2")
     private Integer week2Sale;
-    @JsonProperty("Sales_bucket_3")
+    @JsonProperty("Sales bucket-3")
     private Integer week3Sale;
-    @JsonProperty("Sales_bucket_4")
+    @JsonProperty("Sales bucket-4")
     private Integer week4Sale;
-    @JsonProperty("Sales_bucket_5")
+    @JsonProperty("Sales bucket-5")
     private Integer week5Sale;
-    @JsonProperty("Sales_bucket_6")
+    @JsonProperty("Sales bucket-6")
     private Integer week6Sale;
-    @JsonProperty("Sales_bucket_7")
+    @JsonProperty("Sales bucket-7")
     private Integer week7Sale;
     @JsonProperty("Inventory")
     private Integer inventory;
@@ -69,7 +75,7 @@ public class RequirementDownloadLineItem {
     private String currency;
     @JsonProperty("SLA")
     private Integer sla;
-    @JsonProperty("procurement_type")
+    @JsonProperty("Procurement Type")
     private String procType;
     @JsonProperty("Last App")
     private Integer lastApp;
@@ -81,10 +87,13 @@ public class RequirementDownloadLineItem {
     private String bizFinComment;
     @JsonProperty("IPC Proposed Quantity")
     private Integer ipcProposedQuantity;
-    @JsonProperty("CDO Override reason")
+    @JsonProperty("CDO Override Reason")
     private String cdoOverrideReason;
+    @JsonProperty("Warehouse")
+    private String warehouseName;
 
     public RequirementDownloadLineItem(Requirement req) {
+
         this.fsn = req.getFsn();
 
         //todo: display warehouse as full name
