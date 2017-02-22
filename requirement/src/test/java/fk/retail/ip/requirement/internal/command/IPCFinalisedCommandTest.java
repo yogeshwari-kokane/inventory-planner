@@ -77,15 +77,6 @@ public class IPCFinalisedCommandTest {
         Mockito.verify(generateExcelCommand).generateExcel(captor.capture(), Mockito.eq("/templates/IPCFinalised.xlsx"));
         Assert.assertEquals(2, captor.getValue().size());
 
-        Assert.assertEquals("fsn", captor.getValue().get(0).getFsn());
-        Assert.assertEquals("dummy_warehouse1", captor.getValue().get(0).getWarehouse());
-        Assert.assertEquals(21,(int)captor.getValue().get(0).getQuantity());
-        Assert.assertEquals("ABC", captor.getValue().get(0).getSupplier());
-
-        Assert.assertEquals("fsn", captor.getValue().get(1).getFsn());
-        Assert.assertEquals("dummy_warehouse2", captor.getValue().get(1).getWarehouse());
-        Assert.assertEquals(22,(int)captor.getValue().get(1).getQuantity());
-        Assert.assertEquals("DEF", captor.getValue().get(1).getSupplier());
     }
 
     private List<Requirement> getRequirements() {
