@@ -4,6 +4,7 @@ import com.codahale.metrics.annotation.Timed;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import fk.retail.ip.requirement.internal.exception.InvalidRequirementStateException;
+import fk.retail.ip.requirement.internal.exception.NoRequirementsSelectedException;
 import fk.retail.ip.requirement.model.DownloadRequirementRequest;
 import fk.retail.ip.requirement.service.RequirementService;
 import io.dropwizard.hibernate.UnitOfWork;
@@ -46,6 +47,8 @@ public class RequirementResource {
                     .build();
         } catch (InvalidRequirementStateException ise) {
             return Response.status(400).entity(ise.getMessage()).build();
+        } catch (NoRequirementsSelectedException noreq) {
+            return Response.status(400).entity(noreq.getMessage()).build();
         }
     }
 

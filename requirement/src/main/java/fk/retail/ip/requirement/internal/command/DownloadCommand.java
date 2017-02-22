@@ -171,7 +171,7 @@ public abstract class DownloadCommand {
 
         requirementDownloadLineItems.forEach(reqItem
                 -> {
-            if (fsnWhBizFinRecommended.get(reqItem.getFsn(),reqItem.getWarehouse())!=null)
+            if (fsnWhBizFinRecommended.get(reqItem.getFsn(),reqItem.getWarehouse())!=null && fsnWhBizFinRecommended.get(reqItem.getFsn(),reqItem.getWarehouse()) != reqItem.getQuantity())
                 reqItem.setBizFinRecommendedQuantity(fsnWhBizFinRecommended.get(reqItem.getFsn(), reqItem.getWarehouse()));
             if (fsnWhBizFinComment.get(reqItem.getFsn(),reqItem.getWarehouse())!=null)
                 reqItem.setBizFinComment(fsnWhBizFinComment.get(reqItem.getFsn(), reqItem.getWarehouse()));
