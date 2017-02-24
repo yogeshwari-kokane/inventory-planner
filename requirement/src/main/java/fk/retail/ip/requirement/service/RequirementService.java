@@ -2,6 +2,7 @@ package fk.retail.ip.requirement.service;
 
 import com.google.inject.Inject;
 import fk.retail.ip.requirement.internal.entities.Requirement;
+import fk.retail.ip.requirement.internal.exception.NoRequirementsSelectedException;
 import fk.retail.ip.requirement.internal.factory.RequirementStateFactory;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.internal.states.RequirementState;
@@ -36,6 +37,9 @@ public class RequirementService {
             requirements = requirementRepository.findAllCurrentRequirements(requirementState);
         }
         //todo: cleanup remove if 'all' column value for warehouse is removed
+        if (requirements.size() == 0) {
+            throw new NoRequirementsSelectedException("No requirements were selected in state " + requirementState);
+        }
         requirements = requirements.stream().filter(requirement -> !requirement.getWarehouse().equals("all")).collect(Collectors.toList());
         RequirementState state = requirementStateFactory.getRequirementState(requirementState);
         return state.download(requirements, isLastAppSupplierRequired);
