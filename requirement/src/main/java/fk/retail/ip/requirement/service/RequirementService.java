@@ -2,10 +2,13 @@ package fk.retail.ip.requirement.service;
 
 import com.google.inject.Inject;
 import fk.retail.ip.requirement.internal.entities.Requirement;
+import fk.retail.ip.requirement.internal.exception.NoRequirementsSelectedException;
+import fk.retail.ip.requirement.internal.factory.RequirementStateFactory;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
+import fk.retail.ip.requirement.internal.states.RequirementState;
 import fk.retail.ip.requirement.model.DownloadRequirementRequest;
-import fk.retail.ip.requirement.model.RequirementManager;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.ws.rs.core.StreamingOutput;
 
 /**
@@ -14,12 +17,12 @@ import javax.ws.rs.core.StreamingOutput;
 public class RequirementService {
 
     private final RequirementRepository requirementRepository;
-    private final RequirementManager requirementManager;
+    private final RequirementStateFactory requirementStateFactory;
 
     @Inject
-    public RequirementService(RequirementRepository requirementRepository, RequirementManager requirementManager) {
+    public RequirementService(RequirementRepository requirementRepository, RequirementStateFactory requirementStateFactory) {
         this.requirementRepository = requirementRepository;
-        this.requirementManager = requirementManager;
+        this.requirementStateFactory = requirementStateFactory;
 
     }
 
@@ -31,11 +34,15 @@ public class RequirementService {
         if (!requirementIds.isEmpty()) {
             requirements = requirementRepository.findRequirementByIds(requirementIds);
         } else {
-            requirements = requirementRepository.findAllEnabledRequirements(requirementState);
+            requirements = requirementRepository.findAllCurrentRequirements(requirementState);
         }
-
-        StreamingOutput output = requirementManager.withRequirements(requirements).download(requirementState, isLastAppSupplierRequired);
-        return output;
+        //todo: cleanup remove if 'all' column value for warehouse is removed
+        if (requirements.size() == 0) {
+            throw new NoRequirementsSelectedException("No requirements were selected in state " + requirementState);
+        }
+        requirements = requirements.stream().filter(requirement -> !requirement.getWarehouse().equals("all")).collect(Collectors.toList());
+        RequirementState state = requirementStateFactory.getRequirementState(requirementState);
+        return state.download(requirements, isLastAppSupplierRequired);
 
     }
 

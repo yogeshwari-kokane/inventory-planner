@@ -29,8 +29,13 @@ subprojects {
         compile group: 'org.apache.poi', name: 'poi', version: '3.10-FINAL'
         compile group: 'org.apache.poi', name: 'poi-ooxml', version: '3.10-FINAL'
 
-
-        testCompile group: 'junit', name: 'junit', version: '4.11'
+        testCompile "junit:junit:4.11"
+        testCompile "org.jukito:jukito:1.3"
+        testCompile "io.dropwizard:dropwizard-testing:$dropwizardVersion"
+        testCompile "fk.sp.common:common-test-extensions:$commonExtentions"
+        testCompile group: 'org.mockito', name: 'mockito-core', version: '2.2.7'
+        testCompile 'org.skyscreamer:jsonassert:1.3.0'
+        testCompile group: 'org.hsqldb', name: 'hsqldb', version: '2.3.2'
     }
 
     configurations {
@@ -55,7 +60,7 @@ buildscript {
 }
 
 task createWrapper(type: Wrapper) {
-    gradleVersion = '2.1'
+    gradleVersion = '2.0'
 }
 
 apply plugin: 'dropwizard-debian'
@@ -65,7 +70,7 @@ dropwizardDebian {
     jmxPort = Integer.valueOf(_jmxPort)
     applicationName = "fk-ip-inventory-planner"
     parentProject = "manager"
-    javaOpts = "-Xms1024m -Xmx1024m -XX:MaxPermSize=256m -XX:+UseG1GC -verbose:gc -XX:+PrintGCDateStamps -XX:+PrintGCTimeStamps -XX:+PrintGCDetails -Xloggc:/var/log/flipkart/ip/fk-ip-inventory-planner/gc.log"
+    javaOpts = "-Xms1024m -Xmx4096m -XX:MaxPermSize=256m -XX:+UseG1GC -verbose:gc -XX:+PrintGCDateStamps -XX:+PrintGCTimeStamps -XX:+PrintGCDetails -Xloggc:/var/log/flipkart/ip/fk-ip-inventory-planner/gc.log"
     zip64 = true
     jreVersion = 8;
     enableLogAggregation = true
