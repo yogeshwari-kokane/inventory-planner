@@ -63,12 +63,32 @@ public class Requirement extends AbstractEntity {
 
     private String createdBy;
 
+    @Column(name = "prev_state_id")
+    private Long previousStateId;
+
     @OneToOne(fetch = FetchType.LAZY)
     @PrimaryKeyJoinColumn
     private RequirementSnapshot requirementSnapshot;
 
     public Requirement(Long id) {
         this.id = id;
+    }
+
+    public Requirement(Requirement other) {
+        fsn = other.fsn;
+        warehouse = other.warehouse;
+        quantity = other.quantity;
+        supplier = other.supplier;
+        mrp = other.mrp;
+        app = other.app;
+        currency = other.currency;
+        sla = other.sla;
+        international = other.international;
+        procType = other.procType;
+        enabled = other.enabled;
+        current = other.current;
+        requirementSnapshot = other.requirementSnapshot;
+        previousStateId = other.id;
     }
 
     @Override
@@ -95,5 +115,4 @@ public class Requirement extends AbstractEntity {
     public String toString() {
         return "com.flipkart.ip.db.Requirement[ id=" + id + " ]";
     }
-
 }

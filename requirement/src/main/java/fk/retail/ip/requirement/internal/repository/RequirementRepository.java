@@ -17,44 +17,51 @@ import javax.persistence.EntityManager;
  */
 public class RequirementRepository extends SimpleJpaGenericRepository<Requirement, Long> {
 
-    protected static final int pageSize = 20;
+    protected static final int pageSize = 100;
 
     @Inject
     public RequirementRepository(Provider<EntityManager> entityManagerProvider) {
         super(entityManagerProvider);
     }
 
-    public List<Requirement> findRequirementByIds(List<Long> requirementIds) {
-        List<Requirement> requirements = Lists.newArrayList();
-        int pageNo = 0;
-        PageRequest pageRequest = getPageRequest(pageNo, pageSize);
+    public List<Requirement> find(List<String> fsns, String state) {
         Map<String, Object> params = Maps.newHashMap();
-        params.put("ids", requirementIds);
-        Page<Requirement> page = findAllByNamedQuery("findRequirementByIds", params, pageRequest);
-        requirements.addAll(page.getContent());
-        if (page.isHasMore()) {
-            pageNo += 1;
-            pageRequest = getPageRequest(pageNo, pageSize);
-            page = findAllByNamedQuery("findRequirementByIds", params, pageRequest);
-            requirements.addAll(page.getContent());
-        }
-        return requirements;
+        params.put("fsns", fsns);
+        params.put("state", state);
+        return fetchRequirements("findRequirementByFsns", params);
     }
 
-    public List<Requirement> findAllEnabledRequirements(String state) {
-        List<Requirement> requirements = Lists.newArrayList();
-        int pageNo = 0;
-        PageRequest pageRequest = getPageRequest(pageNo, pageSize);
+    public List<Requirement> find(List<Long> ids) {
+        Map<String, Object> params = Maps.newHashMap();
+        params.put("ids", ids);
+        return fetchRequirements("findRequirementByIds", params);
+    }
+
+    /**
+     * Fetches all the <b>enabled</b> requirements in the given {@code state}.
+     *
+     * @param state the state in which the requirement has to be
+     * @return list of all the <b>enabled</b> requirements in the given
+     * {@code state}.
+     */
+    public List<Requirement> find(String state) {
         Map<String, Object> params = Maps.newHashMap();
         params.put("state", state);
-        Page<Requirement> page = findAllByNamedQuery("findEnabledRequirementsByState", params, pageRequest);
-        requirements.addAll(page.getContent());
-        if (page.isHasMore()) {
-            pageNo += 1;
-            pageRequest = getPageRequest(pageNo, pageSize);
-            page = findAllByNamedQuery("findEnabledRequirementsByState", params, pageRequest);
+        return fetchRequirements("findEnabledRequirementsByState", params);
+    }
+
+
+    private List<Requirement> fetchRequirements(String query, Map<String, Object> params) {
+        List<Requirement> requirements = Lists.newArrayList();
+        int pageNo = 0;
+        Page<Requirement> page;
+        do {
+            PageRequest pageRequest = getPageRequest(pageNo, pageSize);
+            page = findAllByNamedQuery(query, params, pageRequest);
             requirements.addAll(page.getContent());
-        }
+            pageNo += 1;
+        } while (page.isHasMore());
+
         return requirements;
     }
 

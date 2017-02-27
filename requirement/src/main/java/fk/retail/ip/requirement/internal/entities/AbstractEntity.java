@@ -6,6 +6,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
@@ -35,4 +37,14 @@ public class AbstractEntity implements Serializable {
     @NotNull
     private long version;
 
+    @PrePersist
+    private void beforePersist() {
+        createdAt = new Date();
+        updatedAt = new Date();
+    }
+
+    @PreUpdate
+    private void beforeUpdate() {
+        updatedAt = new Date();
+    }
 }

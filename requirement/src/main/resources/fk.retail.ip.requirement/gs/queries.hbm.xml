@@ -4,6 +4,31 @@
                  xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"
                  version="1.0">
 
+    <named-query name="findRequirementByFsns">
+        <query>
+            <![CDATA[
+            SELECT r
+            FROM Requirement r
+            WHERE
+                r.fsn in :fsns AND
+                r.state = :state AND
+                r.enabled = 1
+            ]]>
+        </query>
+    </named-query>
+    <named-query name="findRequirementByFsns.count">
+        <query>
+            <![CDATA[
+            SELECT count(r)
+            FROM Requirement r
+            WHERE
+                r.fsn in :fsns AND
+                r.state = :state AND
+                r.enabled = 1
+            ]]>
+        </query>
+    </named-query>
+    
     <named-query name="findRequirementByIds">
         <query>
             <![CDATA[
@@ -14,7 +39,7 @@
                  ]]>
         </query>
     </named-query>
-
+    
     <named-query name="findRequirementByIds.count">
         <query>
             <![CDATA[
