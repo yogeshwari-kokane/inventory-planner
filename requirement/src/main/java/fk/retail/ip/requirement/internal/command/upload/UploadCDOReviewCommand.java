@@ -67,20 +67,20 @@ public class UploadCDOReviewCommand extends UploadCommand {
     }
 
     private Map<String, Object> isValidOverrideQuantity(Object stateQuantity, Object currentQuantity, String quantityOverrideComment) {
-        Map<String, Object> mp = new HashMap<>();
+        Map<String, Object> validOverride = new HashMap<>();
         if (stateQuantity == null) {
-            return mp;
+            return validOverride;
         }
         if ((stateQuantity instanceof Integer) && (Integer) stateQuantity > 0) {
             if (quantityOverrideComment.isEmpty() && stateQuantity != currentQuantity) {
                 //log => override comment is missing
-                mp.put("failure", "quantity override comment is missing");
+                validOverride.put("failure", "quantity override comment is missing");
             }
         } else {
-            mp.put("failure", "quantity is less than zero or not integer");
+            validOverride.put("failure", "quantity is less than zero or not integer");
             //log => quantity is less than zero or not integer
         }
-        return mp;
+        return validOverride;
     }
 
     private Map<String, Object> isValidOverrideApp(Object stateApp, Object currentApp, String appOverrideComment) {

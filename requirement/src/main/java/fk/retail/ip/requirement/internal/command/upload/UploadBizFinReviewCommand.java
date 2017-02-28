@@ -19,12 +19,12 @@ public class UploadBizFinReviewCommand extends UploadCommand {
         Map<String, Object> overriddenValues;
         overriddenValues = isValidOverrideQuantity(bizfinProposedQuantity, currentQuantity, quantityOverrideComment);
         if (overriddenValues.isEmpty()) {
-            overriddenValues = getOverriddenFields(bizfinProposedQuantity, currentQuantity, quantityOverrideComment);
+            overriddenValues = getOverriddenFields(bizfinProposedQuantity, quantityOverrideComment);
         }
         return overriddenValues;
     }
 
-    private Map<String, Object> getOverriddenFields(Object bizfinProposedQuantity, Object currentQuantity, String quantityOverrideComment) {
+    private Map<String, Object> getOverriddenFields(Object bizfinProposedQuantity, String quantityOverrideComment) {
         Map<String, Object> overriddenValues = new HashMap<>();
         JSONArray commentsArray = new JSONArray();
 
@@ -35,12 +35,24 @@ public class UploadBizFinReviewCommand extends UploadCommand {
             quantityOverrideJson.put("quantityOverrideComment", quantityOverrideComment);
             commentsArray.put(quantityOverrideJson);
             overriddenValues.put("overrideComment", commentsArray);
+        } else {
+            if (!quantityOverrideComment.isEmpty()) {
+                JSONObject commentOverridden = new JSONObject();
+                commentOverridden.put("quantityOverrideComment", quantityOverrideComment);
+                commentsArray.put(commentOverridden);
+                overriddenValues.put("overrideComment", commentsArray);
+            }
         }
         return overriddenValues;
     }
 
     private Map<String, Object> isValidOverrideQuantity(Object proposedQuantity, Object stateQuantity, String quantityOverrideComment) {
         Map<String, Object> validOverride = new HashMap<>();
+
+        if (stateQuantity == null) {
+            return validOverride;
+        }
+
         if ((stateQuantity instanceof Integer) && (Integer) stateQuantity > 0) {
             if (quantityOverrideComment.isEmpty() && stateQuantity != proposedQuantity) {
                 //log => comment is absent
