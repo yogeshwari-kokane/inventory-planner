@@ -25,10 +25,14 @@ public class UploadProposedCommand extends UploadCommand {
         return overriddenFields;
     }
 
-    private Map<String, Object> isValidOverrideQuantity(Object stateQuantity, Object proposedQuantity, String quantityOverrideComment) {
+    private Map<String, Object> isValidOverrideQuantity(Object currentQuantity, Object proposedQuantity, String quantityOverrideComment) {
         Map<String, Object> validOverride = new HashMap<>();
-        if ((stateQuantity instanceof Integer) && (Integer) stateQuantity > 0) {
-            if (quantityOverrideComment.isEmpty() && stateQuantity != proposedQuantity) {
+
+        if (proposedQuantity == null) {
+            return validOverride;
+        }
+        if ((proposedQuantity instanceof Integer) && (Integer) proposedQuantity > 0) {
+            if (quantityOverrideComment.isEmpty() && currentQuantity != proposedQuantity) {
                 //log => comment is absent
                 validOverride.put("failure", "quantity override comment is absent");
             }

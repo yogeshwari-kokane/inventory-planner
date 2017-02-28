@@ -66,13 +66,14 @@ public class UploadCDOReviewCommand extends UploadCommand {
         return overriddenValues;
     }
 
-    private Map<String, Object> isValidOverrideQuantity(Object stateQuantity, Object currentQuantity, String quantityOverrideComment) {
+    private Map<String, Object> isValidOverrideQuantity(Object bdProposedQuantity, Object currentQuantity, String quantityOverrideComment) {
         Map<String, Object> validOverride = new HashMap<>();
-        if (stateQuantity == null) {
+
+        if (bdProposedQuantity == null) {
             return validOverride;
         }
-        if ((stateQuantity instanceof Integer) && (Integer) stateQuantity > 0) {
-            if (quantityOverrideComment.isEmpty() && stateQuantity != currentQuantity) {
+        if ((bdProposedQuantity instanceof Integer) && (Integer) bdProposedQuantity > 0) {
+            if (quantityOverrideComment.isEmpty() && currentQuantity != bdProposedQuantity) {
                 //log => override comment is missing
                 validOverride.put("failure", "quantity override comment is missing");
             }
@@ -83,13 +84,13 @@ public class UploadCDOReviewCommand extends UploadCommand {
         return validOverride;
     }
 
-    private Map<String, Object> isValidOverrideApp(Object stateApp, Object currentApp, String appOverrideComment) {
+    private Map<String, Object> isValidOverrideApp(Object bdProposedApp, Object currentApp, String appOverrideComment) {
         Map<String, Object> validOverride = new HashMap<>();
-        if (stateApp == null) {
+        if (bdProposedApp == null) {
             return validOverride;
         }
-        if ((stateApp instanceof Integer) && (Integer) stateApp > 0) {
-            if (appOverrideComment.isEmpty() && currentApp != stateApp) {
+        if ((bdProposedApp instanceof Integer) && (Integer) bdProposedApp > 0) {
+            if (appOverrideComment.isEmpty() && currentApp != bdProposedApp) {
                 //log => comment is not present
                 validOverride.put("failure", "app override comment is missing");
             }
@@ -101,12 +102,12 @@ public class UploadCDOReviewCommand extends UploadCommand {
         return validOverride;
     }
 
-    private Map<String, Object> isValidOverrideSupplier(Object stateSupplier, Object currentSupplier, String supplierOverrideReason) {
+    private Map<String, Object> isValidOverrideSupplier(Object bdProposedSupplier, Object currentSupplier, String supplierOverrideReason) {
         Map<String, Object> validOverride = new HashMap<>();
-        if (stateSupplier == null) {
+        if (bdProposedSupplier == null) {
             return validOverride;
         }
-        if (supplierOverrideReason.isEmpty() && stateSupplier != currentSupplier) {
+        if (supplierOverrideReason.isEmpty() && bdProposedSupplier != currentSupplier) {
             if (currentSupplier == null) {
                 validOverride.put("failure", "override comment is missing and supplier overridden from blank");
                 //log => override comment is missing and supplier overridden from blank
@@ -118,12 +119,12 @@ public class UploadCDOReviewCommand extends UploadCommand {
         return validOverride;
     }
 
-    private Map<String, Object> isValidOverrideSla(Object stateSla) {
+    private Map<String, Object> isValidOverrideSla(Object bdProposedSla) {
         Map<String, Object> validOverride = new HashMap<>();
-        if (stateSla == null) {
+        if (bdProposedSla == null) {
             return validOverride;
         }
-        if ((stateSla instanceof Integer) && (Integer) stateSla > 0) {
+        if ((bdProposedSla instanceof Integer) && (Integer) bdProposedSla > 0) {
             return validOverride;
         } else {
             //log => sla is less than zero or not integer

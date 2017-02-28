@@ -23,11 +23,13 @@ public class RequirementManager {
 
     public List<RequirementUploadLineItem> upload(String uploadState, List<Map<String, Object>> parsedJson) {
         RequirementState requirementState = RequirementState.valueOf(uploadState);
-        if (requirementState == null) {
+        if (requirementState == null || !requirementState.getUploadCommand().isPresent()) {
+
             //log => unknown state
             return null;
         }
-        return requirementState.getUploadCommand().execute(parsedJson, requirements);
+
+        return requirementState.getUploadCommand().get().execute(parsedJson, requirements);
 
     }
 

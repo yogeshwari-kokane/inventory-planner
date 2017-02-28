@@ -6,6 +6,8 @@ import fk.retail.ip.requirement.config.RequirementModule;
 import fk.retail.ip.requirement.internal.command.*;
 import fk.retail.ip.requirement.internal.command.upload.*;
 
+import java.util.Optional;
+
 /**
  * Created by nidhigupta.m on 30/01/17.
  */
@@ -14,21 +16,27 @@ public enum RequirementState {
     PROPOSED(DownloadProposedCommand.class, UploadProposedCommand.class),
     CDO_REVIEW(DownloadCDOReviewCommand.class, UploadCDOReviewCommand.class),
     BIZFIN_REVIEW(DownloadBizFinReviewCommand.class, UploadBizFinReviewCommand.class),
-    IPC_REVIEW(DownloadIPCReviewCommand.class, UploadIPCReviewCommand.class),
-    IPC_FINALIZED(DownloadIPCFinalisedCommand.class, UploadIPCFinalisedCommand.class);
+    IPC_REVIEW(DownloadIPCReviewCommand.class),
+    IPC_FINALIZED(DownloadIPCFinalisedCommand.class);
 
     private DownloadCommand downloadCommand;
-    private UploadCommand uploadCommand;
+    private Optional<UploadCommand> uploadCommand;
+
+    RequirementState(Class<? extends DownloadCommand> downloadType) {
+        Injector INJECTOR = Guice.createInjector(new RequirementModule());
+        downloadCommand = INJECTOR.getInstance(downloadType);
+        uploadCommand = Optional.empty();
+    }
 
     RequirementState(Class<? extends DownloadCommand> downloadType, Class<? extends UploadCommand> uploadType) {
         Injector INJECTOR = Guice.createInjector(new RequirementModule());
         downloadCommand = INJECTOR.getInstance(downloadType);
-        uploadCommand = INJECTOR.getInstance(uploadType);
+        uploadCommand = Optional.of(INJECTOR.getInstance(uploadType));
     }
 
     public DownloadCommand getDownloadCommand() {
         return this.downloadCommand;
     }
-    public UploadCommand getUploadCommand() { return this.uploadCommand; }
+    public Optional<UploadCommand> getUploadCommand() { return this.uploadCommand; }
 
 }
