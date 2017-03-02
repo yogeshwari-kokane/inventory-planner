@@ -2,10 +2,10 @@ package fk.retail.ip.requirement.resource;
 
 import com.codahale.metrics.annotation.Timed;
 import com.google.inject.Inject;
+import com.google.inject.persist.Transactional;
 import fk.retail.ip.requirement.model.DownloadRequirementRequest;
 import fk.retail.ip.requirement.model.RequirementApprovalRequest;
 import fk.retail.ip.requirement.service.RequirementService;
-import io.dropwizard.hibernate.UnitOfWork;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
@@ -13,7 +13,9 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -24,6 +26,7 @@ import org.json.JSONException;
 /**
  * Created by nidhigupta.m on 26/01/17.
  */
+@Transactional
 @Path("/requirement")
 public class RequirementResource {
 
@@ -37,7 +40,6 @@ public class RequirementResource {
     @GET
     @Path("/download")
     @Timed
-    @UnitOfWork
     public Response download(DownloadRequirementRequest downloadRequirementRequest) {
         StreamingOutput stream = requirementService.downloadRequirement(downloadRequirementRequest);
         return Response.ok(stream)
@@ -58,10 +60,9 @@ public class RequirementResource {
 
     @PUT
     @Path("/state")
+    @Produces(MediaType.APPLICATION_JSON)
     @Timed
-    @UnitOfWork
-    public Response changeState(RequirementApprovalRequest request) throws JSONException {
-        String response = requirementService.changeState(request);
-        return Response.ok(response).build();
+    public String changeState(RequirementApprovalRequest request) throws JSONException {
+        return requirementService.changeState(request);
     }
 }

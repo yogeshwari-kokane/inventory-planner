@@ -6,17 +6,18 @@ import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.model.DownloadRequirementRequest;
 import fk.retail.ip.requirement.model.RequirementApprovalRequest;
 import fk.retail.ip.requirement.model.RequirementManager;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 import javax.ws.rs.core.StreamingOutput;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONException;
 
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
 /**
- * Created by nidhigupta.m on 26/01/17.
+ * @author nidhigupta.m
+ * @author Pragalathan M <pragalathan.m@flipkart.com>
  */
 @Slf4j
 public class RequirementService {
@@ -46,18 +47,16 @@ public class RequirementService {
 
         StreamingOutput output = requirementManager.withRequirements(requirements).download(requirementState, isLastAppSupplierRequired);
         return output;
-
     }
 
     public String changeState(RequirementApprovalRequest request) throws JSONException {
-        //        log.info("params {}", request);
-        String action = request.getProjection().getAction();
-
+        String action = request.getFilters().get("projection_action").toString();
         Function<Requirement, String> getter = Requirement::getState;
-        List<Requirement> requirements = request.isAll()
-                ? requirementRepository.find(request.getState())
-                : requirementRepository.find(Arrays.asList(request.getIds()).stream().map(Integer::longValue).collect(toList()));
+        List<Requirement> requirements = requirementRepository.findRequirements((List<Long>) request.getFilters().get("id"), (String) request.getFilters().get("state"), request.getFilters());
+        Set<Long> projectionIds = requirements.stream().map(Requirement::getProjectionId).collect(toSet());
+
         approvalService.changeState(requirements, "userId", action, getter, new ApprovalService.CopyOnStateChangeAction(requirementRepository));
+        requirementRepository.updateProjection(projectionIds, approvalService.getTargetState(action));
         return "{\"msg\":\"Moved " + requirements.size() + " projections to new state.\"}";
     }
 }

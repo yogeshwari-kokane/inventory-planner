@@ -29,19 +29,24 @@
         "nextState": "approved",
         "isForward": false
     },
-    "biz_fin_approve": {
+    "bizfin_approve": {
         "currentState": "bd_approved",
-        "nextState": "biz_fin_approved",
+        "nextState": "bizfin_approved",
         "isForward": true
     },
-    "cancel_biz_fin_approve": {
-        "currentState": "biz_fin_approved",
+    "cancel_bizfin_approve": {
+        "currentState": "bizfin_approved",
         "nextState": "bd_approved",
         "isForward": false
     },
     "ipc_finalize": {
-        "currentState": "biz_fin_approved",
+        "currentState": "bizfin_approved",
         "nextState": "ipc_finalized",
         "isForward": true
+    },
+    "cancel_ipc_finalize": {
+        "currentState": "ipc_finalized",
+        "nextState": "bizfin_approved",
+        "isForward": false
     }
 }

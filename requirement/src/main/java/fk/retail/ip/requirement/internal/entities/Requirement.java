@@ -21,7 +21,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name = "REQUIREMENT")
+@Table(name = "projection_states")
 public class Requirement extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
@@ -32,7 +32,7 @@ public class Requirement extends AbstractEntity {
     @NotNull
     private String warehouse;
 
-    @NotNull
+    @Column(name = "qty")
     private int quantity;
 
     private String supplier;
@@ -41,7 +41,9 @@ public class Requirement extends AbstractEntity {
 
     private Integer app;
 
-    private String currency;
+    private String mrpCurrency;
+
+    private String appCurrency;
 
     private Integer sla;
 
@@ -52,23 +54,35 @@ public class Requirement extends AbstractEntity {
 
     private String procType;
 
-    @Column(name = "is_enabled")
+    @Column(name = "enabled")
     private boolean enabled;
 
     @Column(name = "is_current")
     private boolean current;
 
+    @Column(name = "comment")
     @Size(max = 100)
     private String overrideComment;
 
     private String createdBy;
 
-    @Column(name = "prev_state_id")
-    private Long previousStateId;
+    private Long sslId;
 
     @OneToOne(fetch = FetchType.LAZY)
     @PrimaryKeyJoinColumn
     private RequirementSnapshot requirementSnapshot;
+
+    //TODO: legacy code
+    @Column(name = "prev_state_id")
+    private Long previousStateId;
+
+    //TODO: legacy code
+    @Column(name = "pan_india")
+    private Integer panIndiaQuantity;
+
+    //TODO: legacy code
+    @Column(name = "projection_id")
+    private Long projectionId;
 
     public Requirement(Long id) {
         this.id = id;
@@ -80,15 +94,20 @@ public class Requirement extends AbstractEntity {
         quantity = other.quantity;
         supplier = other.supplier;
         mrp = other.mrp;
+        mrpCurrency = other.mrpCurrency;
         app = other.app;
-        currency = other.currency;
+        appCurrency = other.appCurrency;
         sla = other.sla;
         international = other.international;
         procType = other.procType;
         enabled = other.enabled;
         current = other.current;
         requirementSnapshot = other.requirementSnapshot;
-        previousStateId = other.id;
+
+        //TODO: legacy code
+        projectionId = other.projectionId;
+        panIndiaQuantity = other.panIndiaQuantity;
+        sslId = other.sslId;
     }
 
     @Override

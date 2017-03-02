@@ -63,7 +63,7 @@ public class RequirementDownloadLineItem {
         this.supplier = req.getSupplier();
         this.mrp = req.getMrp();
         this.app = req.getApp();
-        this.currency = req.getCurrency();
+        this.currency = req.getAppCurrency();
         this.sla = req.getSla();
         this.international = req.isInternational();
         this.procType = req.getProcType();
