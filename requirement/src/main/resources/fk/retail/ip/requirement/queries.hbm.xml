@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xmlns="http://java.sun.com/xml/ns/persistence/orm"
+                 xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"
+                 version="1.0">
+    <named-query name="findRequirementByProjectionIds">
+        <query>
+            <![CDATA[
+            SELECT r
+            FROM Requirement r
+            WHERE
+                r.projectionId IN (:projectionIds) AND
+                r.current = true AND
+                r.enabled = true
+            ]]>
+        </query>
+    </named-query>
+    
+    <named-query name="findRequirementByProjectionIds.count">
+        <query>
+            <![CDATA[
+            SELECT count(r)
+            FROM Requirement r
+            WHERE
+                r.projectionId IN (:projectionIds) AND
+                r.current = true AND
+                r.enabled = true
+            ]]>
+        </query>
+    </named-query>
+    <named-query name="findRequirementByIds">
+        <query>
+            <![CDATA[
+            SELECT r
+            FROM Requirement r
+            WHERE
+                r.id in :ids
+                 ]]>
+        </query>
+    </named-query>
+
+    <named-query name="findRequirementByIds.count">
+        <query>
+            <![CDATA[
+            SELECT count(r)
+            FROM Requirement r
+            WHERE
+                r.id in :ids
+                 ]]>
+        </query>
+    </named-query>
+
+    <named-query name="findEnabledRequirementsByStateFsn">
+        <query>
+            <![CDATA[
+            SELECT r
+            FROM Requirement r
+            WHERE
+                r.enabled = 1 and
+                r.state = :state and
+                r.fsn in :fsns
+                ]]>
+        </query>
+    </named-query>
+
+    <named-query name="findEnabledRequirementsByStateFsn.count">
+        <query>
+            <![CDATA[
+            SELECT count(r)
+            FROM Requirement r
+            WHERE
+                r.enabled = 1 and
+                r.state = :state and
+                r.fsn in :fsn
+                ]]>
+        </query>
+    </named-query>
+
+    <named-query name="findCurrentRequirementsByState">
+        <query>
+            <![CDATA[
+            SELECT r
+            FROM Requirement r
+            WHERE
+                r.current = 1 and
+                r.state = :state
+                ]]>
+        </query>
+    </named-query>
+
+
+    <named-query name="findCurrentRequirementsByState.count">
+        <query>
+            <![CDATA[
+            SELECT count(r)
+            FROM Requirement r
+            WHERE
+                r.current = 1 and
+                r.state = :state
+                ]]>
+        </query>
+    </named-query>
+
+    <named-query name="fetchBandDataForFSNs">
+        <query>
+            <![CDATA[
+            SELECT fb
+            FROM FsnBand fb
+            WHERE
+                fb.fsn IN :fsns and
+                fb.timeFrame = :timeFrame
+                ]]>
+        </query>
+    </named-query>
+
+    <named-query name="fetchBandDataForFSNs.count">
+        <query>
+            <![CDATA[
+            SELECT count(fb)
+            FROM FsnBand fb
+            WHERE
+                fb.fsn IN :fsns and
+                fb.timeFrame = :timeFrame
+                ]]>
+        </query>
+    </named-query>
+
+
+    <named-query name="fetchWeeklySalesForFsns">
+        <query>
+            <![CDATA[
+            SELECT ws
+            FROM WeeklySale ws
+            WHERE
+                ws.fsn IN :fsns
+                ]]>
+        </query>
+    </named-query>
+
+    <named-query name="fetchWeeklySalesForFsns.count">
+        <query>
+            <![CDATA[
+            SELECT count(ws)
+            FROM WeeklySale ws
+            WHERE
+                ws.fsn IN :fsns
+                ]]>
+        </query>
+    </named-query>
+
+    <named-query name="fetchLastAppSupplierForFsns">
+        <query>
+            <![CDATA[
+            SELECT l
+            FROM LastAppSupplier l
+            WHERE
+                l.fsn IN :fsns
+            ]]>
+        </query>
+    </named-query>
+
+    <named-query name="fetchLastAppSupplierForFsns.count">
+        <query>
+            <![CDATA[
+              SELECT count(l)
+              FROM LastAppSupplier l
+              WHERE
+                  l.fsn IN :fsns
+              ]]>
+        </query>
+    </named-query>
+
+    <named-query name="fetchWarehouseNameByCode">
+        <query>
+            <![CDATA[
+            SELECT w
+            FROM Warehouse w
+            WHERE
+                w.warehouseCode IN :whCodes
+            ]]>
+        </query>
+    </named-query>
+
+    <named-query name="fetchWarehouseNameByCode.count">
+        <query>
+            <![CDATA[
+            SELECT count(w)
+            FROM Warehouse w
+            WHERE
+                w.warehouseCode IN :whCodes
+            ]]>
+        </query>
+    </named-query>
+
+    <named-query name="IwtRequestItem.fetchByFsnsInStatuses">
+        <query>
+            <![CDATA[
+            SELECT iri
+            FROM IwtRequestItem iri
+            WHERE
+                iri.fsn IN :fsns AND
+                iri.status IN :statuses
+                ]]>
+        </query>
+    </named-query>
+
+    <named-query name="OpenRequirementAndPurchaseOrder.fetchByFsns">
+        <query>
+            <![CDATA[
+            SELECT rpo
+            FROM OpenRequirementAndPurchaseOrder rpo
+            WHERE
+                rpo.fsn IN :fsns
+                ]]>
+        </query>
+    </named-query>
+
+    <named-query name="Policy.fetchByFsns">
+        <query>
+            <![CDATA[
+            SELECT p
+            FROM Policy p
+            WHERE
+                p.fsn IN :fsns
+                ]]>
+        </query>
+    </named-query>
+
+
+    <named-query name="Policy.fetchByGroupIds">
+        <query>
+            <![CDATA[
+            SELECT p
+            FROM Policy p
+            WHERE
+                p.group.id IN :ids AND
+                p.fsn IS NULL
+                ]]>
+        </query>
+    </named-query>
+
+    <named-query name="GroupFsn.fetchByFsns">
+        <query>
+            <![CDATA[
+            SELECT gf
+            FROM GroupFsn gf
+            WHERE
+                gf.fsn IN :fsns
+                ]]>
+        </query>
+    </named-query>
+
+    <named-query name="getProductInfo">
+        <query>
+            <![CDATA[
+            SELECT pd
+            FROM ProductInfo pd
+            WHERE
+                pd.fsn IN :fsns
+            ]]>
+        </query>
+    </named-query>
+
+</entity-mappings>

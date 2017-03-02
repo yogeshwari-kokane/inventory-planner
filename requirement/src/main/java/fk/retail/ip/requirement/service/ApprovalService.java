@@ -79,7 +79,7 @@ public class ApprovalService<E extends AbstractEntity> {
         @Override
         public void execute(String userId, String fromState, String toState, boolean forward, List<Requirement> entities) {
             Map<String, List<Requirement>> fsnToRequirements = entities.stream().collect(Collectors.groupingBy(Requirement::getFsn));
-            List<Requirement> toEntities = repository.find(fsnToRequirements.keySet(), toState);
+            List<Requirement> toEntities = repository.findEnabledRequirementsByStateFsn(toState, fsnToRequirements.keySet());
             fsnToRequirements.keySet().stream().forEach((fsn) -> {
                 fsnToRequirements.get(fsn).stream().forEach((entity) -> {
                     Optional<Requirement> toStateEntity = toEntities.stream().filter(e -> e.getWarehouse().equals(entity.getWarehouse()) && e.getFsn().equals(entity.getFsn())).findFirst();

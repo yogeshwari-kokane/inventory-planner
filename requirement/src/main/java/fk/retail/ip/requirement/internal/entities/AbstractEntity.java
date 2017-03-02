@@ -10,32 +10,34 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
-import lombok.Getter;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
  * Created by nidhigupta.m on 26/01/17.
  */
 @MappedSuperclass
-@Getter
-@Setter
+@Data
+@NoArgsConstructor
 public class AbstractEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Long id;
 
-    @NotNull
     @Temporal(TemporalType.TIMESTAMP)
     protected Date createdAt;
 
-    @NotNull
     @Temporal(TemporalType.TIMESTAMP)
     protected Date updatedAt;
 
     @NotNull
-    private long version;
+    @Version
+    private Long version;
 
     @PrePersist
     private void beforePersist() {

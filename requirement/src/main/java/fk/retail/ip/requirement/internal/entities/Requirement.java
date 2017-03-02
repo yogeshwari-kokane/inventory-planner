@@ -3,35 +3,38 @@ package fk.retail.ip.requirement.internal.entities;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 /**
  * Created by nidhigupta.m on 26/01/17.
  */
+
 @Entity
 @XmlRootElement
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
+//todo: cleanup
 @Table(name = "projection_states")
+//@Table(name = "REQUIREMENT")
 public class Requirement extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
 
+    //todo : add this field in projection_states in old db
     @NotNull
     private String fsn;
 
     @NotNull
     private String warehouse;
 
+    //todo:cleanup
     @Column(name = "qty")
     private int quantity;
 
@@ -41,9 +44,9 @@ public class Requirement extends AbstractEntity {
 
     private Integer app;
 
-    private String mrpCurrency;
-
-    private String appCurrency;
+    //todo:cleanup
+    @Column(name = "app_currency")
+    private String currency;
 
     private Integer sla;
 
@@ -54,12 +57,14 @@ public class Requirement extends AbstractEntity {
 
     private String procType;
 
+    //todo:cleanup
     @Column(name = "enabled")
     private boolean enabled;
 
     @Column(name = "is_current")
     private boolean current;
 
+    //todo: cleanup
     @Column(name = "comment")
     @Size(max = 100)
     private String overrideComment;
@@ -69,7 +74,7 @@ public class Requirement extends AbstractEntity {
     private Long sslId;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @PrimaryKeyJoinColumn
+    @JoinColumn(name = "requirement_snapshot_id")
     private RequirementSnapshot requirementSnapshot;
 
     //TODO: legacy code
@@ -84,6 +89,12 @@ public class Requirement extends AbstractEntity {
     @Column(name = "projection_id")
     private Long projectionId;
 
+    //todo: cleanup (fields for backward compatibilty)
+    private Integer panIndia;
+
+    //todo:cleanup
+    private String mrpCurrency;
+
     public Requirement(Long id) {
         this.id = id;
     }
@@ -96,7 +107,7 @@ public class Requirement extends AbstractEntity {
         mrp = other.mrp;
         mrpCurrency = other.mrpCurrency;
         app = other.app;
-        appCurrency = other.appCurrency;
+        currency = other.currency;
         sla = other.sla;
         international = other.international;
         procType = other.procType;
