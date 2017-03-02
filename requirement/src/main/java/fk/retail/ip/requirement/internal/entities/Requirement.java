@@ -89,9 +89,6 @@ public class Requirement extends AbstractEntity {
     @Column(name = "projection_id")
     private Long projectionId;
 
-    //todo: cleanup (fields for backward compatibilty)
-    private Integer panIndia;
-
     //todo:cleanup
     private String mrpCurrency;
 
