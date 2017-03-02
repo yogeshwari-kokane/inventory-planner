@@ -9,7 +9,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class RequirementUploadLineItem {
-    private String rowId;
+    private String rowNumber;
     private String fsn;
+    private String warehouse;
     private String failureReason;
+
 }

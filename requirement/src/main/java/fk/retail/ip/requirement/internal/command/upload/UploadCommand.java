@@ -2,9 +2,11 @@ package fk.retail.ip.requirement.internal.command.upload;
 
 
 import fk.retail.ip.requirement.internal.entities.Requirement;
+import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
 import fk.retail.ip.requirement.model.RequirementUploadLineItem;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.map.HashedMap;
 import org.apache.commons.collections4.map.MultiKeyMap;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -17,28 +19,39 @@ import java.util.stream.Collectors;
 /**
  * Created by vaibhav.agarwal on 03/02/17.
  */
+@Slf4j
 public abstract class UploadCommand {
 
-    abstract Map<String, Object> validateAndSetStateSpecific(Map<String, Object> row);
+    abstract Map<String, Object> validateAndSetStateSpecific(RequirementDownloadLineItem row);
 
-    public List<RequirementUploadLineItem> execute(List<Map<String, Object>> parsedJson, List<Requirement> requirements) {
+    private final RequirementRepository requirementRepository;
+
+    public UploadCommand(RequirementRepository requirementRepository) {
+        this.requirementRepository = requirementRepository;
+    }
+
+    public List<RequirementUploadLineItem> execute(List<RequirementDownloadLineItem> requirementDownloadLineItems, List<Requirement> requirements) {
 
         Map<Pair<String,String>,Requirement> requirementMap = requirements.stream().collect(Collectors.toMap(requirement -> {
             return new ImmutablePair<String, String>(requirement.getFsn(), requirement.getWarehouse());
         }, requirement -> requirement));
 
         ArrayList<RequirementUploadLineItem> requirementUploadLineItems = new ArrayList<>();
-        for(Map<String, Object> row : parsedJson) {
+        Integer rowCount = 0;
+        for(RequirementDownloadLineItem row : requirementDownloadLineItems) {
             RequirementUploadLineItem requirementUploadLineItem = new RequirementUploadLineItem();
-            String rowId = row.get("id1").toString();
-            String fsn = row.get("fsn").toString();
-            String warehouse = row.get("warehouse").toString();
-            String genericComment = validateGenericRowColumns(row);
+            rowCount += 1;
+            String fsn = row.getFsn();
+            String warehouse = row.getWarehouseName();
 
+            String genericComment = validateGenericRowColumns(fsn, warehouse);
+
+            /*TODO : remove null checks*/
             if (genericComment != null) {
                 requirementUploadLineItem.setFailureReason(genericComment);
                 requirementUploadLineItem.setFsn(fsn);
-                requirementUploadLineItem.setRowId(rowId);
+                requirementUploadLineItem.setRowNumber(rowCount.toString());
+                requirementUploadLineItem.setWarehouse(warehouse);
                 requirementUploadLineItems.add(requirementUploadLineItem);
                 continue;
             }
@@ -48,12 +61,17 @@ public abstract class UploadCommand {
             if (overriddenValues.containsKey("failure")) {
                 requirementUploadLineItem.setFailureReason(overriddenValues.get("failure").toString());
                 requirementUploadLineItem.setFsn(fsn);
-                requirementUploadLineItem.setRowId(rowId);
+                requirementUploadLineItem.setRowNumber(rowCount.toString());
+                requirementUploadLineItem.setWarehouse(warehouse);
                 requirementUploadLineItems.add(requirementUploadLineItem);
+
             } else {
 
-                Requirement requirement = requirementMap.get(new ImmutablePair<String, String>(fsn, warehouse));
+                Requirement requirement = requirementMap.get(new ImmutablePair<>(fsn, warehouse));
+                /*TODO check if requirement is present or not*/
+
                 if (overriddenValues.containsKey("quantity")) {
+                    System.out.println("quantity to be : " + overriddenValues.get("quantity"));
                     requirement.setQuantity((Integer) overriddenValues.get("quantity"));
                 }
 
@@ -70,21 +88,21 @@ public abstract class UploadCommand {
                 }
 
                 if (overriddenValues.containsKey("overrideComment")) {
+                    System.out.println("comment to be : " + overriddenValues.get("overrideComment"));
                     requirement.setOverrideComment(overriddenValues.get("overrideComment").toString());
                 }
+
+                requirementRepository.persist(requirement);
             }
 
         }
         return requirementUploadLineItems;
     }
 
-    private String validateGenericRowColumns(Map<String, Object> row) {
-        String fsn = (String) row.get("fsn");
-        String warehouse = (String) row.get("warehouse");
-        Integer rowID = (Integer) row.get("id1");
-        if (fsn.isEmpty() || warehouse.isEmpty() || rowID == null) {
-            //log => id1 ,fsn, and/or warehouse is missing
-            return "id1, fsn, and/or warehouse is missing";
+    private String validateGenericRowColumns(String fsn, String warehouse) {
+        if (fsn == null || warehouse == null) {
+            log.debug("fsn and/or warehouse is missing from requirement");
+            return "fsn, and/or warehouse is missing";
         }else {
             return null;
         }

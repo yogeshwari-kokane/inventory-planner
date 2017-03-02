@@ -1,5 +1,9 @@
 package fk.retail.ip.requirement.internal.command.upload;
 
+import com.google.inject.Inject;
+import fk.retail.ip.requirement.internal.repository.RequirementRepository;
+import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -10,22 +14,27 @@ import java.util.Map;
  * Created by agarwal.vaibhav on 06/02/17.
  */
 
+@Slf4j
 public class UploadCDOReviewCommand extends UploadCommand {
 
+    @Inject
+    public UploadCDOReviewCommand(RequirementRepository requirementRepository) {
+        super(requirementRepository);
+    }
+
     @Override
-    Map<String, Object> validateAndSetStateSpecific(Map<String, Object> row) {
-        String supplierOverrideReason = row.get("bd_supplier_override_reason").toString();
-        Object bdProposedQuantity = row.get("bd_quantity");
-        Object bdProposedSla = row.get("new_sla");
-        Object bdProposedApp = row.get("bd_app");
-        Object bdProposedSupplier = row.get("bd_supplier");
-        Object currentSupplier = row.get("supplier");
-        Object currentQuantity =  row.get("quantity");
-        Object currentApp = row.get("app");
-        Object currentSla = row.get("sla");
-        String quantityOverrideComment = row.get("bd_quantity_override_reason").toString();
-        String appOverrideComment = row.get("bd_app_override_reason").toString();
-        String slaOverrideComment = row.get("sla_override_comment").toString();
+    Map<String, Object> validateAndSetStateSpecific(RequirementDownloadLineItem requirementDownloadLineItem) {
+        String supplierOverrideReason = requirementDownloadLineItem.getCdoSupplierOverrideReason();
+        Object bdProposedQuantity = requirementDownloadLineItem.getCdoQuantityOverride();
+        Object bdProposedSla = requirementDownloadLineItem.getNewSla();
+        Object bdProposedApp = requirementDownloadLineItem.getCdoPriceOverride();
+        Object bdProposedSupplier = requirementDownloadLineItem.getCdoSupplierOverride();
+        Object currentSupplier = requirementDownloadLineItem.getSupplier();
+        Object currentQuantity =  requirementDownloadLineItem.getQuantity();
+        Object currentApp = requirementDownloadLineItem.getApp();
+        Object currentSla = requirementDownloadLineItem.getSla();
+        String quantityOverrideComment = requirementDownloadLineItem.getCdoQuantityOverrideReason();
+        String appOverrideComment = requirementDownloadLineItem.getCdoPriceOverrideReason();
         Map<String, Object> overriddenValues;
 
         overriddenValues = isValidOverrideQuantity(bdProposedQuantity, currentQuantity, quantityOverrideComment);
@@ -59,8 +68,7 @@ public class UploadCDOReviewCommand extends UploadCommand {
                 bdProposedSupplier,
                 quantityOverrideComment,
                 appOverrideComment,
-                supplierOverrideReason,
-                slaOverrideComment
+                supplierOverrideReason
         );
 
         return overriddenValues;
@@ -73,13 +81,13 @@ public class UploadCDOReviewCommand extends UploadCommand {
             return validOverride;
         }
         if ((bdProposedQuantity instanceof Integer) && (Integer) bdProposedQuantity > 0) {
-            if (quantityOverrideComment.isEmpty() && currentQuantity != bdProposedQuantity) {
-                //log => override comment is missing
+            if (quantityOverrideComment == null && currentQuantity != bdProposedQuantity) {
+                log.debug("cdo quantity override comment is missing");
                 validOverride.put("failure", "quantity override comment is missing");
             }
         } else {
+            log.debug("cdo quantity overridden is less than or equal to zero or not integer");
             validOverride.put("failure", "quantity is less than zero or not integer");
-            //log => quantity is less than zero or not integer
         }
         return validOverride;
     }
@@ -90,13 +98,12 @@ public class UploadCDOReviewCommand extends UploadCommand {
             return validOverride;
         }
         if ((bdProposedApp instanceof Integer) && (Integer) bdProposedApp > 0) {
-            if (appOverrideComment.isEmpty() && currentApp != bdProposedApp) {
-                //log => comment is not present
+            if (appOverrideComment == null && currentApp != bdProposedApp) {
+                log.debug("cdo app override comment is missing");
                 validOverride.put("failure", "app override comment is missing");
             }
-            //log => app is not a positive number or not integer
         } else {
-            //log => quantity is less than zero or not integer
+            log.debug("app is less than or equal to zero or not integer");
             validOverride.put("failure", "quantity is less zero or not integer");
         }
         return validOverride;
@@ -107,14 +114,13 @@ public class UploadCDOReviewCommand extends UploadCommand {
         if (bdProposedSupplier == null) {
             return validOverride;
         }
-        if (supplierOverrideReason.isEmpty() && bdProposedSupplier != currentSupplier) {
+        if (supplierOverrideReason == null && bdProposedSupplier != currentSupplier) {
             if (currentSupplier == null) {
                 validOverride.put("failure", "override comment is missing and supplier overridden from blank");
-                //log => override comment is missing and supplier overridden from blank
             } else {
                 validOverride.put("failure", "override comment is missing");
-                //log => override comment is missing
             }
+            log.debug("cdo supplier override comment is missing");
         }
         return validOverride;
     }
@@ -125,9 +131,9 @@ public class UploadCDOReviewCommand extends UploadCommand {
             return validOverride;
         }
         if ((bdProposedSla instanceof Integer) && (Integer) bdProposedSla > 0) {
-            return validOverride;
+
         } else {
-            //log => sla is less than zero or not integer
+            log.debug("sla is less than or equal to zero or not integer");
             validOverride.put("failure", "sla is less than zero or not Integer");
         }
         return validOverride;
@@ -144,47 +150,36 @@ public class UploadCDOReviewCommand extends UploadCommand {
             Object bdProposedSupplier,
             String quantityOverrideComment,
             String appOverrideComment,
-            String supplierOverrideComment,
-            String slaOverrideComment
+            String supplierOverrideComment
     ) {
 
         Map<String, Object> overriddenValues = new HashMap<>();
-
-        JSONArray commentsArray = new JSONArray();
+        JSONObject overrideCommentJson = new JSONObject();
 
 
         if (bdProposedQuantity != null && bdProposedQuantity != currentQuantity) {
             Integer quantityToUse = (Integer) bdProposedQuantity;
             overriddenValues.put("quantity", quantityToUse);
-            JSONObject quantityOverrideJson = new JSONObject();
-            quantityOverrideJson.put("quantityOverrideComment", quantityOverrideComment);
-            commentsArray.put(quantityOverrideJson);
+            overrideCommentJson.put("quantityOverrideComment", quantityOverrideComment);
         }
 
         if (bdProposedSupplier != null && bdProposedSupplier != currentSupplier) {
             String supplierToUse = bdProposedSupplier.toString();
             overriddenValues.put("supplier",supplierToUse);
-            JSONObject supplierOverrideJson = new JSONObject();
-            supplierOverrideJson.put("supplierOverrideComment", supplierOverrideComment);
-            commentsArray.put(supplierOverrideJson);
+            overrideCommentJson.put("supplierOverrideComment", supplierOverrideComment);
         }
 
         if (bdProposedApp != null && bdProposedApp != currentApp) {
             Integer appToUse = (Integer) bdProposedApp;
             overriddenValues.put("app", appToUse);
-            JSONObject appOverrideJson = new JSONObject();
-            appOverrideJson.put("appOverrideComment", appOverrideComment);
-            commentsArray.put(appOverrideJson);
+            overrideCommentJson.put("appOverrideComment", appOverrideComment);
         }
 
         if (bdProposedSla != null && bdProposedSla != currentSla) {
             Integer slaToUse = (Integer) bdProposedSla;
             overriddenValues.put("sla", slaToUse);
-            JSONObject slaOverrideJson = new JSONObject();
-            slaOverrideJson.put("slaOverrideComment", slaOverrideComment);
-            commentsArray.put(slaOverrideJson);
         }
-        overriddenValues.put("overrideComment", commentsArray);
+        overriddenValues.put("overrideComment", overrideCommentJson);
         return overriddenValues;
     }
 

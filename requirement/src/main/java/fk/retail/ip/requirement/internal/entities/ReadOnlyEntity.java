@@ -8,23 +8,19 @@ import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.validation.constraints.NotNull;
-import lombok.Getter;
-import org.hibernate.annotations.Immutable;
+import lombok.Data;
 
 /**
  * Created by nidhigupta.m on 26/01/17.
  */
 @MappedSuperclass
-@Getter
-@Immutable
+@Data
 public class ReadOnlyEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Long id;
 
-    @NotNull
     @Temporal(TemporalType.TIMESTAMP)
     protected Date createdAt;
 
