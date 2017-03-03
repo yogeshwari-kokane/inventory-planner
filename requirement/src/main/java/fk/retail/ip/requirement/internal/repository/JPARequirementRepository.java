@@ -59,6 +59,7 @@ public class JPARequirementRepository extends SimpleJpaGenericRepository<Require
         return requirements;
     }
 
+    @Override
     public List<Requirement> findRequirements(List<Long> projectionIds, String requirementState, Map<String, Object> filters, int pageNumber) {
         EntityManager entityManager = getEntityManager();
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
@@ -96,15 +97,10 @@ public class JPARequirementRepository extends SimpleJpaGenericRepository<Require
 //        }
 
         select.where(criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()])));
+//        select.orderBy(criteriaBuilder.asc(requirementRoot.get("id")));
         TypedQuery<Requirement> query = entityManager.createQuery(select);
-        query.setFirstResult((pageNumber - 1) * PAGE_SIZE).setMaxResults(PAGE_SIZE);
+//        query.setFirstResult((pageNumber - 1) * PAGE_SIZE).setMaxResults(PAGE_SIZE);
         return query.getResultList();
-    }
-
-    public List<Requirement> find(List<Long> ids) {
-        Map<String, Object> params = Maps.newHashMap();
-        params.put("ids", ids);
-        return fetchRequirements("findRequirementByIds", params);
     }
 
     //TODO: legacy code

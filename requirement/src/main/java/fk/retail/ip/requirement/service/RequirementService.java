@@ -9,9 +9,9 @@ import fk.retail.ip.requirement.internal.states.RequirementState;
 import fk.retail.ip.requirement.model.DownloadRequirementRequest;
 import fk.retail.ip.requirement.model.RequirementApprovalRequest;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.List;
 import java.util.stream.Collectors;
 import javax.ws.rs.core.StreamingOutput;
 import lombok.extern.slf4j.Slf4j;
@@ -48,7 +48,7 @@ public class RequirementService {
             requirements = requirementRepository.findAllCurrentRequirements(requirementState);
         }
         //todo: cleanup remove if 'all' column value for warehouse is removed
-        if (requirements.size() == 0) {
+        if (requirements.isEmpty()) {
             throw new NoRequirementsSelectedException("No requirements were selected in state " + requirementState);
         }
         requirements = requirements.stream().filter(requirement -> !requirement.getWarehouse().equals("all")).collect(Collectors.toList());
@@ -78,6 +78,6 @@ public class RequirementService {
         } while (requirements.size() == RequirementRepository.PAGE_SIZE);
 
         requirementRepository.updateProjection(projectionIds, approvalService.getTargetState(action));
-        return "{\"msg\":\"Moved " + count + " projections to new state.\"}";
+        return "{\"msg\":\"Moved " + projectionIds.size() + " projections to new state.\"}";
     }
 }

@@ -1,6 +1,7 @@
 package fk.retail.ip.requirement.service;
 
 import com.google.inject.Inject;
+import fk.retail.ip.requirement.config.TestModule;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.sp.common.extensions.jpa.TransactionalJpaRepositoryTest;
@@ -12,15 +13,19 @@ import java.util.function.Function;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import org.jukito.JukitoRunner;
+import org.jukito.UseModules;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  *
  * @author Pragalathan M<pragalathan.m@flipkart.com>
  */
-//@RunWith(JukitoRunner.class)
-//@UseModules(TestModule.class)
+@RunWith(JukitoRunner.class)
+@UseModules(TestModule.class)
 public class ApprovalServiceTest extends TransactionalJpaRepositoryTest {
 
     @Inject
@@ -29,49 +34,49 @@ public class ApprovalServiceTest extends TransactionalJpaRepositoryTest {
     @Inject
     private Provider<EntityManager> entityManagerProvider;
 
-    //@Test
+    @Test
     public void testProposedStateForwardFlow() {
         testForwardFlow("proposed", "verified", "verify");
     }
 
-    //@Test
+    @Test
     public void testVerifiedStateForwardFlow() {
         testForwardFlow("verified", "approved", "approve");
     }
 
-    //@Test
+    @Test
     public void testApprovedStateForwardFlow() {
         testForwardFlow("approved", "bd_approved", "bd_approve");
     }
 
-    //@Test
+    @Test
     public void testBdApprovedStateForwardFlow() {
-        testForwardFlow("bd_approved", "biz_fin_approved", "biz_fin_approve");
+        testForwardFlow("bd_approved", "bizfin_approved", "bizfin_approve");
     }
 
-    //@Test
+    @Test
     public void testBizFinApprovedStateForwardFlow() {
-        testForwardFlow("biz_fin_approved", "ipc_finalized", "ipc_finalize");
+        testForwardFlow("bizfin_approved", "ipc_finalized", "ipc_finalize");
     }
 
-    //@Test
+    @Test
     public void testVerifiedStateBackwardFlow() {
         testBackwardFlow("verified", "proposed", "cancel_verify");
     }
 
-    //@Test
+    @Test
     public void testApprovedStateBackwardFlow() {
         testBackwardFlow("approved", "verified", "cancel_approve");
     }
 
-    //@Test
+    @Test
     public void testBdApprovedStateBackwardFlow() {
         testBackwardFlow("bd_approved", "approved", "cancel_bd_approve");
     }
 
-    //@Test
+    @Test
     public void testBizFinApprovedStateBackwardFlow() {
-        testBackwardFlow("biz_fin_approved", "bd_approved", "cancel_biz_fin_approve");
+        testBackwardFlow("bizfin_approved", "bd_approved", "cancel_bizfin_approve");
     }
 
     private void testForwardFlow(String fromState, String toState, String action) {
