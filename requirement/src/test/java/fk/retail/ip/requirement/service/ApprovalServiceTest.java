@@ -59,7 +59,6 @@ public class ApprovalServiceTest extends TransactionalJpaRepositoryTest {
         testForwardFlow("bizfin_approved", "ipc_finalized", "ipc_finalize");
     }
 
-    @Test
     public void testVerifiedStateBackwardFlow() {
         testBackwardFlow("verified", "proposed", "cancel_verify");
     }

@@ -9,6 +9,8 @@ import fk.retail.ip.requirement.internal.states.RequirementState;
 import fk.retail.ip.requirement.model.DownloadRequirementRequest;
 import fk.retail.ip.requirement.model.RequirementApprovalRequest;
 import java.util.HashSet;
+import java.util.Set;
+import java.util.function.Function;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;

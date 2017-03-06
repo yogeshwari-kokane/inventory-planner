@@ -91,6 +91,7 @@ public class JPARequirementRepository extends SimpleJpaGenericRepository<Require
             predicate = criteriaBuilder.lessThanOrEqualTo(requirementRoot.get("app"), Integer.parseInt(filters.get("price_to").toString()));
             predicates.add(predicate);
         }
+
         if (filters.get("group") != null) {
             predicate = criteriaBuilder.equal(requirementRoot.get("requirementSnapshot").get("group").get("name"), ((List<String>) filters.get("group")).get(0));
             predicates.add(predicate);
