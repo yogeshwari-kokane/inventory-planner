@@ -1,7 +1,9 @@
 package fk.retail.ip.requirement.internal.command.upload;
 
 
+import fk.retail.ip.requirement.internal.Constants;
 import fk.retail.ip.requirement.internal.entities.Requirement;
+import fk.retail.ip.requirement.internal.enums.OverrideKeys;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
 import fk.retail.ip.requirement.model.RequirementUploadLineItem;
@@ -32,12 +34,19 @@ public abstract class UploadCommand {
 
     public List<RequirementUploadLineItem> execute(List<RequirementDownloadLineItem> requirementDownloadLineItems, List<Requirement> requirements) {
 
-        Map<Pair<String,String>,Requirement> requirementMap = requirements.stream().collect(Collectors.toMap(requirement -> {
-            return new ImmutablePair<String, String>(requirement.getFsn(), requirement.getWarehouse());
+        /*TODO: Check if the key has to be fsn-fc pair or requirement id*/
+//        Map<Pair<String,String>,Requirement> requirementMap1 = requirements.stream().collect(Collectors.toMap(requirement -> {
+//            return new ImmutablePair<String, String>(requirement.getFsn(), requirement.getWarehouse());
+//        }, requirement -> requirement));
+
+        Map<Long, Requirement> requirementMap = requirements.stream().collect(Collectors.toMap(requirement -> {
+            return requirement.getProjectionId();
         }, requirement -> requirement));
 
+        System.out.println(requirementMap.get(35809));
+
         ArrayList<RequirementUploadLineItem> requirementUploadLineItems = new ArrayList<>();
-        Integer rowCount = 0;
+        int rowCount = 0;
         for(RequirementDownloadLineItem row : requirementDownloadLineItems) {
             RequirementUploadLineItem requirementUploadLineItem = new RequirementUploadLineItem();
             rowCount += 1;
@@ -47,52 +56,79 @@ public abstract class UploadCommand {
             String genericComment = validateGenericRowColumns(fsn, warehouse);
 
             /*TODO : remove null checks*/
-            if (genericComment != null) {
+            if (!genericComment.isEmpty()) {
                 requirementUploadLineItem.setFailureReason(genericComment);
-                requirementUploadLineItem.setFsn(fsn);
-                requirementUploadLineItem.setRowNumber(rowCount.toString());
-                requirementUploadLineItem.setWarehouse(warehouse);
+                if (fsn != null) {
+                    requirementUploadLineItem.setFsn(fsn);
+                } else {
+                    requirementUploadLineItem.setFsn("");
+                }
+
+                if (warehouse != null) {
+                    requirementUploadLineItem.setWarehouse(warehouse);
+                } else {
+                    requirementUploadLineItem.setWarehouse("");
+                }
+
+                requirementUploadLineItem.setRowNumber(rowCount);
                 requirementUploadLineItems.add(requirementUploadLineItem);
                 continue;
             }
 
             Map<String, Object> overriddenValues = validateAndSetStateSpecific(row);
+            String overrideStatus = overriddenValues.get(OverrideKeys.STATUS.toString()).toString();
+            System.out.println("override status is " + overriddenValues.get(OverrideKeys.STATUS.toString()));
+//            System.out.println("final override comment is" + overriddenValues.get(OverrideKeys.OVERRIDE_COMMENT.toString()));
 
-            if (overriddenValues.containsKey("failure")) {
-                requirementUploadLineItem.setFailureReason(overriddenValues.get("failure").toString());
+            if (overrideStatus == OverrideKeys.FAILURE.toString()) {
+                requirementUploadLineItem.setFailureReason(overriddenValues.get
+                        (OverrideKeys.OVERRIDE_COMMENT.toString()).toString());
                 requirementUploadLineItem.setFsn(fsn);
-                requirementUploadLineItem.setRowNumber(rowCount.toString());
+                requirementUploadLineItem.setRowNumber(rowCount);
                 requirementUploadLineItem.setWarehouse(warehouse);
                 requirementUploadLineItems.add(requirementUploadLineItem);
 
-            } else {
+            } else if (overrideStatus == OverrideKeys.UPDATE.toString()){
+                Pair<String, String> fsn_warehouse_pair = new ImmutablePair<>(fsn, warehouse);
+                Long requirementId = row.getRequirementId();
 
-                Requirement requirement = requirementMap.get(new ImmutablePair<>(fsn, warehouse));
-                /*TODO check if requirement is present or not*/
+                if (requirementMap.containsKey(requirementId)) {
+                    Requirement requirement = requirementMap.get(requirementId);
+                    System.out.println("requirement found");
 
-                if (overriddenValues.containsKey("quantity")) {
-                    System.out.println("quantity to be : " + overriddenValues.get("quantity"));
-                    requirement.setQuantity((Integer) overriddenValues.get("quantity"));
+                    if (overriddenValues.containsKey(OverrideKeys.QUANTITY.toString())) {
+                        System.out.println("quantity to be : " + overriddenValues.get(OverrideKeys.QUANTITY.toString()));
+                        requirement.setQuantity((Integer) overriddenValues.get(OverrideKeys.QUANTITY.toString()));
+                    }
+
+                    if (overriddenValues.containsKey(OverrideKeys.SLA.toString())) {
+                        requirement.setSla((Integer) overriddenValues.get(OverrideKeys.SLA.toString()));
+                    }
+
+                    if (overriddenValues.containsKey(OverrideKeys.APP.toString())) {
+                        requirement.setApp((Integer) overriddenValues.get(OverrideKeys.APP.toString()));
+                    }
+
+                    if (overriddenValues.containsKey(OverrideKeys.SUPPLIER.toString())) {
+                        requirement.setSupplier(overriddenValues.get(OverrideKeys.SUPPLIER.toString()).toString());
+                    }
+
+                    if (overriddenValues.containsKey(OverrideKeys.OVERRIDE_COMMENT.toString())) {
+                        System.out.println("comment to be : " + overriddenValues.get("overrideComment"));
+                        requirement.setOverrideComment(overriddenValues.get(OverrideKeys.OVERRIDE_COMMENT.toString()).toString());
+                    }
+
+                    requirementRepository.persist(requirement);
+
+                } else {
+
+                    requirementUploadLineItem.setFailureReason(Constants.REQUIREMENT_NOT_FOUND_FOR_GIVEN_REQUIREMENT_ID);
+                    requirementUploadLineItem.setFsn(fsn);
+                    requirementUploadLineItem.setRowNumber(rowCount);
+                    requirementUploadLineItem.setWarehouse(warehouse);
+                    requirementUploadLineItems.add(requirementUploadLineItem);
                 }
 
-                if (overriddenValues.containsKey("sla")) {
-                    requirement.setSla((Integer) overriddenValues.get("sla"));
-                }
-
-                if (overriddenValues.containsKey("app")) {
-                    requirement.setApp((Integer) overriddenValues.get("app"));
-                }
-
-                if (overriddenValues.containsKey("supplier")) {
-                    requirement.setSupplier(overriddenValues.get("supplier").toString());
-                }
-
-                if (overriddenValues.containsKey("overrideComment")) {
-                    System.out.println("comment to be : " + overriddenValues.get("overrideComment"));
-                    requirement.setOverrideComment(overriddenValues.get("overrideComment").toString());
-                }
-
-                requirementRepository.persist(requirement);
             }
 
         }
@@ -100,11 +136,35 @@ public abstract class UploadCommand {
     }
 
     private String validateGenericRowColumns(String fsn, String warehouse) {
+        String genericValidationComment = new String();
         if (fsn == null || warehouse == null) {
-            log.debug("fsn and/or warehouse is missing from requirement");
-            return "fsn, and/or warehouse is missing";
-        }else {
-            return null;
+            log.debug(Constants.FSN_OR_WAREHOUSE_IS_MISSING);
+           genericValidationComment =  Constants.FSN_OR_WAREHOUSE_IS_MISSING;
+        }
+        return genericValidationComment;
+    }
+
+    protected String isQuantityOverrideValid(Integer currentQuantity, Integer suggestedQuantity, String overrideComment) {
+        String validationComment = new String();
+        System.out.println("override comment is " + overrideComment);
+        if (suggestedQuantity != null) {
+            if (suggestedQuantity <= 0) {
+                log.debug(Constants.SUGGESTED_QUANTITY_IS_NOT_GREATER_THAN_ZERO.toString());
+                validationComment = Constants.SUGGESTED_QUANTITY_IS_NOT_GREATER_THAN_ZERO.toString();
+            } else if (suggestedQuantity != currentQuantity && isEmptyString(overrideComment)) {
+                log.debug(Constants.QUANTITY_OVERRIDE_COMMENT_IS_MISSING);
+                validationComment = Constants.QUANTITY_OVERRIDE_COMMENT_IS_MISSING.toString();
+            }
+        }
+
+        return validationComment;
+    }
+
+    protected boolean isEmptyString(String comment) {
+        if (comment == null || comment.trim().isEmpty()) {
+            return true;
+        } else {
+            return false;
         }
     }
 

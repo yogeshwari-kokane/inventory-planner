@@ -4,10 +4,12 @@ import com.codahale.metrics.annotation.Timed;
 import com.google.common.io.FileBackedOutputStream;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
+import fk.retail.ip.requirement.internal.enums.OverrideKeys;
 import fk.retail.ip.requirement.internal.exception.InvalidRequirementStateException;
 import fk.retail.ip.requirement.internal.exception.NoRequirementsSelectedException;
 import fk.retail.ip.requirement.model.DownloadRequirementRequest;
 import fk.retail.ip.requirement.model.RequirementUploadLineItem;
+import fk.retail.ip.requirement.model.UploadResponse;
 import fk.retail.ip.requirement.service.RequirementService;
 import io.dropwizard.hibernate.UnitOfWork;
 
@@ -97,22 +99,30 @@ public class RequirementResource {
         try {
             //List<RequirementUploadLineItem> result = requirementService.uploadRequirement(new FileInputStream("/Users/agarwal.vaibhav/Desktop/test_proposed.xlsx"), fileDetails, state);
             List<RequirementUploadLineItem> result = requirementService.uploadRequirement(inputStream, state);
+
+            UploadResponse uploadResponse = new UploadResponse();
+
             JSONObject response = new JSONObject();
             if (result.isEmpty()) {
                 response.put("status", "success");
                 System.out.println("all were successful");
+                uploadResponse.setRequirementUploadLineItems(result);
+                uploadResponse.setStatus(OverrideKeys.SUCCESS.toString());
             } else {
-                JSONObject responseBody = new JSONObject();
-                List<JSONObject> responseList = new ArrayList<>();
-                for(RequirementUploadLineItem row : result) {
-                    responseBody.put("failureReason", row.getFailureReason());
-                    responseBody.put("rowNumber", row.getRowNumber());
-                    responseBody.put("warehouse", row.getWarehouse());
-                    responseBody.put("fsn", row.getFsn());
-                    responseList.add(responseBody);
-                }
-                response.put("status", "failed");
-                response.put("response", responseList);
+                System.out.println("atleast one failed");
+                uploadResponse.setRequirementUploadLineItems(result);
+                uploadResponse.setStatus(OverrideKeys.FAILURE.toString());
+//                JSONObject responseBody = new JSONObject();
+//                List<JSONObject> responseList = new ArrayList<>();
+//                for(RequirementUploadLineItem row : result) {
+//                    responseBody.put("failureReason", row.getFailureReason());
+//                    responseBody.put("rowNumber", row.getRowNumber());
+//                    responseBody.put("warehouse", row.getWarehouse());
+//                    responseBody.put("fsn", row.getFsn());
+//                    responseList.add(responseBody);
+//                }
+//                response.put("status", "failed");
+//                response.put("response", responseList);
 
 //                responseBody.put("rowNumber", result.get(0).getRowNumber());
 //                responseBody.put("fsn", result.get(0).getFsn());
@@ -123,7 +133,7 @@ public class RequirementResource {
 //                System.out.println(result.get(0).getFsn());
 //                System.out.println(result.get(0).getRowNumber());
             }
-            return Response.ok(response).build();
+            return Response.ok(uploadResponse).build();
 
         } catch (InvalidRequirementStateException invalidStateException) {
             return Response.status(400).entity(invalidStateException.getMessage()).build();

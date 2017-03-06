@@ -33,32 +33,32 @@ public class RequirementRepositoryTest extends TransactionalJpaRepositoryTest {
                 .executeUpdate();
     }
 
-    @Test
-    public void testFindRequirementById() {
-        Requirement requirement = getRequirement(1);
-        requirementRepository.persist(requirement);
-        List<Requirement>
-                requirements = requirementRepository.findRequirementByIds(Lists.newArrayList(new Long(1)));
-        Assert.assertEquals(1, requirements.size());
-        Assert.assertEquals(requirement, requirements.get(0));
-    }
+//    @Test
+//    public void testFindRequirementById() {
+//        Requirement requirement = getRequirement(1);
+//        requirementRepository.persist(requirement);
+//        List<Requirement>
+//                requirements = requirementRepository.findRequirementByIds(Lists.newArrayList(new Long(1)));
+//        Assert.assertEquals(1, requirements.size());
+//        Assert.assertEquals(requirement, requirements.get(0));
+//    }
 
-    @Test
-    public void testFindRequirementByIdArray() {
-
-        IntStream.rangeClosed(1, 30).forEach(i -> {
-
-            requirementRepository.persist(getRequirement(i));
-        });
-
-        long[] ids = LongStream.rangeClosed(1, 30).toArray();
-        Long[] idList = ArrayUtils.toObject(ids);
-        List<Long> idsAsList = Arrays.asList(idList);
-
-        List<Requirement>
-                requirements = requirementRepository.findRequirementByIds(idsAsList);
-        Assert.assertEquals(30, requirements.size());
-    }
+//    @Test
+//    public void testFindRequirementByIdArray() {
+//
+//        IntStream.rangeClosed(1, 30).forEach(i -> {
+//
+//            requirementRepository.persist(getRequirement(i));
+//        });
+//
+//        long[] ids = LongStream.rangeClosed(1, 30).toArray();
+//        Long[] idList = ArrayUtils.toObject(ids);
+//        List<Long> idsAsList = Arrays.asList(idList);
+//
+//        List<Requirement>
+//                requirements = requirementRepository.findRequirementByIds(idsAsList);
+//        Assert.assertEquals(30, requirements.size());
+//    }
 
     @Test
     public void testFindAllCurrentRequirements() {

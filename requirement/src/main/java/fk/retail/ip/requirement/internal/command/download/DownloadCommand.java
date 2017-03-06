@@ -209,6 +209,7 @@ public abstract class DownloadCommand {
             JSONObject productAttributesJson = new JSONObject(supplyChainJson.get("product_attributes").toString());
             String brand = productAttributesJson.get("brand").toString();
             int fsp;
+
             if (productAttributesJson.has("flipkart_selling_price")) {
                 fsp = Integer.parseInt(productAttributesJson.get("flipkart_selling_price").toString());
             } else {

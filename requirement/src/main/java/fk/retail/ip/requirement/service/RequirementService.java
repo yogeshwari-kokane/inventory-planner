@@ -34,7 +34,8 @@ public class RequirementService {
     private final RequirementStateFactory requirementStateFactory;
 
     @Inject
-    public RequirementService(RequirementRepository requirementRepository, RequirementStateFactory requirementStateFactory) {
+    public RequirementService(RequirementRepository requirementRepository,
+                              RequirementStateFactory requirementStateFactory) {
         this.requirementRepository = requirementRepository;
         this.requirementStateFactory = requirementStateFactory;
 
@@ -60,11 +61,13 @@ public class RequirementService {
 
     }
 
-    public List<RequirementUploadLineItem> uploadRequirement(InputStream inputStream, String requirementState) throws IOException, InvalidFormatException {
+    public List<RequirementUploadLineItem> uploadRequirement(InputStream inputStream, String requirementState)
+            throws IOException, InvalidFormatException {
         SpreadSheetReader spreadSheetReader = new SpreadSheetReader();
         List<Map<String, Object>> parsedMappingList = spreadSheetReader.read(inputStream);
         ObjectMapper mapper = new ObjectMapper();
-        List<RequirementDownloadLineItem> requirementDownloadLineItems = mapper.convertValue(parsedMappingList, new TypeReference<List<RequirementDownloadLineItem>>() {});
+        List<RequirementDownloadLineItem> requirementDownloadLineItems = mapper.convertValue(parsedMappingList,
+                new TypeReference<List<RequirementDownloadLineItem>>() {});
 //        System.out.println("the line item is :");
 //        System.out.println(requirementDownloadLineItems.get(0));
 //        System.out.println("the parsed json is");
@@ -81,10 +84,12 @@ public class RequirementService {
         System.out.println("the list of requirement ids is : ");
         System.out.println(requirementIds.get(0));
         requirements = requirementRepository.findRequirementByIds(requirementIds);
+
         if (requirements.size() == 0) {
             throw new NoRequirementsSelectedException("No requirements were selected in state " + requirementState);
         }
         RequirementState state = requirementStateFactory.getRequirementState(requirementState);
+        System.out.println("requirement is " + requirements.get(0).getFsn());
         return state.upload(requirements, requirementDownloadLineItems);
 //        return requirementManager.withRequirements(requirements).upload(requirementState, parsedJson);
 

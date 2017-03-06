@@ -1,8 +1,9 @@
-package fk.retail.ip.requirement.internal.command;
+package fk.retail.ip.requirement.internal.command.download;
 
 import com.google.common.collect.Lists;
 import fk.retail.ip.requirement.config.TestModule;
-import fk.retail.ip.requirement.internal.command.download.DownloadPreProposedCommand;
+import fk.retail.ip.requirement.internal.command.GenerateExcelCommand;
+import fk.retail.ip.requirement.internal.command.download.DownloadProposedCommand;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.entities.RequirementSnapshot;
 import fk.retail.ip.requirement.internal.entities.Warehouse;
@@ -36,15 +37,17 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+
 /**
- * Created by yogeshwari.k on 23/02/17.
+ * Created by nidhigupta.m on 15/02/17.
  */
+
 @RunWith(JukitoRunner.class)
 @UseModules(TestModule.class)
-public class DownloadPreProposedCommandTest {
+public class DownloadProposedCommandTest {
 
     @InjectMocks
-    DownloadPreProposedCommand downloadPreProposedCommand;
+    DownloadProposedCommand downloadProposedCommand;
 
     @Mock
     JPAFsnBandRepository fsnBandRepository;
@@ -81,8 +84,8 @@ public class DownloadPreProposedCommandTest {
         Mockito.when(productInfoRepository.getProductInfo(Mockito.anyList())).thenReturn(TestHelper.getProductInfo());
         Mockito.doReturn(TestHelper.getZuluData()).when(zuluClient).getRetailProductAttributes(Mockito.anyList());
 
-        downloadPreProposedCommand.execute(requirements,false);
-        Mockito.verify(generateExcelCommand).generateExcel(captor.capture(), Mockito.eq("/templates/pre_proposed.xlsx"));
+        downloadProposedCommand.execute(requirements,false);
+        Mockito.verify(generateExcelCommand).generateExcel(captor.capture(), Mockito.eq("/templates/proposed.xlsx"));
 
         Assert.assertEquals(2, captor.getValue().size());
         Assert.assertEquals("fsn", captor.getValue().get(0).getFsn());
@@ -203,4 +206,3 @@ public class DownloadPreProposedCommandTest {
     }
 
 }
-
