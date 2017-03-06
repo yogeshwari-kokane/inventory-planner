@@ -1,6 +1,5 @@
 package fk.retail.ip.core.poi;
 
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -19,7 +18,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  * @author pragalathan.m
  */
 public class SpreadSheetReader {
-
 
     //    private final DecimalFormat formatter = new DecimalFormat("#.###");
     public List<Map<String, Object>> read(InputStream xlsxFile) throws InvalidFormatException, IOException {

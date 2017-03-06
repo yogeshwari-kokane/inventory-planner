@@ -4,6 +4,9 @@ import com.google.common.collect.Lists;
 import fk.retail.ip.requirement.internal.entities.*;
 
 import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
 import fk.retail.ip.requirement.model.RequirementUploadLineItem;
