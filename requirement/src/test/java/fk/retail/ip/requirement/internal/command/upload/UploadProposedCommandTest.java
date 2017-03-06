@@ -50,12 +50,10 @@ public class UploadProposedCommandTest {
         List<RequirementUploadLineItem> requirementUploadLineItems = uploadProposedCommand.execute(requirementDownloadLineItems, requirements);
         ArgumentCaptor<Requirement> argumentCaptor = ArgumentCaptor.forClass(Requirement.class);
         Mockito.verify(requirementRepository, Mockito.times(1)).persist(argumentCaptor.capture());
-                //Mockito.verify(requirementRepository).persist(argumentCaptor.capture());
 
         Assert.assertEquals(1, argumentCaptor.getAllValues().size());
         Assert.assertEquals(20, (int) argumentCaptor.getAllValues().get(0).getQuantity());
-        //Assert.assertEquals("test_ipc", argumentCaptor.getAllValues().get(0).getOverrideComment());
-
+        Assert.assertEquals("{\"quantityOverrideComment\":\"test_ipc\"}", argumentCaptor.getAllValues().get(0).getOverrideComment());
         Assert.assertEquals(3, requirementUploadLineItems.size());
         Assert.assertEquals(Constants.QUANTITY_OVERRIDE_COMMENT_IS_MISSING,
                 requirementUploadLineItems.get(0).getFailureReason());

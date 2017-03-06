@@ -1,6 +1,7 @@
 package fk.retail.ip.requirement.internal.command.upload;
 
 import com.google.inject.Inject;
+import fk.retail.ip.requirement.internal.Constants;
 import fk.retail.ip.requirement.internal.enums.OverrideKeys;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
@@ -48,13 +49,13 @@ public class UploadBizFinReviewCommand extends UploadCommand {
             Integer quantityToUse = (Integer) bizfinProposedQuantity;
             overriddenValues.put(OverrideKeys.QUANTITY.toString(), quantityToUse);
             JSONObject quantityOverrideJson = new JSONObject();
-            quantityOverrideJson.put("quantityOverrideComment", quantityOverrideComment);
-            overriddenValues.put("overrideComment", quantityOverrideJson);
+            quantityOverrideJson.put(Constants.QUANTITY_OVERRIDE_COMMENT.toString(), quantityOverrideComment);
+            overriddenValues.put(OverrideKeys.OVERRIDE_COMMENT.toString(), quantityOverrideJson);
             overriddenValues.put(OverrideKeys.STATUS.toString(), OverrideKeys.UPDATE.toString());
         } else {
             if (!isEmptyString(quantityOverrideComment)) {
                 JSONObject commentOverridden = new JSONObject();
-                commentOverridden.put("quantityOverrideComment", quantityOverrideComment);
+                commentOverridden.put(Constants.QUANTITY_OVERRIDE_COMMENT.toString(), quantityOverrideComment);
                 overriddenValues.put(OverrideKeys.OVERRIDE_COMMENT.toString(), commentOverridden);
                 overriddenValues.put(OverrideKeys.STATUS.toString(), OverrideKeys.UPDATE.toString());
             }
@@ -62,23 +63,4 @@ public class UploadBizFinReviewCommand extends UploadCommand {
         return overriddenValues;
     }
 
-//    private Map<String, Object> isValidOverrideQuantity(Object proposedQuantity, Object stateQuantity, String quantityOverrideComment) {
-//        Map<String, Object> validOverride = new HashMap<>();
-//
-//        if (stateQuantity == null) {
-//            return validOverride;
-//        }
-//
-//        if ((stateQuantity instanceof Integer) && (Integer) stateQuantity > 0) {
-//            if (quantityOverrideComment == null && stateQuantity != proposedQuantity) {
-//                log.debug("bizfin override comment is missing");
-//                validOverride.put("failure", "quantity override comment is absent");
-//            }
-//        } else {
-//            log.debug("quantity is less than or equal to zero or not integer");
-//            validOverride.put("failure", "quantity is less than zero or not integer");
-//
-//        }
-//        return validOverride;
-//    }
 }

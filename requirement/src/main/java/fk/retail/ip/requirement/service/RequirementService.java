@@ -21,23 +21,35 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import fk.retail.ip.requirement.model.RequirementApprovalRequest;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.List;
+import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.ws.rs.core.StreamingOutput;
+import lombok.extern.slf4j.Slf4j;
+import org.json.JSONException;
 
 /**
- * Created by nidhigupta.m on 26/01/17.
+ * @author nidhigupta.m
+ * @author Pragalathan M <pragalathan.m@flipkart.com>
  */
 @Slf4j
 public class RequirementService {
 
     private final RequirementRepository requirementRepository;
     private final RequirementStateFactory requirementStateFactory;
+    private final ApprovalService approvalService;
 
     @Inject
-    public RequirementService(RequirementRepository requirementRepository,
-                              RequirementStateFactory requirementStateFactory) {
+
+    public RequirementService(RequirementRepository requirementRepository, RequirementStateFactory requirementStateFactory, ApprovalService approvalService) {
         this.requirementRepository = requirementRepository;
         this.requirementStateFactory = requirementStateFactory;
+        this.approvalService = approvalService;
 
     }
 
@@ -49,16 +61,16 @@ public class RequirementService {
         if (!requirementIds.isEmpty()) {
             requirements = requirementRepository.findRequirementByIds(requirementIds);
         } else {
+
             requirements = requirementRepository.findAllCurrentRequirements(requirementState);
         }
         //todo: cleanup remove if 'all' column value for warehouse is removed
-        if (requirements.size() == 0) {
+        if (requirements.isEmpty()) {
             throw new NoRequirementsSelectedException("No requirements were selected in state " + requirementState);
         }
         requirements = requirements.stream().filter(requirement -> !requirement.getWarehouse().equals("all")).collect(Collectors.toList());
         RequirementState state = requirementStateFactory.getRequirementState(requirementState);
         return state.download(requirements, isLastAppSupplierRequired);
-
     }
 
     public List<RequirementUploadLineItem> uploadRequirement(InputStream inputStream, String requirementState)
@@ -68,31 +80,49 @@ public class RequirementService {
         ObjectMapper mapper = new ObjectMapper();
         List<RequirementDownloadLineItem> requirementDownloadLineItems = mapper.convertValue(parsedMappingList,
                 new TypeReference<List<RequirementDownloadLineItem>>() {});
-//        System.out.println("the line item is :");
-//        System.out.println(requirementDownloadLineItems.get(0));
-//        System.out.println("the parsed json is");
 
         List<Requirement> requirements;
         List<Long> requirementIds = new ArrayList<>();
         requirementDownloadLineItems.forEach(row ->
                 requirementIds.add(row.getRequirementId())
         );
-//        parsedMappingList.forEach(row ->
-//                requirementIds.add((Long)row.get("Requirement Id"))
-//        );
 
         System.out.println("the list of requirement ids is : ");
         System.out.println(requirementIds.get(0));
         requirements = requirementRepository.findRequirementByIds(requirementIds);
 
         if (requirements.size() == 0) {
-            throw new NoRequirementsSelectedException("No requirements were selected in state " + requirementState);
+            NoRequirementsSelectedException noRequirementsSelectedException =
+                    new NoRequirementsSelectedException("no requirement found");
+            throw noRequirementsSelectedException;
         }
         RequirementState state = requirementStateFactory.getRequirementState(requirementState);
-        System.out.println("requirement is " + requirements.get(0).getFsn());
         return state.upload(requirements, requirementDownloadLineItems);
-//        return requirementManager.withRequirements(requirements).upload(requirementState, parsedJson);
 
     }
 
+    public String changeState(RequirementApprovalRequest request) throws JSONException {
+        String action = request.getFilters().get("projection_action").toString();
+        Function<Requirement, String> getter = Requirement::getState;
+        List<Requirement> requirements;
+        List<Long> ids = (List<Long>) request.getFilters().get("id");
+        String state = (String) request.getFilters().get("state");
+
+        int count = 0;
+        int pageNumber = 1;
+        Set<Long> projectionIds = new HashSet<>();
+        do {
+            requirements = requirementRepository.findRequirements(ids, state, request.getFilters(), pageNumber++);
+            count += requirements.size();
+            if (requirements.isEmpty()) {
+                break;
+            }
+            log.info("Loaded {} records from page {}", requirements.size(), pageNumber - 1);
+            requirements.stream().forEach(e -> projectionIds.add(e.getProjectionId()));
+            approvalService.changeState(requirements, "dummyUser", action, getter, new ApprovalService.CopyOnStateChangeAction(requirementRepository));
+        } while (requirements.size() == RequirementRepository.PAGE_SIZE);
+
+        requirementRepository.updateProjection(projectionIds, approvalService.getTargetState(action));
+        return "{\"msg\":\"Moved " + projectionIds.size() + " projections to new state.\"}";
+    }
 }

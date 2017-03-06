@@ -1,6 +1,7 @@
 package fk.retail.ip.requirement.config;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.name.Names;
 import fk.retail.ip.requirement.internal.repository.FsnBandRepository;
 import fk.retail.ip.requirement.internal.repository.GroupFsnRepository;
 import fk.retail.ip.requirement.internal.repository.IwtRequestItemRepository;
@@ -9,15 +10,18 @@ import fk.retail.ip.requirement.internal.repository.JPAGroupFsnRepository;
 import fk.retail.ip.requirement.internal.repository.JPALastAppSupplierRepository;
 import fk.retail.ip.requirement.internal.repository.JPAOpenRequirementAndPurchaseOrderRepository;
 import fk.retail.ip.requirement.internal.repository.JPAPolicyRepository;
+import fk.retail.ip.requirement.internal.repository.JPAProductInfoRepository;
 import fk.retail.ip.requirement.internal.repository.JPARequirementRepository;
+import fk.retail.ip.requirement.internal.repository.JPAWarehouseRepository;
 import fk.retail.ip.requirement.internal.repository.JPAWeeklySaleRepository;
 import fk.retail.ip.requirement.internal.repository.JpaIwtRequestItemRepository;
 import fk.retail.ip.requirement.internal.repository.LastAppSupplierRepository;
 import fk.retail.ip.requirement.internal.repository.OpenRequirementAndPurchaseOrderRepository;
 import fk.retail.ip.requirement.internal.repository.PolicyRepository;
+import fk.retail.ip.requirement.internal.repository.ProductInfoRepository;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
+import fk.retail.ip.requirement.internal.repository.WarehouseRepository;
 import fk.retail.ip.requirement.internal.repository.WeeklySaleRepository;
-import fk.retail.ip.requirement.internal.repository.*;
 import fk.retail.ip.requirement.resource.RequirementResource;
 import fk.retail.ip.requirement.resource.TestResource;
 import fk.retail.ip.zulu.client.HystrixZuluClient;
@@ -45,5 +49,6 @@ public class RequirementModule extends AbstractModule {
         bind(GroupFsnRepository.class).to(JPAGroupFsnRepository.class);
         bind(ProductInfoRepository.class).to(JPAProductInfoRepository.class);
         bind(WarehouseRepository.class).to(JPAWarehouseRepository.class);
+        bind(String.class).annotatedWith(Names.named("actionConfiguration")).toInstance("/requirement-state-actions.json");
     }
 }

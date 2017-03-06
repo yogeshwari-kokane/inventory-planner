@@ -46,13 +46,12 @@ public class UploadBizFinReviewCommandTest {
         List<RequirementUploadLineItem> requirementUploadLineItems = uploadBizFinReviewCommand.execute(requirementDownloadLineItems, requirements);
         ArgumentCaptor<Requirement> argumentCaptor = ArgumentCaptor.forClass(Requirement.class);
         Mockito.verify(requirementRepository,Mockito.times(2)).persist(argumentCaptor.capture());
-        //Mockito.verify(requirementRepository).persist(argumentCaptor.capture());
 
 
         Assert.assertEquals(1, requirementUploadLineItems.size());
         Assert.assertEquals(20, (int)argumentCaptor.getAllValues().get(0).getQuantity());
-        //Assert.assertEquals("bizfin_test", argumentCaptor.getAllValues().get(0).getOverrideComment());
-        //Assert.assertEquals("bizfin_test", argumentCaptor.getValue().get(1).getOverrideComment());
+        Assert.assertEquals("{\"quantityOverrideComment\":\"test_bizfin\"}", argumentCaptor.getAllValues().get(0).getOverrideComment());
+        Assert.assertEquals("{\"quantityOverrideComment\":\"test_bizfin\"}", argumentCaptor.getAllValues().get(1).getOverrideComment());
     }
 
     private List<Requirement> getRequirements() {
@@ -65,21 +64,22 @@ public class UploadBizFinReviewCommandTest {
 
         Requirement requirement = TestHelper.getRequirement("fsn", "dummy_warehouse_1", RequirementApprovalStates.BIZFIN_REVIEW.toString(), true, snapshot , 21, "ABC",
                 100, 101, "INR", 3, "", "Daily planning");
+        requirement.setProjectionId((long)1);
         requirements.add(requirement);
 
         requirement = TestHelper.getRequirement("fsn", "dummy_warehouse_2",RequirementApprovalStates.BIZFIN_REVIEW.toString(), true, snapshot1 , 22, "DEF",
                 10, 9, "USD", 4, "", "Daily planning");
-
+        requirement.setProjectionId((long)2);
         requirements.add(requirement);
 
         requirement = TestHelper.getRequirement("fsn_1", "dummy_warehouse_1",RequirementApprovalStates.BIZFIN_REVIEW.toString(), true, snapshot1 , 22, "DEF",
                 10, 9, "USD", 4, "", "Daily planning");
-
+        requirement.setProjectionId((long)3);
         requirements.add(requirement);
 
         requirement = TestHelper.getRequirement("fsn_1", "dummy_warehouse_2",RequirementApprovalStates.BIZFIN_REVIEW.toString(), true, snapshot1 , 22, "DEF",
                 10, 9, "USD", 4, "", "Daily planning");
-
+        requirement.setProjectionId((long)4);
         requirements.add(requirement);
 
 

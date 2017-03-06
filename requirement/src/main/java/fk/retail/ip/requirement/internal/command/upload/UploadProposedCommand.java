@@ -1,6 +1,7 @@
 package fk.retail.ip.requirement.internal.command.upload;
 
 import com.google.inject.Inject;
+import fk.retail.ip.requirement.internal.Constants;
 import fk.retail.ip.requirement.internal.enums.OverrideKeys;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
@@ -75,8 +76,8 @@ public class UploadProposedCommand extends UploadCommand {
         if (proposedQuantity != null && proposedQuantity != currentQuantity) {
             overriddenValues.put(OverrideKeys.QUANTITY.toString(), proposedQuantity);
             JSONObject comment = new JSONObject();
-            comment.put("quantityOverrideComment", quantityOverrideComment);
-            overriddenValues.put("overrideComment", comment);
+            comment.put(Constants.QUANTITY_OVERRIDE_COMMENT.toString(), quantityOverrideComment);
+            overriddenValues.put(OverrideKeys.OVERRIDE_COMMENT.toString(), comment);
             overriddenValues.put(OverrideKeys.STATUS.toString(), OverrideKeys.UPDATE.toString());
         } else {
             overriddenValues.put(OverrideKeys.STATUS.toString(), OverrideKeys.SUCCESS.toString());

@@ -17,6 +17,14 @@ public class Constants {
     public static final String APP_QUANTITY_IS_NOT_GREATER_THAN_ZERO = "suggested app is not greater than zero";
     public static final String REQUIREMENT_NOT_FOUND_FOR_GIVEN_REQUIREMENT_ID =
             "requirement not found for given requirement Id";
+    public static final String QUANTITY_OVERRIDE_IS_NOT_GREATER_THAN_ZERO_AND_COMMENT_IS_MISSING =
+            "quantity override comment is missing and overridden quantity is not positive integer";
+    public static final String APP_OVERRIDE_IS_NOT_GREATER_THAN_ZERO_AND_COMMENT_IS_MISSING =
+            "price override comment is missing and overridden price is not positive integer";
+
+    public static final String QUANTITY_OVERRIDE_COMMENT = "quantityOverrideComment";
+    public static final String APP_OVERRIDE_COMMENT = "appOverrideComment";
+    public static final String SUPPLIER_OVERRIDE_COMMENT = "supplierOverrideComment";
 
 
 }

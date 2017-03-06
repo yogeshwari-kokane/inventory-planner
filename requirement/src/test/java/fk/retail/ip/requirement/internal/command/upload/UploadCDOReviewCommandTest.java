@@ -63,9 +63,8 @@ public class UploadCDOReviewCommandTest {
         Assert.assertEquals(Constants.SLA_QUANTITY_IS_NOT_GREATER_THAN_ZERO.toString()
                 + Constants.SUPPLIER_OVERRIDE_COMMENT_IS_MISSING_WHEN_UPDATED_FROM_BLANK.toString(),
                 requirementUploadLineItems.get(2).getFailureReason());
-        Assert.assertEquals(Constants.APP_OVERRIDE_COMMENT_IS_MISSING.toString(),
+        Assert.assertEquals(Constants.APP_OVERRIDE_IS_NOT_GREATER_THAN_ZERO_AND_COMMENT_IS_MISSING.toString(),
                 requirementUploadLineItems.get(3).getFailureReason());
-
 
     }
 
@@ -79,31 +78,32 @@ public class UploadCDOReviewCommandTest {
 
         Requirement requirement = TestHelper.getRequirement("fsn", "dummy_warehouse_1", RequirementApprovalStates.CDO_REVIEW.toString(), true, snapshot , 21, "ABC",
                 100, 101, "INR", 3, "", "Daily planning");
+        requirement.setProjectionId((long)1);
         requirements.add(requirement);
 
         requirement = TestHelper.getRequirement("fsn", "dummy_warehouse_2",RequirementApprovalStates.CDO_REVIEW.toString(), true, snapshot1 , 22, "DEF",
                 10, 9, "USD", 4, "", "Daily planning");
-
+        requirement.setProjectionId((long)2);
         requirements.add(requirement);
 
         requirement = TestHelper.getRequirement("fsn_1", "dummy_warehouse_1",RequirementApprovalStates.CDO_REVIEW.toString(), true, snapshot1 , 22, "DEF",
                 10, 9, "USD", 4, "", "Daily planning");
-
+        requirement.setProjectionId((long)3);
         requirements.add(requirement);
 
         requirement = TestHelper.getRequirement("fsn_1", "dummy_warehouse_2",RequirementApprovalStates.CDO_REVIEW.toString(), true, snapshot1 , 22, "DEF",
                 10, 9, "USD", 4, "", "Daily planning");
-
+        requirement.setProjectionId((long)4);
         requirements.add(requirement);
 
         requirement = TestHelper.getRequirement("fsn_2", "dummy_warehouse_1",RequirementApprovalStates.CDO_REVIEW.toString(), true, snapshot1 , 22, "DEF",
                 10, 9, "USD", 4, "", "Daily planning");
-
+        requirement.setProjectionId((long)5);
         requirements.add(requirement);
 
         requirement = TestHelper.getRequirement("fsn_2", "dummy_warehouse_2",RequirementApprovalStates.CDO_REVIEW.toString(), true, snapshot1 , 22, "DEF",
                 10, 9, "USD", 4, "", "Daily planning");
-
+        requirement.setProjectionId((long)6);
         requirements.add(requirement);
 
 

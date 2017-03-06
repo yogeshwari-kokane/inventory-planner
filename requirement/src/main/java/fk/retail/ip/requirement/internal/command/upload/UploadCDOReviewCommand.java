@@ -41,11 +41,11 @@ public class UploadCDOReviewCommand extends UploadCommand {
 
         String validationComment = isQuantityOverrideValid(currentQuantity, bdProposedQuantity, quantityOverrideComment);
 
-        validationComment += isValidOverrideSla(bdProposedSla);
+        validationComment += isSlaOverrideValid(bdProposedSla);
 
-        validationComment += isValidOverrideApp(bdProposedApp, currentApp, appOverrideComment);
+        validationComment += isAppOverrideValid(bdProposedApp, currentApp, appOverrideComment);
 
-        validationComment += isValidOverrideSupplier(bdProposedSupplier, currentSupplier, supplierOverrideReason);
+        validationComment += isSupplierOverrideValid(bdProposedSupplier, currentSupplier, supplierOverrideReason);
 
         if (!validationComment.isEmpty()) {
             overriddenValues.put(OverrideKeys.STATUS.toString(), OverrideKeys.FAILURE.toString());
@@ -88,7 +88,7 @@ public class UploadCDOReviewCommand extends UploadCommand {
 //        return validOverride;
 //    }
 
-    private String isValidOverrideApp(Integer bdProposedApp, Integer currentApp, String appOverrideComment) {
+    private String isAppOverrideValid(Integer bdProposedApp, Integer currentApp, String appOverrideComment) {
         String validationComment = new String();
 
         if (bdProposedApp == null) {
@@ -101,14 +101,19 @@ public class UploadCDOReviewCommand extends UploadCommand {
                 //validOverride.put("failure", "app override comment is missing");
             }
         } else {
-            log.debug("app is less than or equal to zero or not integer");
+            if (isEmptyString(appOverrideComment)) {
+                validationComment = Constants.APP_OVERRIDE_IS_NOT_GREATER_THAN_ZERO_AND_COMMENT_IS_MISSING.toString();
+            } else {
+                validationComment = Constants.APP_QUANTITY_IS_NOT_GREATER_THAN_ZERO;
+            }
+            log.debug(validationComment);
             //validOverride.put("failure", "quantity is less zero or not integer");
-            validationComment = Constants.APP_QUANTITY_IS_NOT_GREATER_THAN_ZERO;
+
         }
         return validationComment;
     }
 
-    private String isValidOverrideSupplier(String bdProposedSupplier, String currentSupplier, String supplierOverrideReason) {
+    private String isSupplierOverrideValid(String bdProposedSupplier, String currentSupplier, String supplierOverrideReason) {
         String validationComment = new String();
 
         if (bdProposedSupplier == null) {
@@ -127,7 +132,7 @@ public class UploadCDOReviewCommand extends UploadCommand {
         return validationComment;
     }
 
-    private String isValidOverrideSla(Integer bdProposedSla) {
+    private String isSlaOverrideValid(Integer bdProposedSla) {
         String validationComment = new String();
         if (bdProposedSla == null) {
             return validationComment;
@@ -163,21 +168,21 @@ public class UploadCDOReviewCommand extends UploadCommand {
         if (bdProposedQuantity != null && bdProposedQuantity != currentQuantity) {
             Integer quantityToUse = (Integer) bdProposedQuantity;
             overriddenValues.put(OverrideKeys.QUANTITY.toString(), quantityToUse);
-            overrideCommentJson.put("quantityOverrideComment", quantityOverrideComment);
+            overrideCommentJson.put(Constants.QUANTITY_OVERRIDE_COMMENT.toString(), quantityOverrideComment);
             overriddenValues.put(OverrideKeys.STATUS.toString(), OverrideKeys.UPDATE.toString());
         }
 
         if (bdProposedSupplier != null && bdProposedSupplier != currentSupplier) {
             String supplierToUse = bdProposedSupplier.toString();
             overriddenValues.put(OverrideKeys.SUPPLIER.toString(),supplierToUse);
-            overrideCommentJson.put("supplierOverrideComment", supplierOverrideComment);
+            overrideCommentJson.put(Constants.SUPPLIER_OVERRIDE_COMMENT.toString(), supplierOverrideComment);
             overriddenValues.put(OverrideKeys.STATUS.toString(), OverrideKeys.UPDATE.toString());
         }
 
         if (bdProposedApp != null && bdProposedApp != currentApp) {
             Integer appToUse = (Integer) bdProposedApp;
             overriddenValues.put(OverrideKeys.APP.toString(), appToUse);
-            overrideCommentJson.put("appOverrideComment", appOverrideComment);
+            overrideCommentJson.put(Constants.APP_OVERRIDE_COMMENT.toString(), appOverrideComment);
             overriddenValues.put(OverrideKeys.STATUS.toString(), OverrideKeys.UPDATE.toString());
         }
 

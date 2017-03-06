@@ -7,10 +7,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Type;
 
 /**
  * Created by nidhigupta.m on 26/01/17.
@@ -36,8 +36,7 @@ public class Requirement extends AbstractEntity {
 
     //todo:cleanup
     @Column(name = "qty")
-    @NotNull
-    private Integer quantity;
+    private int quantity;
 
     private String supplier;
 
@@ -51,38 +50,71 @@ public class Requirement extends AbstractEntity {
 
     private Integer sla;
 
+    private boolean international;
+
     @NotNull
     private String state;
 
     private String procType;
 
-
     //todo:cleanup
-    @Type(type = "org.hibernate.type.NumericBooleanType")
-    @Column(name = "enabled", columnDefinition = "TINYINT")
-    //@Column(name = "is_enabled")
-    private Boolean enabled;
+    @Column(name = "enabled")
+    private boolean enabled;
 
     @Column(name = "is_current")
-    private Boolean current;
+    private boolean current;
 
     //todo: cleanup
     @Column(name = "comment")
+    @Size(max = 100)
     private String overrideComment;
 
     private String createdBy;
+
+    private Long sslId;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "requirement_snapshot_id")
     private RequirementSnapshot requirementSnapshot;
 
+    //TODO: legacy code
+    @Column(name = "prev_state_id")
+    private Long previousStateId;
 
-    //todo: cleanup (fields for backward compatibilty)
+    //TODO: legacy code
+    @Column(name = "pan_india")
+    private Integer panIndiaQuantity;
+
+    //TODO: legacy code
+    @Column(name = "projection_id")
     private Long projectionId;
-    private Integer panIndia;
-    private String mrpCurrency;
-    private String sslId;
-    private Long prevStateId;
-    private Integer international;
 
+    //todo:cleanup
+    private String mrpCurrency;
+
+    public Requirement(Long id) {
+        this.id = id;
+    }
+
+    public Requirement(Requirement other) {
+        fsn = other.fsn;
+        warehouse = other.warehouse;
+        quantity = other.quantity;
+        supplier = other.supplier;
+        mrp = other.mrp;
+        mrpCurrency = other.mrpCurrency;
+        app = other.app;
+        currency = other.currency;
+        sla = other.sla;
+        international = other.international;
+        procType = other.procType;
+        enabled = other.enabled;
+        current = other.current;
+        requirementSnapshot = other.requirementSnapshot;
+
+        //TODO: legacy code
+        projectionId = other.projectionId;
+        panIndiaQuantity = other.panIndiaQuantity;
+        sslId = other.sslId;
+    }
 }

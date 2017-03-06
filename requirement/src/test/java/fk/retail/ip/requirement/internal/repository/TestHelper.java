@@ -174,47 +174,47 @@ public class TestHelper {
         List<RequirementDownloadLineItem> requirementDownloadLineItems = new ArrayList<>();
 
         /*This one has all fields up-to-date*/
-        RequirementDownloadLineItem requirementDownloadLineItem = new RequirementDownloadLineItem();
-        //requirementDownloadLineItem.setRequirementId((long)12);
+        RequirementDownloadLineItem firstItem = new RequirementDownloadLineItem();
+
         /*Quantity should be overridden*/
-        requirementDownloadLineItem.setWarehouseName("dummy_warehouse_1");
-        requirementDownloadLineItem.setFsn("dummy_fsn");
-        requirementDownloadLineItem.setRequirementId((long)1);
-        requirementDownloadLineItem.setQuantity(100);
-        requirementDownloadLineItem.setIpcQuantityOverride(20);
-        requirementDownloadLineItem.setIpcQuantityOverrideReason("test_ipc");
-        requirementDownloadLineItem.setCdoQuantityOverride(15);
-        requirementDownloadLineItem.setCdoOverrideReason("test_cdo_quantity");
-        requirementDownloadLineItem.setCdoPriceOverride(100);
-        requirementDownloadLineItem.setCdoPriceOverrideReason("test_cdo_price");
-        requirementDownloadLineItem.setCdoSupplierOverride("new_supplier");
-        requirementDownloadLineItems.add(requirementDownloadLineItem);
+        firstItem.setWarehouseName("dummy_warehouse_1");
+        firstItem.setFsn("dummy_fsn");
+        firstItem.setRequirementId((long) 1);
+        firstItem.setQuantity(100);
+        firstItem.setIpcQuantityOverride(20);
+        firstItem.setIpcQuantityOverrideReason("test_ipc");
+        firstItem.setCdoQuantityOverride(15);
+        firstItem.setCdoOverrideReason("test_cdo_quantity");
+        firstItem.setCdoPriceOverride(100);
+        firstItem.setCdoPriceOverrideReason("test_cdo_price");
+        firstItem.setCdoSupplierOverride("new_supplier");
+        requirementDownloadLineItems.add(firstItem);
 
         /*Override should fail for this as comment is missing*/
-        RequirementDownloadLineItem requirementDownloadLineItem2 = new RequirementDownloadLineItem();
-        requirementDownloadLineItem2.setWarehouseName("dummy_warehouse_2");
-        requirementDownloadLineItem2.setFsn("dummy_fsn");
-        requirementDownloadLineItem2.setRequirementId((long)2);
-        requirementDownloadLineItem2.setQuantity(100);
-        requirementDownloadLineItem2.setIpcQuantityOverride(20);
-        requirementDownloadLineItems.add(requirementDownloadLineItem2);
+        RequirementDownloadLineItem secondItem = new RequirementDownloadLineItem();
+        secondItem.setWarehouseName("dummy_warehouse_2");
+        secondItem.setFsn("dummy_fsn");
+        secondItem.setRequirementId((long)2);
+        secondItem.setQuantity(100);
+        secondItem.setIpcQuantityOverride(20);
+        requirementDownloadLineItems.add(secondItem);
 
         /*Override should fail as warehouse is missing*/
-        RequirementDownloadLineItem requirementDownloadLineItem1 = new RequirementDownloadLineItem();
-        requirementDownloadLineItem1.setFsn("dummy_fsn_1");
-        requirementDownloadLineItem1.setRequirementId((long)3);
-        requirementDownloadLineItem1.setIpcQuantityOverride(20);
-        requirementDownloadLineItems.add(requirementDownloadLineItem1);
+        RequirementDownloadLineItem thirdItem = new RequirementDownloadLineItem();
+        thirdItem.setFsn("dummy_fsn_1");
+        thirdItem.setRequirementId((long) 3);
+        thirdItem.setIpcQuantityOverride(20);
+        requirementDownloadLineItems.add(thirdItem);
 
         /*Override should fail as quantity is not a positive integer*/
-        RequirementDownloadLineItem requirementDownloadLineItem3 = new RequirementDownloadLineItem();
-        requirementDownloadLineItem3.setFsn("dummy_fsn_1");
-        requirementDownloadLineItem3.setWarehouseName("dummy_warehouse");
-        requirementDownloadLineItem3.setQuantity(100);
-        requirementDownloadLineItem3.setRequirementId((long)4);
-        requirementDownloadLineItem3.setIpcQuantityOverride(0);
-        requirementDownloadLineItem3.setIpcQuantityOverrideReason("test_ipc");
-        requirementDownloadLineItems.add(requirementDownloadLineItem3);
+        RequirementDownloadLineItem fourthItem = new RequirementDownloadLineItem();
+        fourthItem.setFsn("dummy_fsn_1");
+        fourthItem.setWarehouseName("dummy_warehouse");
+        fourthItem.setQuantity(100);
+        fourthItem.setRequirementId((long) 4);
+        fourthItem.setIpcQuantityOverride(0);
+        fourthItem.setIpcQuantityOverrideReason("test_ipc");
+        requirementDownloadLineItems.add(fourthItem);
 
         return requirementDownloadLineItems;
     }
@@ -223,57 +223,63 @@ public class TestHelper {
         List<RequirementDownloadLineItem> requirementDownloadLineItems = new ArrayList<>();
 
         /*Quantity, app, supplier, sla should be overridden with comment*/
-        RequirementDownloadLineItem requirementDownloadLineItem = new RequirementDownloadLineItem();
-        requirementDownloadLineItem.setWarehouseName("dummy_warehouse_1");
-        requirementDownloadLineItem.setFsn("fsn");
-        requirementDownloadLineItem.setCdoQuantityOverride(20);
-        requirementDownloadLineItem.setCdoQuantityOverrideReason("test_cdo_quantity");
-        requirementDownloadLineItem.setCdoPriceOverride(100);
-        requirementDownloadLineItem.setCdoPriceOverrideReason("test_cdo_price");
-        requirementDownloadLineItem.setCdoSupplierOverride("new_supplier");
-        requirementDownloadLineItem.setCdoSupplierOverrideReason("test_cdo_supplier");
-        requirementDownloadLineItem.setNewSla(20);
-        requirementDownloadLineItems.add(requirementDownloadLineItem);
+        RequirementDownloadLineItem firstItem = new RequirementDownloadLineItem();
+        firstItem.setWarehouseName("dummy_warehouse_1");
+        firstItem.setRequirementId((long) 1);
+        firstItem.setFsn("fsn");
+        firstItem.setCdoQuantityOverride(20);
+        firstItem.setCdoQuantityOverrideReason("test_cdo_quantity");
+        firstItem.setCdoPriceOverride(100);
+        firstItem.setCdoPriceOverrideReason("test_cdo_price");
+        firstItem.setCdoSupplierOverride("new_supplier");
+        firstItem.setCdoSupplierOverrideReason("test_cdo_supplier");
+        firstItem.setNewSla(20);
+        requirementDownloadLineItems.add(firstItem);
 
         /*Quantity override should not happen*/
-        RequirementDownloadLineItem requirementDownloadLineItem2 = new RequirementDownloadLineItem();
-        requirementDownloadLineItem2.setWarehouseName("dummy_warehouse_2");
-        requirementDownloadLineItem2.setFsn("fsn");
-        requirementDownloadLineItem2.setCdoQuantityOverride(-1);
-        requirementDownloadLineItem2.setCdoQuantityOverrideReason("test_cdo_quantity");
-        requirementDownloadLineItems.add(requirementDownloadLineItem2);
+        RequirementDownloadLineItem secondItem = new RequirementDownloadLineItem();
+        secondItem.setRequirementId((long) 2);
+        secondItem.setWarehouseName("dummy_warehouse_2");
+        secondItem.setFsn("fsn");
+        secondItem.setCdoQuantityOverride(-1);
+        secondItem.setCdoQuantityOverrideReason("test_cdo_quantity");
+        requirementDownloadLineItems.add(secondItem);
 
         /*No override should happen as comment is missing*/
-        RequirementDownloadLineItem requirementDownloadLineItem3 = new RequirementDownloadLineItem();
-        requirementDownloadLineItem3.setWarehouseName("dummy_warehouse_1");
-        requirementDownloadLineItem3.setFsn("fsn_1");
-        requirementDownloadLineItem3.setCdoQuantityOverride(20);
-        requirementDownloadLineItems.add(requirementDownloadLineItem3);
+        RequirementDownloadLineItem thirdItem = new RequirementDownloadLineItem();
+        thirdItem.setRequirementId((long) 3);
+        thirdItem.setWarehouseName("dummy_warehouse_1");
+        thirdItem.setFsn("fsn_1");
+        thirdItem.setCdoQuantityOverride(20);
+        requirementDownloadLineItems.add(thirdItem);
 
         /*No override should happen as sla < 0 and supplier override comment is absent*/
-        RequirementDownloadLineItem requirementDownloadLineItem1 = new RequirementDownloadLineItem();
-        requirementDownloadLineItem1.setFsn("fsn_1");
-        requirementDownloadLineItem1.setWarehouseName("dummy_warehouse_2");
-        requirementDownloadLineItem1.setNewSla(-1);
-        requirementDownloadLineItem1.setCdoSupplierOverride("new_supplier");
-        requirementDownloadLineItems.add(requirementDownloadLineItem1);
+        RequirementDownloadLineItem fourthItem = new RequirementDownloadLineItem();
+        fourthItem.setFsn("fsn_1");
+        fourthItem.setRequirementId((long) 4);
+        fourthItem.setWarehouseName("dummy_warehouse_2");
+        fourthItem.setNewSla(-1);
+        fourthItem.setCdoSupplierOverride("new_supplier");
+        requirementDownloadLineItems.add(fourthItem);
 
         /*No override as app quantity is less than zero and reason is missing*/
-        RequirementDownloadLineItem requirementDownloadLineItem4 = new RequirementDownloadLineItem();
-        requirementDownloadLineItem4.setFsn("fsn_2");
-        requirementDownloadLineItem4.setWarehouseName("dummy_warehouse_1");
-        requirementDownloadLineItem4.setCdoPriceOverride(1);
-        requirementDownloadLineItem4.setCdoPriceOverrideReason("  ");
-        requirementDownloadLineItems.add(requirementDownloadLineItem4);
+        RequirementDownloadLineItem fifthItem = new RequirementDownloadLineItem();
+        fifthItem.setFsn("fsn_2");
+        fifthItem.setRequirementId((long) 5);
+        fifthItem.setWarehouseName("dummy_warehouse_1");
+        fifthItem.setCdoPriceOverride(-1);
+        fifthItem.setCdoPriceOverrideReason("  ");
+        requirementDownloadLineItems.add(fifthItem);
 
         /*Supplier and sla should be overridden*/
-        RequirementDownloadLineItem requirementDownloadLineItem5 = new RequirementDownloadLineItem();
-        requirementDownloadLineItem5.setFsn("fsn_2");
-        requirementDownloadLineItem5.setWarehouseName("dummy_warehouse_2");
-        requirementDownloadLineItem5.setCdoSupplierOverride("new Supplier");
-        requirementDownloadLineItem5.setCdoSupplierOverrideReason("test_cdo_supplier");
-        requirementDownloadLineItem5.setNewSla(20);
-        requirementDownloadLineItems.add(requirementDownloadLineItem5);
+        RequirementDownloadLineItem sixthItem = new RequirementDownloadLineItem();
+        sixthItem.setFsn("fsn_2");
+        sixthItem.setRequirementId((long) 6);
+        sixthItem.setWarehouseName("dummy_warehouse_2");
+        sixthItem.setCdoSupplierOverride("new Supplier");
+        sixthItem.setCdoSupplierOverrideReason("test_cdo_supplier");
+        sixthItem.setNewSla(20);
+        requirementDownloadLineItems.add(sixthItem);
 
 
         return requirementDownloadLineItems;
@@ -284,32 +290,36 @@ public class TestHelper {
         List<RequirementDownloadLineItem> requirementDownloadLineItems = new ArrayList<>();
 
         /*Quantity and comment should be overridden*/
-        RequirementDownloadLineItem requirementDownloadLineItem = new RequirementDownloadLineItem();
-        requirementDownloadLineItem.setWarehouseName("dummy_warehouse_1");
-        requirementDownloadLineItem.setFsn("fsn");
-        requirementDownloadLineItem.setBizFinRecommendedQuantity(20);
-        requirementDownloadLineItem.setBizFinComment("test_bizfin");
-        requirementDownloadLineItems.add(requirementDownloadLineItem);
+        RequirementDownloadLineItem firstItem = new RequirementDownloadLineItem();
+        firstItem.setWarehouseName("dummy_warehouse_1");
+        firstItem.setRequirementId((long) 1);
+        firstItem.setFsn("fsn");
+        firstItem.setBizFinRecommendedQuantity(20);
+        firstItem.setBizFinComment("test_bizfin");
+        requirementDownloadLineItems.add(firstItem);
 
         /*Override should fail as comment is missing*/
-        RequirementDownloadLineItem requirementDownloadLineItem3 = new RequirementDownloadLineItem();
-        requirementDownloadLineItem3.setWarehouseName("dummy_warehouse_2");
-        requirementDownloadLineItem3.setFsn("fsn");
-        requirementDownloadLineItem3.setBizFinRecommendedQuantity(20);
-        requirementDownloadLineItems.add(requirementDownloadLineItem3);
+        RequirementDownloadLineItem secondItem = new RequirementDownloadLineItem();
+        secondItem.setWarehouseName("dummy_warehouse_2");
+        secondItem.setRequirementId((long) 2);
+        secondItem.setFsn("fsn");
+        secondItem.setBizFinRecommendedQuantity(20);
+        requirementDownloadLineItems.add(secondItem);
 
         /*Override only the comment*/
-        RequirementDownloadLineItem requirementDownloadLineItem1 = new RequirementDownloadLineItem();
-        requirementDownloadLineItem1.setFsn("fsn_1");
-        requirementDownloadLineItem1.setWarehouseName("dummy_warehouse_1");
-        requirementDownloadLineItem1.setBizFinComment("test_bizfin");
-        requirementDownloadLineItems.add(requirementDownloadLineItem1);
+        RequirementDownloadLineItem thirdItem = new RequirementDownloadLineItem();
+        thirdItem.setFsn("fsn_1");
+        thirdItem.setRequirementId((long) 3);
+        thirdItem.setWarehouseName("dummy_warehouse_1");
+        thirdItem.setBizFinComment("test_bizfin");
+        requirementDownloadLineItems.add(thirdItem);
 
         /*Should impact nothing on upload */
-        RequirementDownloadLineItem requirementDownloadLineItem2 = new RequirementDownloadLineItem();
-        requirementDownloadLineItem2.setFsn("fsn_1");
-        requirementDownloadLineItem2.setWarehouseName("dummy_warehouse_2");
-        requirementDownloadLineItems.add(requirementDownloadLineItem2);
+        RequirementDownloadLineItem fourthItem = new RequirementDownloadLineItem();
+        fourthItem.setRequirementId((long) 4);
+        fourthItem.setFsn("fsn_1");
+        fourthItem.setWarehouseName("dummy_warehouse_2");
+        requirementDownloadLineItems.add(fourthItem);
 
 
         return requirementDownloadLineItems;
