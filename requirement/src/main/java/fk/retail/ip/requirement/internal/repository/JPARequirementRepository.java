@@ -27,7 +27,6 @@ import static fk.retail.ip.requirement.internal.repository.RequirementRepository
 @Slf4j
 public class JPARequirementRepository extends SimpleJpaGenericRepository<Requirement, Long> implements RequirementRepository {
 
-
     @Inject
     public JPARequirementRepository(Provider<EntityManager> entityManagerProvider) {
         super(entityManagerProvider);
@@ -75,8 +74,9 @@ public class JPARequirementRepository extends SimpleJpaGenericRepository<Require
             predicate = criteriaBuilder.isTrue(requirementRoot.get("projectionId").in(projectionIds));
             predicates.add(predicate);
         }
-        if (filters.containsKey("fsns") && !filters.get("fsns").toString().isEmpty()) {
-            predicate = criteriaBuilder.equal(requirementRoot.get("fsn"), filters.get("fsns"));
+        List<String> fsns = (List<String>) filters.get("fsns");
+        if (filters.containsKey("fsns") && fsns != null && !fsns.isEmpty()) {
+            predicate = criteriaBuilder.isTrue(requirementRoot.get("fsn").in(fsns));
             predicates.add(predicate);
         }
         if (filters.containsKey("international") && !filters.get("international").toString().isEmpty()) {
@@ -119,7 +119,6 @@ public class JPARequirementRepository extends SimpleJpaGenericRepository<Require
                 .setParameter("state", toState)
                 .executeUpdate();
     }
-
 
     private List<Requirement> fetchRequirements(String query, Map<String, Object> params) {
         List<Requirement> requirements = Lists.newArrayList();
