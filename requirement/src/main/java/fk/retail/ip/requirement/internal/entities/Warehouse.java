@@ -11,15 +11,9 @@ import lombok.Data;
  */
 
 @Entity
-@Table(name = "INVENTORY_PLAN_WAREHOUSES")
-@XmlRootElement
 @Data
-
 public class Warehouse extends ReadOnlyEntity{
 
-    @Column(name = "whName")
-    private String warehouseCode;
-
-    @Column(name = "name")
-    private String warehouseName;
+    private String code;
+    private String name;
 }

@@ -10,7 +10,6 @@ import java.util.Map;
 
 import fk.retail.ip.zulu.internal.entities.EntityView;
 import fk.retail.ip.zulu.internal.entities.RetailProductAttributeResponse;
-import org.bouncycastle.cert.ocsp.Req;
 
 public class TestHelper {
 
@@ -120,8 +119,8 @@ public class TestHelper {
 
     public static Warehouse getWarehouse(String whCode, String whName) {
         Warehouse warehouse = new Warehouse();
-        warehouse.setWarehouseCode(whCode);
-        warehouse.setWarehouseName(whName);
+        warehouse.setCode(whCode);
+        warehouse.setName(whName);
         return warehouse;
     }
 
