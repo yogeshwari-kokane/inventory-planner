@@ -1,5 +1,6 @@
 package fk.retail.ip.requirement.internal.entities;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -31,7 +32,7 @@ public class RequirementSnapshot extends ReadOnlyEntity {
 
     private String policy;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "group_id")
     private Group group;
 

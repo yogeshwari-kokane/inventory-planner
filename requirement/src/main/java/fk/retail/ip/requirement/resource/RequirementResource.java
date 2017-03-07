@@ -3,8 +3,6 @@ package fk.retail.ip.requirement.resource;
 import com.codahale.metrics.annotation.Timed;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
-import fk.retail.ip.requirement.internal.exception.InvalidRequirementStateException;
-import fk.retail.ip.requirement.internal.exception.NoRequirementsSelectedException;
 import fk.retail.ip.requirement.model.DownloadRequirementRequest;
 import fk.retail.ip.requirement.model.RequirementApprovalRequest;
 import fk.retail.ip.requirement.service.RequirementService;
@@ -42,17 +40,13 @@ public class RequirementResource {
     @Path("/download")
     @Timed
     public Response download(DownloadRequirementRequest downloadRequirementRequest) {
-        try {
-            StreamingOutput stream = requirementService.downloadRequirement(downloadRequirementRequest);
-            return Response.ok(stream)
+
+        StreamingOutput stream = requirementService.downloadRequirement(downloadRequirementRequest);
+        return Response.ok(stream)
                     .header(HttpHeaders.CONTENT_TYPE, "application/octet-stream")
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename = projection.xlsx")
                     .build();
-        } catch (InvalidRequirementStateException ise) {
-            return Response.status(400).entity(ise.getMessage()).build();
-        } catch (NoRequirementsSelectedException noreq) {
-            return Response.status(400).entity(noreq.getMessage()).build();
-        }
+
     }
 
     @POST

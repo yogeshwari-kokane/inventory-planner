@@ -1,5 +1,6 @@
 package fk.retail.ip.requirement.internal.entities;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -57,6 +58,7 @@ public class Requirement extends AbstractEntity {
 
     private String procType;
 
+
     //todo:cleanup
     @Column(name = "enabled")
     private boolean enabled;
@@ -73,10 +75,11 @@ public class Requirement extends AbstractEntity {
 
     private Long sslId;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "requirement_snapshot_id")
     private RequirementSnapshot requirementSnapshot;
 
+    //todo: cleanup (fields for backward compatibilty)
     //TODO: legacy code
     @Column(name = "prev_state_id")
     private Long previousStateId;
