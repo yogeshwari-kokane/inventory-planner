@@ -5,7 +5,6 @@ dataSource:
   user: ip_sys_rw
   # the password
   password: caiP5yaa
-
   # the JDBC URL
   url: jdbc:mysql://10.32.225.159/erp_inv_db_test
   # any properties specific to your JDBC driver:
@@ -34,10 +33,22 @@ rotationManagementConfig:
   persistantFilePath: "/var/run/fk-ip-inventory-planner/persistant_state.txt"
 
 logging:
+logging:
   level: INFO
+  loggers:
+    "org.hibernate.ejb.HibernatePersistence": ERROR
+    "org.hibernate.SQL": ERROR
+    "org.hibernate.type": ERROR
+    "com.flipkart.mmq.Dispatcher": ERROR
   appenders:
-  - type: console
-    threshold: INFO
+  - type: file
+    threshold: ALL
+    currentLogFilename: /var/log/flipkart/rp/fk-ip-inventory-planner/production.log
+    logFormat: "%-5p [%d{ISO8601}] [%X{reqId} %X{txnId}] %replace(%c: %m){'\n', '\n '}%n%replace(%ex){'(?m)^(.)',' $1'}%nopex"
+    archivedLogFilenamePattern: /var/log/flipkart/rp/fk-ip-inventory-planner/production-%d.log.gz
+    archive: true
+    archivedFileCount: 30
+    timeZone: Asia/Calcutta
 
 server:
   applicationConnectors:
@@ -56,10 +67,15 @@ server:
     excludedUserAgents: []
     compressedMimeTypes: []
   requestLog:
+  requestLog:
     timeZone: IST
     appenders:
-    - type: console
-      threshold: INFO
+    - type: file
+      logFormat: "%-5p [%d{ISO8601}] [%X{reqId} %X{txnId}] %replace(%c: %m){'\n', '\n '}%n%replace(%ex){'(?m)^(.)',' $1'}%nopex"
+      currentLogFilename: /var/log/flipkart/rp/fk-ip-inventory-planner/requests.log
+      archive: true
+      archivedLogFilenamePattern: /var/log/flipkart/rp/fk-ip-inventory-planner/requests-%d.log.gz
+      archivedFileCount: 30
 
 
 zuluConfiguration:
@@ -67,6 +83,10 @@ zuluConfiguration:
   viewPath: "/views"
   clientId: "retail.rp"
   maxBatchSize: 30
+
+sslClientConfiguration:
+  url: http://10.85.52.106
+  viewPath: "/supplier_selection"
 
 clientConfiguration:
   timeout: 80000ms
@@ -82,7 +102,4 @@ clientConfiguration:
   gzipEnabled: false
   gzipEnabledForRequests: false
   chunkedEncodingEnabled: false
-sslClientConfiguration:
-  url: http://10.85.52.106
-  viewPath: "/supplier_selection"
 
