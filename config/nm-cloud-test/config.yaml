@@ -1,4 +1,4 @@
-dataSource:
+Source:
   # the name of your JDBC driver
   driverClass: com.mysql.jdbc.Driver
   # the username
@@ -33,7 +33,6 @@ rotationManagementConfig:
   persistantFilePath: "/var/run/fk-ip-inventory-planner/persistant_state.txt"
 
 logging:
-logging:
   level: INFO
   loggers:
     "org.hibernate.ejb.HibernatePersistence": ERROR
@@ -66,7 +65,6 @@ server:
     bufferSize: 8KiB
     excludedUserAgents: []
     compressedMimeTypes: []
-  requestLog:
   requestLog:
     timeZone: IST
     appenders:
