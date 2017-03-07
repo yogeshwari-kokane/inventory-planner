@@ -68,7 +68,9 @@ public abstract class DownloadCommand {
     }
 
     public StreamingOutput execute(List<Requirement> requirements, boolean isLastAppSupplierRequired) {
+        log.info("Download Request for {} number of requirements", requirements.size());
         if (requirements.isEmpty()) {
+            log.info("No requirements found for download. Generating empty file");
             return generateExcelCommand.generateExcel(Collections.EMPTY_LIST, getTemplateName(isLastAppSupplierRequired));
         }
         List<RequirementDownloadLineItem> requirementDownloadLineItems = requirements.stream().map(RequirementDownloadLineItem::new).collect(toList());
@@ -89,13 +91,16 @@ public abstract class DownloadCommand {
     *
     * */
     protected void fetchProductData(Set<String> fsns, Map<String, List<RequirementDownloadLineItem>> fsnToRequirement) {
+        log.info("Fetching Product Data for downloading requirements");
         Set<String> zuluFsns = fetchDataFromProductInfo(fsns, fsnToRequirement);
         if (zuluFsns.size() > 0) {
+            log.info("Fetching product data from Zulu for download for fns size " + zuluFsns.size());
             fetchDataFromZulu(zuluFsns, fsnToRequirement);
         }
     }
 
     protected void fetchFsnBandData(Set<String> fsns, Map<String, List<RequirementDownloadLineItem>> fsnToRequirement) {
+        log.info("Fetching Fsn Band data for downloading requirements");
         List<FsnBand> bands = fsnBandRepository.fetchBandDataForFSNs(fsns);
         bands.stream().forEach(b -> {
             List<RequirementDownloadLineItem> items = fsnToRequirement.get(b.getFsn());
@@ -107,6 +112,7 @@ public abstract class DownloadCommand {
     }
 
     protected void fetchSalesBucketData(Set<String> fsns, List<RequirementDownloadLineItem> requirementDownloadLineItems) {
+        log.info("Fetching sales Bucket Data for downloading requirements");
         List<WeeklySale> sales = weeklySaleRepository.fetchWeeklySalesForFsns(fsns);
         MultiKeyMap<String, Integer> fsnWhWeekSalesMap = new MultiKeyMap();
         sales.forEach(s -> fsnWhWeekSalesMap.put(s.getFsn(), s.getWarehouse(), String.valueOf(s.getWeek()), s.getSaleQty()));
@@ -127,6 +133,7 @@ public abstract class DownloadCommand {
     }
 
     protected void fetchWarehouseName(Set<String> requirementWhs, List<RequirementDownloadLineItem> requirementDownloadLineItems) {
+        log.info("Fetching Warehouse name for warehouse code for downloading requirements");
         List<Warehouse> warehouses = warehouseRepository.fetchWarehouseNameByCode(requirementWhs);
         Map<String,String> whCodeNameMap = warehouses.stream().collect(Collectors.toMap(Warehouse::getCode, Warehouse::getName));
         requirementDownloadLineItems.forEach(reqItem -> reqItem.setWarehouseName(Optional.ofNullable(whCodeNameMap.get(reqItem.getWarehouse())).orElse(reqItem.getWarehouse())));
@@ -135,6 +142,7 @@ public abstract class DownloadCommand {
 
 
     protected void fetchLastAppSupplierDataFromProc(Set<String> fsns, List<RequirementDownloadLineItem> requirementDownloadLineItems) {
+        log.info("Fetching last app and supplier for downloading requirements");
         List<LastAppSupplier> lastAppSuppliers = lastAppSupplierRepository.fetchLastAppSupplierForFsns(fsns);
         MultiKeyMap<String,Integer> fsnWhLastAppMap = new MultiKeyMap();
         MultiKeyMap<String,String> fsnWhLastSupplierMap = new MultiKeyMap();
@@ -153,7 +161,7 @@ public abstract class DownloadCommand {
 
 
     protected void populateBizFinData(Set<String> fsns, List<RequirementDownloadLineItem> requirementDownloadLineItems) {
-
+        log.info("Fetching Biz Fin data for downloading requirements");
         List<Requirement> requirements = requirementRepository.findEnabledRequirementsByStateFsn(RequirementApprovalState.BIZFIN_REVIEW.toString(),fsns);
         MultiKeyMap<String,Integer> fsnWhBizFinRecommended = new MultiKeyMap();
         MultiKeyMap<String,String> fsnWhBizFinComment = new MultiKeyMap();
@@ -172,7 +180,7 @@ public abstract class DownloadCommand {
 
 
     protected void populateIpcQuantity(Set<String> fsns, List<RequirementDownloadLineItem> requirementDownloadLineItems) {
-
+        log.info("Fetching IPC Quantity for downloading requirements");
         List<Requirement> requirements = requirementRepository.findEnabledRequirementsByStateFsn(RequirementApprovalState.PROPOSED.toString(),fsns);
         MultiKeyMap<String,Integer> fsnWhIpcProposedQuantity = new MultiKeyMap();
         requirements.forEach(r -> {
@@ -183,6 +191,7 @@ public abstract class DownloadCommand {
     }
 
     private void fetchDataFromZulu(Set<String> zuluFsns, Map<String, List<RequirementDownloadLineItem>> fsnToRequirement ) {
+        log.info("Fetching zulu data for downloading requirements");
         RetailProductAttributeResponse retailProductAttributeResponse = zuluClient.getRetailProductAttributes(zuluFsns);
         retailProductAttributeResponse.getEntityViews().forEach(entityView -> {
             try {
@@ -226,6 +235,7 @@ public abstract class DownloadCommand {
     }
 
     private Set<String> fetchDataFromProductInfo(Set<String> fsns, Map<String, List<RequirementDownloadLineItem>> fsnToRequirement ) {
+        log.info("Fetching product info data from db for downloading requirements");
         List<ProductInfo> productInfo = productInfoRepository.getProductInfo(Lists.newArrayList(fsns));
         Set<String> cachedFsns = Sets.newHashSet();
         productInfo.stream().forEach(pi -> {
@@ -248,6 +258,7 @@ public abstract class DownloadCommand {
 
 
     protected void populateCdoData(Set<String> fsns, List<RequirementDownloadLineItem> requirementDownloadLineItems) {
+        log.info("Fetching CDO data for downloading requirements");
         List<Requirement> requirements = requirementRepository.findEnabledRequirementsByStateFsn(RequirementApprovalState.CDO_REVIEW.toString(),fsns);
         MultiKeyMap<String,String> fsnWhCdoComment = new MultiKeyMap();
         MultiKeyMap<String,Integer> fsnWhQuantity = new MultiKeyMap();
