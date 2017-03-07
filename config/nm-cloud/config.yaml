@@ -1,4 +1,4 @@
-Source:
+dataSource:
   # the name of your JDBC driver
   driverClass: com.mysql.jdbc.Driver
   # the username
