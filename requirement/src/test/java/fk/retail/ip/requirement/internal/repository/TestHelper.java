@@ -4,6 +4,22 @@ import com.google.common.collect.Lists;
 import fk.retail.ip.requirement.internal.entities.*;
 
 import java.util.*;
+import fk.retail.ip.requirement.internal.entities.Forecast;
+import fk.retail.ip.requirement.internal.entities.FsnBand;
+import fk.retail.ip.requirement.internal.entities.Group;
+import fk.retail.ip.requirement.internal.entities.GroupFsn;
+import fk.retail.ip.requirement.internal.entities.IwtRequest;
+import fk.retail.ip.requirement.internal.entities.IwtRequestItem;
+import fk.retail.ip.requirement.internal.entities.LastAppSupplier;
+import fk.retail.ip.requirement.internal.entities.OpenRequirementAndPurchaseOrder;
+import fk.retail.ip.requirement.internal.entities.Policy;
+import fk.retail.ip.requirement.internal.entities.ProductInfo;
+import fk.retail.ip.requirement.internal.entities.Requirement;
+import fk.retail.ip.requirement.internal.entities.RequirementSnapshot;
+import fk.retail.ip.requirement.internal.entities.Warehouse;
+import fk.retail.ip.requirement.internal.entities.WeeklySale;
+import fk.retail.ip.zulu.internal.entities.EntityView;
+import fk.retail.ip.zulu.internal.entities.RetailProductAttributeResponse;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -69,7 +85,7 @@ public class TestHelper {
         return fsnBand;
     }
 
-    public static LastAppSupplier getLastAppSupplier(String fsn, String wh,String supplier, int app ) {
+    public static LastAppSupplier getLastAppSupplier(String fsn, String wh, String supplier, int app) {
         LastAppSupplier lastAppSupplier = new LastAppSupplier();
         lastAppSupplier.setFsn(fsn);
         lastAppSupplier.setWarehouse(wh);
@@ -88,7 +104,7 @@ public class TestHelper {
     }
 
     public static Requirement getRequirement(String fsn, String wh, String state, boolean enabled,
-                                             RequirementSnapshot snapshot, int quantity, String supplier,
+                                             RequirementSnapshot snapshot, double quantity, String supplier,
                                              int mrp, int app, String currency, int sla,
                                              String comment, String procType) {
         Requirement requirement = new Requirement();
@@ -108,7 +124,7 @@ public class TestHelper {
         return requirement;
     }
 
-    public static RequirementSnapshot getRequirementSnapshot(String forecast, int inventory, int qoh, int po , int req, int intransit) {
+    public static RequirementSnapshot getRequirementSnapshot(String forecast, int inventory, int qoh, int po, int req, int intransit) {
         RequirementSnapshot snapshot = new RequirementSnapshot();
         snapshot.setForecast(forecast);
         snapshot.setInventoryQty(inventory);
@@ -126,9 +142,9 @@ public class TestHelper {
         return warehouse;
     }
 
-     /*
-    * Initialise mocked zulu response
-    * */
+    /*
+   * Initialise mocked zulu response
+   * */
     public static RetailProductAttributeResponse getZuluData() {
         RetailProductAttributeResponse retailProductAttributeResponse = new RetailProductAttributeResponse();
         EntityView entityView = new EntityView();
@@ -327,4 +343,11 @@ public class TestHelper {
         return requirementDownloadLineItems;
     }
 
+    public static Forecast getForecast(String fsn, String warehouse, String forecastString) {
+        Forecast forecast = new Forecast();
+        forecast.setFsn(fsn);
+        forecast.setWarehouse(warehouse);
+        forecast.setForecast(forecastString);
+        return forecast;
+    }
 }
