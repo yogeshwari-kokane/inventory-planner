@@ -92,7 +92,9 @@ public class ApprovalServiceTest extends TransactionalJpaRepositoryTest {
         Assert.assertTrue(actual.isCurrent());
         Assert.assertTrue(actual.isEnabled());
         Assert.assertEquals(actual.getPreviousStateId(), requirement.getId());
-        Assert.assertEquals(actual.getQuantity(), cdoRequirement.getQuantity());
+
+        Assert.assertEquals(actual.getQuantity(), cdoRequirement.getQuantity(),0.01);
+
         Assert.assertEquals(actual.getSla(), requirement.getSla());
         Assert.assertEquals(actual.getSupplier(), requirement.getSupplier());
         Assert.assertEquals(actual.getApp(), requirement.getApp());
@@ -114,7 +116,7 @@ public class ApprovalServiceTest extends TransactionalJpaRepositoryTest {
         Assert.assertTrue(actual.isCurrent());
         Assert.assertTrue(actual.isEnabled());
 //        Assert.assertEquals(actual.getPreviousStateId(), requirement.getId());
-        Assert.assertEquals(actual.getQuantity(), requirement.getQuantity());
+        Assert.assertEquals(actual.getQuantity(), requirement.getQuantity(),0.01);
         Assert.assertEquals(actual.getSla(), requirement.getSla());
         Assert.assertEquals(actual.getSupplier(), requirement.getSupplier());
         Assert.assertEquals(actual.getApp(), requirement.getApp());
@@ -163,7 +165,7 @@ public class ApprovalServiceTest extends TransactionalJpaRepositoryTest {
                     .getSingleResult();
         } catch (NoResultException ex) {
             entityManager
-                    .createNativeQuery("INSERT INTO projections(fsn, current_state) VALUES( :fsn, :state)")
+                    .createNativeQuery("INSERT INTO projections(fsn, current_state, version) VALUES( :fsn, :state, 0)")
                     .setParameter("fsn", fsn)
                     .setParameter("state", state)
                     .executeUpdate();
