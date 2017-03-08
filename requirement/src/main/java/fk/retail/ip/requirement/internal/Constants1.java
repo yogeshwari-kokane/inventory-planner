@@ -1,36 +1,12 @@
 package fk.retail.ip.requirement.internal;
 
-
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Optional;
 import java.util.Properties;
-import com.google.common.collect.Sets;
-import java.util.Set;
 
 /**
- * Created by agarwal.vaibhav on 03/03/17.
+ * Created by agarwal.vaibhav on 08/03/17.
  */
-//public class Constants {
-public interface Constants {
-
-    double DEFAULT_FORECAST = 0.0;
-    int DAYS_IN_WEEK = 7;
-    int WEEKS_OF_FORECAST = 15;
-    Set<String> INTRANSIT_REQUEST_STATUSES = Sets.newHashSet("in-process", "dispatched", "requested");
-    String POLICY_DISPLAY_FORMAT = "{\"%s\":%.2f}";
-
-    //Error messages
-    String INVALID_POLICY_TYPE = "Did not find matching policy type for: {}";
-    String GROUP_NOT_FOUND = "Group for this fsn is not present";
-    String FORECAST_NOT_FOUND = "Forecast for this fsn is not present";
-    String VALID_POLICY_NOT_FOUND = "Valid %s policy for this fsn is not present";
-    String UNABLE_TO_PARSE = "Unable to parse: {}";
-    String NOT_APPLICABLE = "N/A";
-
-    public static final String ERROR_STATE = "error";
-
+public class Constants1 {
     public static String FSN_OR_WAREHOUSE_IS_MISSING = "FSN_OR_WAREHOUSE_IS_MISSING";
     public static String QUANTITY_OVERRIDE_COMMENT_IS_MISSING = "QUANTITY_OVERRIDE_COMMENT_IS_MISSING";
     public static String SUGGESTED_QUANTITY_IS_NOT_GREATER_THAN_ZERO =
@@ -54,23 +30,20 @@ public interface Constants {
     public static String STATUS = "STATUS";
     public static String PROPERTIES_FILE_PATH = "/message.properties";
 
-//    private static Properties properties;
-//
-//    static {
-//        try {
-//            properties = new Properties();
-//            properties.load(Constants.class.getResourceAsStream(Constants.PROPERTIES_FILE_PATH));
-//        } catch (IOException ioe) {
-//            System.out.println("Unable to find file");
-//        }
-//    }
-//
-//    private Constants() {}
-//
-//    public static String getKey(String key) {
-//        return properties.getProperty(key);
-//    }
+    private static Properties properties;
 
+    static {
+        try {
+            properties = new Properties();
+            properties.load(Constants.class.getResourceAsStream(Constants.PROPERTIES_FILE_PATH));
+        } catch (IOException ioe) {
+            System.out.println("Unable to find file");
+        }
+    }
 
+    private Constants1() {}
+
+    public static String getKey(String key) {
+        return properties.getProperty(key);
+    }
 }
-

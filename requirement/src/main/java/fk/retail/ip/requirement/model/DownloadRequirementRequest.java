@@ -12,7 +12,6 @@ import lombok.Getter;
 @Data
 
 @Getter
-@JsonSnakeCase
 public class DownloadRequirementRequest {
 
     List<Long> requirementIds;

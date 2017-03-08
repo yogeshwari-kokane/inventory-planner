@@ -2,6 +2,7 @@ package fk.retail.ip.requirement.internal.command.upload;
 
 import com.google.inject.Inject;
 import fk.retail.ip.requirement.internal.Constants;
+import fk.retail.ip.requirement.internal.Constants1;
 import fk.retail.ip.requirement.internal.enums.OverrideKeys;
 import fk.retail.ip.requirement.internal.enums.OverrideStatus;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
@@ -35,7 +36,7 @@ public class ProposedUploadCommand extends UploadCommand {
         Optional<String> validationResponse = validateQuantityOverride(currentQuantity, proposedQuantity, quantityOverrideComment);
         if (validationResponse.isPresent()) {
             String validationComment = validationResponse.get();
-            overriddenFields.put(Constants.getKey(Constants.STATUS), OverrideStatus.FAILURE.toString());
+            overriddenFields.put(Constants1.getKey(Constants.STATUS), OverrideStatus.FAILURE.toString());
             overriddenFields.put(OverrideKeys.OVERRIDE_COMMENT.toString(), validationComment);
         } else {
             overriddenFields = getOverriddenFields(currentQuantity, proposedQuantity, quantityOverrideComment);
@@ -58,11 +59,11 @@ public class ProposedUploadCommand extends UploadCommand {
         if (proposedQuantity != null && proposedQuantity != currentQuantity) {
             overriddenValues.put(OverrideKeys.QUANTITY.toString(), proposedQuantity);
             JSONObject comment = new JSONObject();
-            comment.put(Constants.getKey(Constants.QUANTITY_OVERRIDE_COMMENT), quantityOverrideComment);
+            comment.put(Constants1.getKey(Constants.QUANTITY_OVERRIDE_COMMENT), quantityOverrideComment);
             overriddenValues.put(OverrideKeys.OVERRIDE_COMMENT.toString(), comment);
-            overriddenValues.put(Constants.getKey(Constants.STATUS), OverrideStatus.UPDATE.toString());
+            overriddenValues.put(Constants1.getKey(Constants.STATUS), OverrideStatus.UPDATE.toString());
         } else {
-            overriddenValues.put(Constants.getKey(Constants.STATUS), OverrideStatus.SUCCESS.toString());
+            overriddenValues.put(Constants1.getKey(Constants.STATUS), OverrideStatus.SUCCESS.toString());
         }
         return overriddenValues;
     }
