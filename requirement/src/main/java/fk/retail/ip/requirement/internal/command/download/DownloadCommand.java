@@ -1,7 +1,8 @@
-package fk.retail.ip.requirement.internal.command;
+package fk.retail.ip.requirement.internal.command.download;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import fk.retail.ip.requirement.internal.command.GenerateExcelCommand;
 import fk.retail.ip.requirement.internal.entities.FsnBand;
 import fk.retail.ip.requirement.internal.entities.LastAppSupplier;
 import fk.retail.ip.requirement.internal.entities.ProductInfo;
@@ -166,7 +167,7 @@ public abstract class DownloadCommand {
         MultiKeyMap<String,Integer> fsnWhBizFinRecommended = new MultiKeyMap();
         MultiKeyMap<String,String> fsnWhBizFinComment = new MultiKeyMap();
         requirements.forEach(r -> {
-            fsnWhBizFinRecommended.put(r.getFsn(),r.getWarehouse(),r.getQuantity());
+            fsnWhBizFinRecommended.put(r.getFsn(),r.getWarehouse(), (int) r.getQuantity());
             fsnWhBizFinComment.put(r.getFsn(),r.getWarehouse(),r.getOverrideComment());
         });
 
@@ -184,7 +185,7 @@ public abstract class DownloadCommand {
         List<Requirement> requirements = requirementRepository.findEnabledRequirementsByStateFsn(RequirementApprovalState.PROPOSED.toString(),fsns);
         MultiKeyMap<String,Integer> fsnWhIpcProposedQuantity = new MultiKeyMap();
         requirements.forEach(r -> {
-            fsnWhIpcProposedQuantity.put(r.getFsn(),r.getWarehouse(),r.getQuantity());
+            fsnWhIpcProposedQuantity.put(r.getFsn(),r.getWarehouse(), (int) r.getQuantity());
 });
         requirementDownloadLineItems.stream()
                 .forEach(reqItem ->reqItem.setIpcProposedQuantity(fsnWhIpcProposedQuantity.get(reqItem.getFsn(),reqItem.getWarehouse())) );
@@ -264,7 +265,7 @@ public abstract class DownloadCommand {
         MultiKeyMap<String,Integer> fsnWhQuantity = new MultiKeyMap();
         requirements.forEach(r -> {
             fsnWhCdoComment.put(r.getFsn(),r.getWarehouse(),r.getOverrideComment());
-            fsnWhQuantity.put(r.getFsn(),r.getWarehouse(),r.getQuantity());
+            fsnWhQuantity.put(r.getFsn(),r.getWarehouse(), (int) r.getQuantity());
         });
 
         requirementDownloadLineItems.forEach(reqItem

@@ -1,11 +1,24 @@
-package fk.retail.ip.requirement.internal.command;
+package fk.retail.ip.requirement.internal.command.download;
 
 import com.google.common.collect.Lists;
 import fk.retail.ip.requirement.config.TestModule;
-import fk.retail.ip.requirement.internal.entities.*;
+import fk.retail.ip.requirement.internal.command.GenerateExcelCommand;
+import fk.retail.ip.requirement.internal.entities.FsnBand;
+import fk.retail.ip.requirement.internal.entities.LastAppSupplier;
+import fk.retail.ip.requirement.internal.entities.Requirement;
+import fk.retail.ip.requirement.internal.entities.RequirementSnapshot;
+import fk.retail.ip.requirement.internal.entities.Warehouse;
+import fk.retail.ip.requirement.internal.entities.WeeklySale;
 import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
-import fk.retail.ip.requirement.internal.repository.*;
+import fk.retail.ip.requirement.internal.repository.JPAFsnBandRepository;
+import fk.retail.ip.requirement.internal.repository.LastAppSupplierRepository;
+import fk.retail.ip.requirement.internal.repository.ProductInfoRepository;
+import fk.retail.ip.requirement.internal.repository.RequirementRepository;
+import fk.retail.ip.requirement.internal.repository.TestHelper;
+import fk.retail.ip.requirement.internal.repository.WarehouseRepository;
+import fk.retail.ip.requirement.internal.repository.WeeklySaleRepository;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
+import fk.retail.ip.zulu.client.ZuluClient;
 import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -14,8 +27,6 @@ import java.time.temporal.WeekFields;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
-
-import fk.retail.ip.zulu.client.ZuluClient;
 import org.jukito.JukitoRunner;
 import org.jukito.UseModules;
 import org.junit.Assert;
@@ -35,9 +46,9 @@ import org.mockito.MockitoAnnotations;
 
 @RunWith(JukitoRunner.class)
 @UseModules(TestModule.class)
-public class DownloadCDOReviewCommandTest {
+public class DownloadBizFinReviewCommandTest {
     @InjectMocks
-    DownloadCDOReviewCommand downloadCDOReviewCommand;
+    DownloadBizFinReviewCommand downloadBizFinReviewCommand;
 
     @Mock
     JPAFsnBandRepository fsnBandRepository;
@@ -63,6 +74,7 @@ public class DownloadCDOReviewCommandTest {
     @Mock
     WarehouseRepository warehouseRepository;
 
+
     @Captor
     private ArgumentCaptor<List<RequirementDownloadLineItem>> captor;
 
@@ -80,9 +92,11 @@ public class DownloadCDOReviewCommandTest {
         Mockito.when(productInfoRepository.getProductInfo(Mockito.anyList())).thenReturn(TestHelper.getProductInfo());
         Mockito.doReturn(TestHelper.getZuluData()).when(zuluClient).getRetailProductAttributes(Mockito.anyList());
         Mockito.when(lastAppSupplierRepository.fetchLastAppSupplierForFsns(Mockito.anySetOf(String.class))).thenReturn(getLasAppSupplier());
-        Mockito.when(requirementRepository.findEnabledRequirementsByStateFsn(Mockito.anyString(),Mockito.anySetOf(String.class))).thenReturn(getBizFinData());
-        downloadCDOReviewCommand.execute(requirements,false);
-        Mockito.verify(generateExcelCommand).generateExcel(captor.capture(), Mockito.eq("/templates/CDOReview.xlsx"));
+        Mockito.when(requirementRepository.findEnabledRequirementsByStateFsn(Mockito.matches(RequirementApprovalState.BIZFIN_REVIEW.toString()),Mockito.anySetOf(String.class))).thenReturn(getBizFinData());
+        Mockito.when(requirementRepository.findEnabledRequirementsByStateFsn(Mockito.matches(RequirementApprovalState.CDO_REVIEW.toString()),Mockito.anySetOf(String.class))).thenReturn(getCdoData());
+        Mockito.when(requirementRepository.findEnabledRequirementsByStateFsn(Mockito.matches(RequirementApprovalState.PROPOSED.toString()),Mockito.anySetOf(String.class))).thenReturn(getIpcQuantity());
+        downloadBizFinReviewCommand.execute(requirements,false);
+        Mockito.verify(generateExcelCommand).generateExcel(captor.capture(), Mockito.eq("/templates/BizFinReview.xlsx"));
         Assert.assertEquals(2, captor.getValue().size());
 
         Assert.assertEquals("fsn", captor.getValue().get(0).getFsn());
@@ -91,11 +105,14 @@ public class DownloadCDOReviewCommandTest {
         Assert.assertEquals("ABC", captor.getValue().get(0).getSupplier());
         Assert.assertEquals("bizfin_comment",captor.getValue().get(0).getBizFinComment());
         Assert.assertEquals(30,(int)captor.getValue().get(0).getBizFinRecommendedQuantity());
+        Assert.assertEquals("cdo_comment",captor.getValue().get(0).getCdoOverrideReason());
+        Assert.assertEquals(15,(int)captor.getValue().get(0).getIpcProposedQuantity());
 
         Assert.assertEquals("fsn", captor.getValue().get(1).getFsn());
         Assert.assertEquals("dummy_warehouse2", captor.getValue().get(1).getWarehouse());
         Assert.assertEquals(22,(int)captor.getValue().get(1).getQuantity());
         Assert.assertEquals("DEF", captor.getValue().get(1).getSupplier());
+        Assert.assertEquals(22,(int)captor.getValue().get(1).getIpcProposedQuantity());
     }
 
     @Test
@@ -107,27 +124,33 @@ public class DownloadCDOReviewCommandTest {
         Mockito.when(productInfoRepository.getProductInfo(Mockito.anyList())).thenReturn(TestHelper.getProductInfo());
         Mockito.doReturn(TestHelper.getZuluData()).when(zuluClient).getRetailProductAttributes(Mockito.anyList());
         Mockito.when(lastAppSupplierRepository.fetchLastAppSupplierForFsns(Mockito.anySetOf(String.class))).thenReturn(getLasAppSupplier());
-        Mockito.when(requirementRepository.findEnabledRequirementsByStateFsn(Mockito.anyString(),Mockito.anySetOf(String.class))).thenReturn(getBizFinData());
-        downloadCDOReviewCommand.execute(requirements,true);
-        Mockito.verify(generateExcelCommand).generateExcel(captor.capture(), Mockito.eq("/templates/CDOReviewWithLastAppSupplier.xlsx"));
+        Mockito.when(requirementRepository.findEnabledRequirementsByStateFsn(Mockito.matches(RequirementApprovalState.BIZFIN_REVIEW.toString()),Mockito.anySetOf(String.class))).thenReturn(getBizFinData());
+        Mockito.when(requirementRepository.findEnabledRequirementsByStateFsn(Mockito.matches(RequirementApprovalState.CDO_REVIEW.toString()),Mockito.anySetOf(String.class))).thenReturn(getCdoData());
+        Mockito.when(requirementRepository.findEnabledRequirementsByStateFsn(Mockito.matches(RequirementApprovalState.PROPOSED.toString()),Mockito.anySetOf(String.class))).thenReturn(getIpcQuantity());
+        downloadBizFinReviewCommand.execute(requirements,true);
+        Mockito.verify(generateExcelCommand).generateExcel(captor.capture(), Mockito.eq("/templates/BizFinReviewWithLastAppSupplier.xlsx"));
         Assert.assertEquals(2, captor.getValue().size());
 
         Assert.assertEquals("fsn", captor.getValue().get(0).getFsn());
         Assert.assertEquals("dummy_warehouse1", captor.getValue().get(0).getWarehouse());
         Assert.assertEquals(21,(int)captor.getValue().get(0).getQuantity());
         Assert.assertEquals("ABC", captor.getValue().get(0).getSupplier());
-        Assert.assertEquals("supplier1",captor.getValue().get(0).getLastSupplier());
-        Assert.assertEquals(100, (int)captor.getValue().get(0).getLastApp());
         Assert.assertEquals("bizfin_comment",captor.getValue().get(0).getBizFinComment());
         Assert.assertEquals(30,(int)captor.getValue().get(0).getBizFinRecommendedQuantity());
+        Assert.assertEquals("cdo_comment",captor.getValue().get(0).getCdoOverrideReason());
+        Assert.assertEquals(15,(int)captor.getValue().get(0).getIpcProposedQuantity());
+        Assert.assertEquals("supplier1",captor.getValue().get(0).getLastSupplier());
+        Assert.assertEquals(100, (int)captor.getValue().get(0).getLastApp());
 
         Assert.assertEquals("fsn", captor.getValue().get(1).getFsn());
         Assert.assertEquals("dummy_warehouse2", captor.getValue().get(1).getWarehouse());
         Assert.assertEquals(22,(int)captor.getValue().get(1).getQuantity());
         Assert.assertEquals("DEF", captor.getValue().get(1).getSupplier());
+        Assert.assertEquals(22,(int)captor.getValue().get(1).getIpcProposedQuantity());
         Assert.assertEquals("supplier2",captor.getValue().get(1).getLastSupplier());
         Assert.assertEquals(120, (int)captor.getValue().get(1).getLastApp());
     }
+
 
     private List<Requirement> getRequirements() {
 
@@ -136,12 +159,12 @@ public class DownloadCDOReviewCommandTest {
         RequirementSnapshot snapshot1 = TestHelper.getRequirementSnapshot("[3,4]", 7,8,9,10,11);
 
         List<Requirement> requirements = Lists.newArrayList();
-        Requirement requirement = TestHelper.getRequirement("fsn", "dummy_warehouse1", RequirementApprovalState.CDO_REVIEW.toString(), true, snapshot, 21,
-                "ABC",100,101,"INR", 3, "", "Daily planning" );
+        Requirement requirement = TestHelper.getRequirement("fsn", "dummy_warehouse1", RequirementApprovalState.BIZFIN_REVIEW.toString(), true, snapshot, 30,
+                "ABC",100,101,"INR", 3, "bizfin_comment", "Daily planning" );
 
         requirements.add(requirement);
 
-        requirement = TestHelper.getRequirement("fsn", "dummy_warehouse2", RequirementApprovalState.CDO_REVIEW.toString(), true, snapshot1, 22,
+        requirement = TestHelper.getRequirement("fsn", "dummy_warehouse2", RequirementApprovalState.BIZFIN_REVIEW.toString(), true, snapshot1, 22,
                 "DEF",10,9,"USD", 4, "", "Daily planning" );
 
         requirements.add(requirement);
@@ -183,18 +206,41 @@ public class DownloadCDOReviewCommandTest {
     }
 
     private List<Requirement> getBizFinData() {
+       return getRequirements();
+    }
+
+    private List<Requirement> getCdoData(){
         RequirementSnapshot snapshot = TestHelper.getRequirementSnapshot("[1,2]", 2,3,4,5,6);
+
         RequirementSnapshot snapshot1 = TestHelper.getRequirementSnapshot("[3,4]", 7,8,9,10,11);
 
         List<Requirement> requirements = Lists.newArrayList();
-        Requirement requirement = TestHelper.getRequirement("fsn", "dummy_warehouse1", RequirementApprovalState.BIZFIN_REVIEW.toString(), true, snapshot, 30,
-                "ABC",100,101,"INR", 3, "bizfin_comment", "Daily planning" );
+        Requirement requirement = TestHelper.getRequirement("fsn", "dummy_warehouse1", RequirementApprovalState.CDO_REVIEW.toString(), true, snapshot, 21,
+                "ABC",100,101,"INR", 3, "cdo_comment", "Daily planning" );
 
         requirements.add(requirement);
 
-        requirement = TestHelper.getRequirement("fsn", "dummy_warehouse2", RequirementApprovalState.BIZFIN_REVIEW.toString(), true, snapshot1, 22,
+        requirement = TestHelper.getRequirement("fsn", "dummy_warehouse2", RequirementApprovalState.CDO_REVIEW.toString(), true, snapshot1, 22,
                 "DEF",10,9,"USD", 4, "", "Daily planning" );
 
+        requirements.add(requirement);
+
+        return requirements;
+    }
+
+    private List<Requirement> getIpcQuantity() {
+        RequirementSnapshot snapshot = TestHelper.getRequirementSnapshot("[1,2]", 2,3,4,5,6);
+
+        RequirementSnapshot snapshot1 = TestHelper.getRequirementSnapshot("[3,4]", 7,8,9,10,11);
+
+        List<Requirement> requirements = Lists.newArrayList();
+        Requirement requirement = TestHelper.getRequirement("fsn", "dummy_warehouse1", RequirementApprovalState.PROPOSED.toString(), true, snapshot, 15,
+                "ABC",100,101,"INR", 3, "", "Daily planning" );
+
+        requirements.add(requirement);
+
+        requirement = TestHelper.getRequirement("fsn", "dummy_warehouse2", RequirementApprovalState.PROPOSED.toString(), true, snapshot1, 22,
+                "DEF",10,9,"USD", 4, "", "Daily planning" );
 
         requirements.add(requirement);
 
@@ -211,3 +257,4 @@ public class DownloadCDOReviewCommandTest {
     }
 
 }
+

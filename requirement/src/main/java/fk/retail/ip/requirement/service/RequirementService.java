@@ -1,28 +1,44 @@
 package fk.retail.ip.requirement.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
+import fk.retail.ip.core.poi.SpreadSheetReader;
+import com.google.inject.Provider;
+import fk.retail.ip.requirement.internal.command.CalculateRequirementCommand;
 import fk.retail.ip.requirement.internal.entities.Requirement;
+import fk.retail.ip.requirement.internal.enums.OverrideStatus;
+import fk.retail.ip.requirement.internal.exception.NoRequirementsSelectedException;
 import fk.retail.ip.requirement.internal.factory.RequirementStateFactory;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.internal.states.RequirementState;
+import fk.retail.ip.requirement.model.CalculateRequirementRequest;
 import fk.retail.ip.requirement.model.DownloadRequirementRequest;
 import fk.retail.ip.requirement.model.RequirementApprovalRequest;
+import fk.retail.ip.requirement.model.*;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.List;
+import java.util.Map;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.ws.rs.core.StreamingOutput;
-import lombok.extern.slf4j.Slf4j;
 import org.json.JSONException;
 
 /**
  * @author nidhigupta.m
  * @author Pragalathan M <pragalathan.m@flipkart.com>
+ * @author contradiction154
  */
 @Slf4j
 public class RequirementService {
@@ -30,13 +46,15 @@ public class RequirementService {
     private final RequirementRepository requirementRepository;
     private final RequirementStateFactory requirementStateFactory;
     private final ApprovalService approvalService;
+    private final Provider<CalculateRequirementCommand> calculateRequirementCommandProvider;
 
     @Inject
-    public RequirementService(RequirementRepository requirementRepository, RequirementStateFactory requirementStateFactory, ApprovalService approvalService) {
+    public RequirementService(RequirementRepository requirementRepository, RequirementStateFactory requirementStateFactory,
+                              ApprovalService approvalService, Provider<CalculateRequirementCommand> calculateRequirementCommandProvider) {
         this.requirementRepository = requirementRepository;
         this.requirementStateFactory = requirementStateFactory;
         this.approvalService = approvalService;
-
+        this.calculateRequirementCommandProvider = calculateRequirementCommandProvider;
     }
 
     public StreamingOutput downloadRequirement(DownloadRequirementRequest downloadRequirementRequest) {
@@ -48,6 +66,47 @@ public class RequirementService {
         requirements = requirements.stream().filter(requirement -> !requirement.getWarehouse().equals("all")).collect(Collectors.toList());
         RequirementState state = requirementStateFactory.getRequirementState(requirementState);
         return state.download(requirements, isLastAppSupplierRequired);
+    }
+
+    public UploadResponse uploadRequirement(InputStream inputStream, String requirementState)
+            throws IOException, InvalidFormatException {
+        SpreadSheetReader spreadSheetReader = new SpreadSheetReader();
+        List<Map<String, Object>> parsedMappingList = spreadSheetReader.read(inputStream);
+        log.info("Uploaded file parsed and contains ", parsedMappingList.size(), "records");
+        ObjectMapper mapper = new ObjectMapper();
+        List<RequirementDownloadLineItem> requirementDownloadLineItems = mapper.convertValue(parsedMappingList,
+                new TypeReference<List<RequirementDownloadLineItem>>() {});
+
+        List<Requirement> requirements;
+        List<Long> requirementIds = new ArrayList<>();
+        requirementDownloadLineItems.forEach(row ->
+                requirementIds.add(row.getRequirementId())
+        );
+
+        System.out.println("the list of requirement ids is : ");
+        System.out.println(requirementIds.get(0));
+        requirements = requirementRepository.findRequirementByIds(requirementIds);
+        log.info("number of requirements found for uploaded records : " ,requirements.size());
+
+        if (requirements.size() == 0) {
+            System.out.println("no requirement found");
+            NoRequirementsSelectedException noRequirementsSelectedException =
+                    new NoRequirementsSelectedException("no requirement found");
+            throw noRequirementsSelectedException;
+        }
+        RequirementState state = requirementStateFactory.getRequirementState(requirementState);
+        List<RequirementUploadLineItem> uploadLineItems = state.upload(requirements, requirementDownloadLineItems);
+        int successfulRowCount = requirementDownloadLineItems.size() - uploadLineItems.size();
+        UploadResponse uploadResponse = new UploadResponse();
+        uploadResponse.setRequirementUploadLineItems(uploadLineItems);
+        uploadResponse.setSuccessfulRowCount(successfulRowCount);
+        if (uploadLineItems.isEmpty()) {
+            uploadResponse.setStatus(OverrideStatus.SUCCESS.toString());
+        } else {
+            uploadResponse.setStatus(OverrideStatus.FAILURE.toString());
+        }
+
+        return uploadResponse;
     }
 
     public String changeState(RequirementApprovalRequest request) throws JSONException {
@@ -74,5 +133,10 @@ public class RequirementService {
 
         requirementRepository.updateProjection(projectionIds, approvalService.getTargetState(action));
         return "{\"msg\":\"Moved " + projectionIds.size() + " projections to new state.\"}";
+    }
+
+
+    public void calculateRequirement(CalculateRequirementRequest calculateRequirementRequest) {
+        calculateRequirementCommandProvider.get().withFsns(calculateRequirementRequest.getFsns()).execute();
     }
 }

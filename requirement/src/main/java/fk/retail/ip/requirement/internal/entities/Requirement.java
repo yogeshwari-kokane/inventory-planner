@@ -37,7 +37,7 @@ public class Requirement extends AbstractEntity {
 
     //todo:cleanup
     @Column(name = "qty")
-    private int quantity;
+    private double quantity;
 
     private String supplier;
 
