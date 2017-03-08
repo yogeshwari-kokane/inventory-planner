@@ -4,18 +4,17 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import fk.retail.ip.core.poi.SpreadSheetReader;
-import fk.retail.ip.requirement.internal.command.upload.UploadCommand;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.enums.OverrideStatus;
 import fk.retail.ip.requirement.internal.exception.NoRequirementsSelectedException;
 import fk.retail.ip.requirement.internal.factory.RequirementStateFactory;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.internal.states.RequirementState;
+import fk.retail.ip.requirement.model.DownloadRequirementRequest;
+import fk.retail.ip.requirement.model.RequirementApprovalRequest;
 import fk.retail.ip.requirement.model.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -24,12 +23,8 @@ import java.util.Map;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.List;
-import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.ws.rs.core.StreamingOutput;
-import lombok.extern.slf4j.Slf4j;
 import org.json.JSONException;
 
 /**
@@ -45,7 +40,6 @@ public class RequirementService {
     private final ApprovalService approvalService;
 
     @Inject
-
     public RequirementService(RequirementRepository requirementRepository, RequirementStateFactory requirementStateFactory, ApprovalService approvalService) {
         this.requirementRepository = requirementRepository;
         this.requirementStateFactory = requirementStateFactory;

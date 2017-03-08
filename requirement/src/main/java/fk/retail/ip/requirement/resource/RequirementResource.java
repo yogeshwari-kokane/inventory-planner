@@ -160,13 +160,11 @@ public class RequirementResource {
         }
     }
 
-
     @PUT
     @Path("/state")
     @Produces(MediaType.APPLICATION_JSON)
     @Timed
     public String changeState(RequirementApprovalRequest request) throws JSONException {
         return requirementService.changeState(request);
-
     }
 }

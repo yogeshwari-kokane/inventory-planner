@@ -7,8 +7,6 @@ import fk.retail.ip.requirement.internal.command.upload.ProposedUploadCommand;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
 import fk.retail.ip.requirement.model.RequirementUploadLineItem;
-
-import java.io.IOException;
 import java.util.List;
 import javax.ws.rs.core.StreamingOutput;
 
@@ -26,13 +24,8 @@ public class ProposedRequirementState implements RequirementState {
         this.uploadProposedCommandProvider = uploadProposedCommandProvider;
     }
 
-//    @Inject
-//    public ProposedRequirementState(Provider<UploadProposedCommand> uploadProposedCommandProvider) {
-//        this.uploadProposedCommandProvider = uploadProposedCommandProvider;
-//    }
-
     @Override
-    public List<RequirementUploadLineItem> upload(List<Requirement> requirements, List<RequirementDownloadLineItem> parsedJson) throws IOException {
+    public List<RequirementUploadLineItem> upload(List<Requirement> requirements, List<RequirementDownloadLineItem> parsedJson) {
         return uploadProposedCommandProvider.get().execute(parsedJson, requirements);
     }
 

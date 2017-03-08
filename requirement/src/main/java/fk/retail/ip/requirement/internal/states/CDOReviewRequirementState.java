@@ -7,8 +7,6 @@ import fk.retail.ip.requirement.internal.command.upload.CdoReviewUploadCommand;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
 import fk.retail.ip.requirement.model.RequirementUploadLineItem;
-
-import java.io.IOException;
 import java.util.List;
 import javax.ws.rs.core.StreamingOutput;
 
@@ -25,13 +23,8 @@ public class CDOReviewRequirementState implements RequirementState {
         this.uploadCDOReviewCommandProvider = uploadCDOReviewCommandProvider;
     }
 
-//    @Inject
-//    public CDOReviewRequirementState(Provider<UploadCDOReviewCommand> uploadCDOReviewCommandProvider) {
-//        this.uploadCDOReviewCommandProvider = uploadCDOReviewCommandProvider;
-//    }
-
     @Override
-    public List<RequirementUploadLineItem> upload(List<Requirement> requirements, List<RequirementDownloadLineItem> parsedJson) throws IOException {
+    public List<RequirementUploadLineItem> upload(List<Requirement> requirements, List<RequirementDownloadLineItem> parsedJson) {
         return uploadCDOReviewCommandProvider.get().execute(parsedJson, requirements);
     }
 
