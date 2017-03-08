@@ -2,6 +2,7 @@ package fk.retail.ip.requirement.internal.command.upload;
 
 
 import fk.retail.ip.requirement.internal.Constants;
+import fk.retail.ip.requirement.internal.Constants1;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.enums.OverrideKeys;
 import fk.retail.ip.requirement.internal.enums.OverrideStatus;
@@ -58,7 +59,7 @@ public abstract class UploadCommand {
             } else {
 
                 Map<String, Object> overriddenValues = validateAndSetStateSpecificFields(row);
-                String status = overriddenValues.get(Constants.getKey(Constants.STATUS)).toString();
+                String status = overriddenValues.get(Constants1.getKey(Constants.STATUS)).toString();
                 OverrideStatus overrideStatus = OverrideStatus.fromString(status);
 
                 switch(overrideStatus) {
@@ -105,7 +106,7 @@ public abstract class UploadCommand {
 
                         } else {
 
-                            requirementUploadLineItem.setFailureReason(Constants.getKey("dasd"));
+                            requirementUploadLineItem.setFailureReason(Constants1.getKey("dasd"));
                             requirementUploadLineItem.setFsn(fsn);
                             requirementUploadLineItem.setRowNumber(rowCount);
                             requirementUploadLineItem.setWarehouse(warehouse);
@@ -177,7 +178,7 @@ public abstract class UploadCommand {
     private Optional<String> validateGenericColumns(String fsn, String warehouse){
         String genericValidationComment;
         if (fsn == null || warehouse == null) {
-           genericValidationComment =  Constants.getKey(Constants.FSN_OR_WAREHOUSE_IS_MISSING);
+           genericValidationComment =  Constants1.getKey(Constants.FSN_OR_WAREHOUSE_IS_MISSING);
             return Optional.of(genericValidationComment);
         }
         return Optional.empty();
@@ -189,11 +190,11 @@ public abstract class UploadCommand {
             return Optional.empty();
         }
         if (suggestedQuantity <= 0) {
-            validationComment = isEmptyString(overrideComment) ? Constants.getKey(Constants.INVALID_QUANTITY_WITHOUT_COMMENT) :
-                    Constants.getKey(Constants.SUGGESTED_QUANTITY_IS_NOT_GREATER_THAN_ZERO);
+            validationComment = isEmptyString(overrideComment) ? Constants1.getKey(Constants.INVALID_QUANTITY_WITHOUT_COMMENT) :
+                    Constants1.getKey(Constants.SUGGESTED_QUANTITY_IS_NOT_GREATER_THAN_ZERO);
             return Optional.of(validationComment);
         } else if (suggestedQuantity != currentQuantity && isEmptyString(overrideComment)) {
-            validationComment = Constants.getKey(Constants.QUANTITY_OVERRIDE_COMMENT_IS_MISSING);
+            validationComment = Constants1.getKey(Constants.QUANTITY_OVERRIDE_COMMENT_IS_MISSING);
             return Optional.of(validationComment);
         } else {
             return Optional.empty();

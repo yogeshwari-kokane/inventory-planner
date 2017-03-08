@@ -62,7 +62,13 @@ public class RequirementService {
         String requirementState = downloadRequirementRequest.getState();
         Map<String, Object> filters = downloadRequirementRequest.getFilters();
         boolean isLastAppSupplierRequired = downloadRequirementRequest.isLastAppSupplierRequired();
-        List<Requirement> requirements = requirementRepository.findRequirements(requirementIds, requirementState, filters);
+        List<Requirement> requirements;
+        if (!requirementIds.isEmpty()) {
+            requirements = requirementRepository.findRequirementByIds(requirementIds);
+        } else {
+            requirements = requirementRepository.findAllCurrentRequirements(requirementState);
+        }
+
         requirements = requirements.stream().filter(requirement -> !requirement.getWarehouse().equals("all")).collect(Collectors.toList());
         RequirementState state = requirementStateFactory.getRequirementState(requirementState);
         return state.download(requirements, isLastAppSupplierRequired);
@@ -121,7 +127,7 @@ public class RequirementService {
         int pageSize = 1000;
         Set<Long> projectionIds = new HashSet<>();
         do {
-            requirements = requirementRepository.findRequirements(ids, state, request.getFilters(), pageNumber++, pageSize);
+            requirements = requirementRepository.findRequirements(ids, state, request.getFilters(), pageNumber++);
             count += requirements.size();
             if (requirements.isEmpty()) {
                 break;

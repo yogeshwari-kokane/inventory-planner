@@ -3,6 +3,7 @@ package fk.retail.ip.requirement.internal.command.upload;
 import com.google.common.collect.Lists;
 import fk.retail.ip.requirement.config.TestModule;
 import fk.retail.ip.requirement.internal.Constants;
+import fk.retail.ip.requirement.internal.Constants1;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.entities.RequirementSnapshot;
 import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
@@ -51,11 +52,11 @@ public class ProposedUploadCommandTest {
         Assert.assertEquals(20, (int) argumentCaptor.getAllValues().get(0).getQuantity());
         Assert.assertEquals("{\"quantityOverrideComment\":\"test_ipc\"}", argumentCaptor.getAllValues().get(0).getOverrideComment());
         Assert.assertEquals(3, requirementUploadLineItems.size());
-        Assert.assertEquals(Constants.getKey(Constants.QUANTITY_OVERRIDE_COMMENT_IS_MISSING),
+        Assert.assertEquals(Constants1.getKey(Constants.QUANTITY_OVERRIDE_COMMENT_IS_MISSING),
                 requirementUploadLineItems.get(0).getFailureReason());
-        Assert.assertEquals(Constants.getKey(Constants.FSN_OR_WAREHOUSE_IS_MISSING),
+        Assert.assertEquals(Constants1.getKey(Constants.FSN_OR_WAREHOUSE_IS_MISSING),
                 requirementUploadLineItems.get(1).getFailureReason());
-        Assert.assertEquals(Constants.getKey(Constants.SUGGESTED_QUANTITY_IS_NOT_GREATER_THAN_ZERO),
+        Assert.assertEquals(Constants1.getKey(Constants.SUGGESTED_QUANTITY_IS_NOT_GREATER_THAN_ZERO),
                 requirementUploadLineItems.get(2).getFailureReason());
 
 
