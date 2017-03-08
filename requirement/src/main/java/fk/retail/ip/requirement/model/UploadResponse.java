@@ -13,4 +13,5 @@ import java.util.List;
 public class UploadResponse {
     private List<RequirementUploadLineItem> requirementUploadLineItems;
     private String status;
+    private int successfulRowCount;
 }

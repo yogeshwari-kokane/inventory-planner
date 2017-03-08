@@ -3,11 +3,12 @@ package fk.retail.ip.requirement.internal.states;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import fk.retail.ip.requirement.internal.command.download.DownloadCDOReviewCommand;
-import fk.retail.ip.requirement.internal.command.upload.UploadCDOReviewCommand;
+import fk.retail.ip.requirement.internal.command.upload.CdoReviewUploadCommand;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
 import fk.retail.ip.requirement.model.RequirementUploadLineItem;
 
+import java.io.IOException;
 import java.util.List;
 import javax.ws.rs.core.StreamingOutput;
 
@@ -16,10 +17,10 @@ import javax.ws.rs.core.StreamingOutput;
  */
 public class CDOReviewRequirementState implements RequirementState {
     private final Provider<DownloadCDOReviewCommand> downloadCDOReviewCommandProvider;
-    private final Provider<UploadCDOReviewCommand> uploadCDOReviewCommandProvider;
+    private final Provider<CdoReviewUploadCommand> uploadCDOReviewCommandProvider;
 
     @Inject
-    public CDOReviewRequirementState(Provider<DownloadCDOReviewCommand> downloadCDOReviewCommandProvider, Provider<UploadCDOReviewCommand> uploadCDOReviewCommandProvider) {
+    public CDOReviewRequirementState(Provider<DownloadCDOReviewCommand> downloadCDOReviewCommandProvider, Provider<CdoReviewUploadCommand> uploadCDOReviewCommandProvider) {
         this.downloadCDOReviewCommandProvider = downloadCDOReviewCommandProvider;
         this.uploadCDOReviewCommandProvider = uploadCDOReviewCommandProvider;
     }
@@ -30,7 +31,7 @@ public class CDOReviewRequirementState implements RequirementState {
 //    }
 
     @Override
-    public List<RequirementUploadLineItem> upload(List<Requirement> requirements, List<RequirementDownloadLineItem> parsedJson) {
+    public List<RequirementUploadLineItem> upload(List<Requirement> requirements, List<RequirementDownloadLineItem> parsedJson) throws IOException {
         return uploadCDOReviewCommandProvider.get().execute(parsedJson, requirements);
     }
 

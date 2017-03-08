@@ -33,6 +33,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
+import io.dropwizard.jersey.errors.ErrorMessage;
+import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
@@ -44,6 +46,7 @@ import org.json.JSONException;
  */
 @Transactional
 @Path("/v1/requirement")
+@Slf4j
 public class RequirementResource {
 
     private final RequirementService requirementService;
@@ -107,20 +110,23 @@ public class RequirementResource {
         System.out.println(state);
         try {
             //List<RequirementUploadLineItem> result = requirementService.uploadRequirement(new FileInputStream("/Users/agarwal.vaibhav/Desktop/test_proposed.xlsx"), fileDetails, state);
-            List<RequirementUploadLineItem> result = requirementService.uploadRequirement(inputStream, state);
+            UploadResponse uploadResponse = requirementService.uploadRequirement(inputStream, state);
+            log.info("Successfully uploaded " + uploadResponse.getSuccessfulRowCount() + "records");
 
-            UploadResponse uploadResponse = new UploadResponse();
 
-            JSONObject response = new JSONObject();
-            if (result.isEmpty()) {
-                response.put("status", "success");
-                System.out.println("all were successful");
-                uploadResponse.setRequirementUploadLineItems(result);
-                uploadResponse.setStatus(OverrideKeys.SUCCESS.toString());
-            } else {
-                System.out.println("atleast one failed");
-                uploadResponse.setRequirementUploadLineItems(result);
-                uploadResponse.setStatus(OverrideKeys.FAILURE.toString());
+            //UploadResponse uploadResponse = new UploadResponse();
+
+            //JSONObject response = new JSONObject();
+//            if (result.isEmpty()) {
+//                //response.put("status", "success");
+//                System.out.println("all were successful");
+//                uploadResponse.setRequirementUploadLineItems(result);
+//                uploadResponse.setStatus(OverrideKeys.SUCCESS.toString());
+//                uploadResponse.setSuccessfulRowCount(0);
+//            } else {
+//                System.out.println("atleast one failed");
+//                uploadResponse.setRequirementUploadLineItems(result);
+//                uploadResponse.setStatus(OverrideKeys.FAILURE.toString());
 //                JSONObject responseBody = new JSONObject();
 //                List<JSONObject> responseList = new ArrayList<>();
 //                for(RequirementUploadLineItem row : result) {
@@ -141,13 +147,16 @@ public class RequirementResource {
 //                System.out.println(result.get(0).getFailureReason());
 //                System.out.println(result.get(0).getFsn());
 //                System.out.println(result.get(0).getRowNumber());
-            }
+//            }
             return Response.ok(uploadResponse).build();
 
         } catch (InvalidRequirementStateException invalidStateException) {
-            return Response.status(400).entity(invalidStateException.getMessage()).build();
+            log.info("Invalid Requirement State");
+            return Response.status(400).entity(invalidStateException.getMessage()).type("text/plain").build();
         } catch (NoRequirementsSelectedException noRequirement) {
-            return Response.status(400).entity(noRequirement.getMessage()).build();
+            log.info("No requirement was found for the Uploaded File");
+            return Response.status(400).entity(new ErrorMessage("No requirement Found"))
+                    .type(MediaType.APPLICATION_JSON).build();
         }
     }
 

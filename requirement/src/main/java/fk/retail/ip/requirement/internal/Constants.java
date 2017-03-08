@@ -1,30 +1,56 @@
 package fk.retail.ip.requirement.internal;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Optional;
+import java.util.Properties;
+
 /**
  * Created by agarwal.vaibhav on 03/03/17.
  */
 public class Constants {
 
-    public static final String FSN_OR_WAREHOUSE_IS_MISSING = "fsn or warehouse is missing";
-    public static final String QUANTITY_OVERRIDE_COMMENT_IS_MISSING = "quantity override comment is missing";
-    public static final String SUGGESTED_QUANTITY_IS_NOT_GREATER_THAN_ZERO =
-            "suggested quantity is not greater than zero";
-    public static final String APP_OVERRIDE_COMMENT_IS_MISSING = "app override comment is missing";
-    public static final String SUPPLIER_OVERRIDE_COMMENT_IS_MISSING = "supplier override comment is missing";
-    public static final String SUPPLIER_OVERRIDE_COMMENT_IS_MISSING_WHEN_UPDATED_FROM_BLANK =
-            "supplier override comment is missing when overridden from blank";
-    public static final String SLA_QUANTITY_IS_NOT_GREATER_THAN_ZERO = "suggested sla is not greater than zero";
-    public static final String APP_QUANTITY_IS_NOT_GREATER_THAN_ZERO = "suggested app is not greater than zero";
-    public static final String REQUIREMENT_NOT_FOUND_FOR_GIVEN_REQUIREMENT_ID =
-            "requirement not found for given requirement Id";
-    public static final String QUANTITY_OVERRIDE_IS_NOT_GREATER_THAN_ZERO_AND_COMMENT_IS_MISSING =
-            "quantity override comment is missing and overridden quantity is not positive integer";
-    public static final String APP_OVERRIDE_IS_NOT_GREATER_THAN_ZERO_AND_COMMENT_IS_MISSING =
-            "price override comment is missing and overridden price is not positive integer";
+    public static String FSN_OR_WAREHOUSE_IS_MISSING = "FSN_OR_WAREHOUSE_IS_MISSING";
+    public static String QUANTITY_OVERRIDE_COMMENT_IS_MISSING = "QUANTITY_OVERRIDE_COMMENT_IS_MISSING";
+    public static String SUGGESTED_QUANTITY_IS_NOT_GREATER_THAN_ZERO =
+            "SUGGESTED_QUANTITY_IS_NOT_GREATER_THAN_ZERO";
+    public static String APP_OVERRIDE_COMMENT_IS_MISSING = "APP_OVERRIDE_COMMENT_IS_MISSING";
+    public static String SUPPLIER_OVERRIDE_COMMENT_IS_MISSING = "SUPPLIER_OVERRIDE_COMMENT_IS_MISSING";
+    public static String SUPPLIER_OVERRIDE_COMMENT_IS_MISSING_WHEN_UPDATED_FROM_BLANK =
+            "SUPPLIER_OVERRIDE_COMMENT_IS_MISSING_WHEN_UPDATED_FROM_BLANK";
+    public static String SLA_QUANTITY_IS_NOT_GREATER_THAN_ZERO = "SLA_QUANTITY_IS_NOT_GREATER_THAN_ZERO";
+    public static String APP_QUANTITY_IS_NOT_GREATER_THAN_ZERO = "APP_QUANTITY_IS_NOT_GREATER_THAN_ZERO";
+    public static String REQUIREMENT_NOT_FOUND_FOR_GIVEN_REQUIREMENT_ID =
+            "REQUIREMENT_NOT_FOUND_FOR_GIVEN_REQUIREMENT_ID";
+    public static String INVALID_QUANTITY_WITHOUT_COMMENT =
+            "INVALID_QUANTITY_WITHOUT_COMMENT";
+    public static String INVALID_APP_WITHOUT_COMMENT =
+            "INVALID_APP_WITHOUT_COMMENT";
 
-    public static final String QUANTITY_OVERRIDE_COMMENT = "quantityOverrideComment";
-    public static final String APP_OVERRIDE_COMMENT = "appOverrideComment";
-    public static final String SUPPLIER_OVERRIDE_COMMENT = "supplierOverrideComment";
+    public static String QUANTITY_OVERRIDE_COMMENT = "QUANTITY_OVERRIDE_COMMENT";
+    public static String APP_OVERRIDE_COMMENT = "APP_OVERRIDE_COMMENT";
+    public static String SUPPLIER_OVERRIDE_COMMENT = "SUPPLIER_OVERRIDE_COMMENT";
+    public static String STATUS = "STATUS";
+    public static String PROPERTIES_FILE_PATH = "/message.properties";
 
+    private static Properties properties;
+
+    static {
+        try {
+            properties = new Properties();
+            properties.load(Constants.class.getResourceAsStream(Constants.PROPERTIES_FILE_PATH));
+        } catch (IOException ioe) {
+            System.out.println("Unable to find file");
+        }
+    }
+
+    private Constants() {}
+
+    public static String getKey(String key) {
+        return properties.getProperty(key);
+    }
 
 }
+
+

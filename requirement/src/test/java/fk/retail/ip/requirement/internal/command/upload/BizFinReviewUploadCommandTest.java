@@ -2,7 +2,6 @@ package fk.retail.ip.requirement.internal.command.upload;
 
 import com.google.common.collect.Lists;
 import fk.retail.ip.requirement.config.TestModule;
-import fk.retail.ip.requirement.internal.command.upload.UploadBizFinReviewCommand;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.entities.RequirementSnapshot;
 import fk.retail.ip.requirement.internal.enums.RequirementApprovalStates;
@@ -18,6 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.*;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -26,10 +26,10 @@ import java.util.List;
 
 @RunWith(JukitoRunner.class)
 @UseModules(TestModule.class)
-public class UploadBizFinReviewCommandTest {
+public class BizFinReviewUploadCommandTest {
 
     @InjectMocks
-    UploadBizFinReviewCommand uploadBizFinReviewCommand;
+    BizFinReviewUploadCommand bizFinReviewUploadCommand;
 
     @Mock
     RequirementRepository requirementRepository;
@@ -40,12 +40,13 @@ public class UploadBizFinReviewCommandTest {
     }
 
     @Test
-    public void uploadTest() {
+    public void uploadTest() throws IOException {
         List<RequirementDownloadLineItem> requirementDownloadLineItems = TestHelper.getBizfinReviewDownloadLineItem();
         List<Requirement> requirements = getRequirements();
-        List<RequirementUploadLineItem> requirementUploadLineItems = uploadBizFinReviewCommand.execute(requirementDownloadLineItems, requirements);
+        List<RequirementUploadLineItem> requirementUploadLineItems = bizFinReviewUploadCommand.execute(requirementDownloadLineItems, requirements);
         ArgumentCaptor<Requirement> argumentCaptor = ArgumentCaptor.forClass(Requirement.class);
         Mockito.verify(requirementRepository,Mockito.times(2)).persist(argumentCaptor.capture());
+
 
 
         Assert.assertEquals(1, requirementUploadLineItems.size());
@@ -64,22 +65,22 @@ public class UploadBizFinReviewCommandTest {
 
         Requirement requirement = TestHelper.getRequirement("fsn", "dummy_warehouse_1", RequirementApprovalStates.BIZFIN_REVIEW.toString(), true, snapshot , 21, "ABC",
                 100, 101, "INR", 3, "", "Daily planning");
-        requirement.setProjectionId((long)1);
+        requirement.setId((long) 1);
         requirements.add(requirement);
 
         requirement = TestHelper.getRequirement("fsn", "dummy_warehouse_2",RequirementApprovalStates.BIZFIN_REVIEW.toString(), true, snapshot1 , 22, "DEF",
                 10, 9, "USD", 4, "", "Daily planning");
-        requirement.setProjectionId((long)2);
+        requirement.setId((long) 2);
         requirements.add(requirement);
 
         requirement = TestHelper.getRequirement("fsn_1", "dummy_warehouse_1",RequirementApprovalStates.BIZFIN_REVIEW.toString(), true, snapshot1 , 22, "DEF",
                 10, 9, "USD", 4, "", "Daily planning");
-        requirement.setProjectionId((long)3);
+        requirement.setId((long) 3);
         requirements.add(requirement);
 
         requirement = TestHelper.getRequirement("fsn_1", "dummy_warehouse_2",RequirementApprovalStates.BIZFIN_REVIEW.toString(), true, snapshot1 , 22, "DEF",
                 10, 9, "USD", 4, "", "Daily planning");
-        requirement.setProjectionId((long)4);
+        requirement.setId((long) 4);
         requirements.add(requirement);
 
 

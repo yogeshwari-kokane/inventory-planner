@@ -4,14 +4,14 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import fk.retail.ip.core.poi.SpreadSheetReader;
+import fk.retail.ip.requirement.internal.command.upload.UploadCommand;
 import fk.retail.ip.requirement.internal.entities.Requirement;
+import fk.retail.ip.requirement.internal.enums.OverrideStatus;
 import fk.retail.ip.requirement.internal.exception.NoRequirementsSelectedException;
 import fk.retail.ip.requirement.internal.factory.RequirementStateFactory;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.internal.states.RequirementState;
-import fk.retail.ip.requirement.model.DownloadRequirementRequest;
-import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
-import fk.retail.ip.requirement.model.RequirementUploadLineItem;
+import fk.retail.ip.requirement.model.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
@@ -21,7 +21,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import fk.retail.ip.requirement.model.RequirementApprovalRequest;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
@@ -36,6 +35,7 @@ import org.json.JSONException;
 /**
  * @author nidhigupta.m
  * @author Pragalathan M <pragalathan.m@flipkart.com>
+ * @author contradiction154
  */
 @Slf4j
 public class RequirementService {
@@ -73,10 +73,11 @@ public class RequirementService {
         return state.download(requirements, isLastAppSupplierRequired);
     }
 
-    public List<RequirementUploadLineItem> uploadRequirement(InputStream inputStream, String requirementState)
+    public UploadResponse uploadRequirement(InputStream inputStream, String requirementState)
             throws IOException, InvalidFormatException {
         SpreadSheetReader spreadSheetReader = new SpreadSheetReader();
         List<Map<String, Object>> parsedMappingList = spreadSheetReader.read(inputStream);
+        log.info("Uploaded file parsed and contains ", parsedMappingList.size(), "records");
         ObjectMapper mapper = new ObjectMapper();
         List<RequirementDownloadLineItem> requirementDownloadLineItems = mapper.convertValue(parsedMappingList,
                 new TypeReference<List<RequirementDownloadLineItem>>() {});
@@ -90,15 +91,27 @@ public class RequirementService {
         System.out.println("the list of requirement ids is : ");
         System.out.println(requirementIds.get(0));
         requirements = requirementRepository.findRequirementByIds(requirementIds);
+        log.info("number of requirements found for uploaded records : " ,requirements.size());
 
         if (requirements.size() == 0) {
+            System.out.println("no requirement found");
             NoRequirementsSelectedException noRequirementsSelectedException =
                     new NoRequirementsSelectedException("no requirement found");
             throw noRequirementsSelectedException;
         }
         RequirementState state = requirementStateFactory.getRequirementState(requirementState);
-        return state.upload(requirements, requirementDownloadLineItems);
+        List<RequirementUploadLineItem> uploadLineItems = state.upload(requirements, requirementDownloadLineItems);
+        int successfulRowCount = requirementDownloadLineItems.size() - uploadLineItems.size();
+        UploadResponse uploadResponse = new UploadResponse();
+        uploadResponse.setRequirementUploadLineItems(uploadLineItems);
+        uploadResponse.setSuccessfulRowCount(successfulRowCount);
+        if (uploadLineItems.isEmpty()) {
+            uploadResponse.setStatus(OverrideStatus.SUCCESS.toString());
+        } else {
+            uploadResponse.setStatus(OverrideStatus.FAILURE.toString());
+        }
 
+        return uploadResponse;
     }
 
     public String changeState(RequirementApprovalRequest request) throws JSONException {

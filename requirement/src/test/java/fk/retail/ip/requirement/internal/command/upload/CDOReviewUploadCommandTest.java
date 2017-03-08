@@ -3,7 +3,6 @@ package fk.retail.ip.requirement.internal.command.upload;
 import com.google.common.collect.Lists;
 import fk.retail.ip.requirement.config.TestModule;
 import fk.retail.ip.requirement.internal.Constants;
-import fk.retail.ip.requirement.internal.command.upload.UploadCDOReviewCommand;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.entities.RequirementSnapshot;
 import fk.retail.ip.requirement.internal.enums.RequirementApprovalStates;
@@ -19,6 +18,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.*;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -26,10 +26,10 @@ import java.util.List;
  */
 @RunWith(JukitoRunner.class)
 @UseModules(TestModule.class)
-public class UploadCDOReviewCommandTest {
+public class CdoReviewUploadCommandTest {
 
     @InjectMocks
-    UploadCDOReviewCommand uploadCDOReviewCommand;
+    CdoReviewUploadCommand CDOReviewUploadCommand;
 
     @Mock
     RequirementRepository requirementRepository;
@@ -40,10 +40,10 @@ public class UploadCDOReviewCommandTest {
     }
 
     @Test
-    public void uploadTest() {
+    public void uploadTest() throws IOException {
         List<RequirementDownloadLineItem> requirementDownloadLineItems = TestHelper.getCDOReviewRequirementDownloadLineItem();
         List<Requirement> requirements = getRequirements();
-        List<RequirementUploadLineItem> requirementUploadLineItems = uploadCDOReviewCommand.execute(requirementDownloadLineItems ,requirements);
+        List<RequirementUploadLineItem> requirementUploadLineItems = CDOReviewUploadCommand.execute(requirementDownloadLineItems ,requirements);
         ArgumentCaptor<Requirement> argumentCaptor = ArgumentCaptor.forClass(Requirement.class);
         Mockito.verify(requirementRepository, Mockito.times(2)).persist(argumentCaptor.capture());
 
@@ -56,14 +56,14 @@ public class UploadCDOReviewCommandTest {
         Assert.assertEquals("new Supplier", argumentCaptor.getAllValues().get(1).getSupplier());
 
         Assert.assertEquals(4, requirementUploadLineItems.size());
-        Assert.assertEquals(Constants.SUGGESTED_QUANTITY_IS_NOT_GREATER_THAN_ZERO.toString(),
+        Assert.assertEquals(Constants.getKey(Constants.SUGGESTED_QUANTITY_IS_NOT_GREATER_THAN_ZERO),
                 requirementUploadLineItems.get(0).getFailureReason());
-        Assert.assertEquals(Constants.QUANTITY_OVERRIDE_COMMENT_IS_MISSING.toString(),
+        Assert.assertEquals(Constants.getKey(Constants.QUANTITY_OVERRIDE_COMMENT_IS_MISSING),
                 requirementUploadLineItems.get(1).getFailureReason());
-        Assert.assertEquals(Constants.SLA_QUANTITY_IS_NOT_GREATER_THAN_ZERO.toString()
-                + Constants.SUPPLIER_OVERRIDE_COMMENT_IS_MISSING_WHEN_UPDATED_FROM_BLANK.toString(),
+        Assert.assertEquals(Constants.getKey(Constants.SLA_QUANTITY_IS_NOT_GREATER_THAN_ZERO)
+                 + System.lineSeparator() + Constants.getKey(Constants.SUPPLIER_OVERRIDE_COMMENT_IS_MISSING),
                 requirementUploadLineItems.get(2).getFailureReason());
-        Assert.assertEquals(Constants.APP_OVERRIDE_IS_NOT_GREATER_THAN_ZERO_AND_COMMENT_IS_MISSING.toString(),
+        Assert.assertEquals(Constants.getKey(Constants.INVALID_APP_WITHOUT_COMMENT),
                 requirementUploadLineItems.get(3).getFailureReason());
 
     }
@@ -78,32 +78,32 @@ public class UploadCDOReviewCommandTest {
 
         Requirement requirement = TestHelper.getRequirement("fsn", "dummy_warehouse_1", RequirementApprovalStates.CDO_REVIEW.toString(), true, snapshot , 21, "ABC",
                 100, 101, "INR", 3, "", "Daily planning");
-        requirement.setProjectionId((long)1);
+        requirement.setId((long) 1);
         requirements.add(requirement);
 
         requirement = TestHelper.getRequirement("fsn", "dummy_warehouse_2",RequirementApprovalStates.CDO_REVIEW.toString(), true, snapshot1 , 22, "DEF",
                 10, 9, "USD", 4, "", "Daily planning");
-        requirement.setProjectionId((long)2);
+        requirement.setId((long) 2);
         requirements.add(requirement);
 
         requirement = TestHelper.getRequirement("fsn_1", "dummy_warehouse_1",RequirementApprovalStates.CDO_REVIEW.toString(), true, snapshot1 , 22, "DEF",
                 10, 9, "USD", 4, "", "Daily planning");
-        requirement.setProjectionId((long)3);
+        requirement.setId((long) 3);
         requirements.add(requirement);
 
         requirement = TestHelper.getRequirement("fsn_1", "dummy_warehouse_2",RequirementApprovalStates.CDO_REVIEW.toString(), true, snapshot1 , 22, "DEF",
                 10, 9, "USD", 4, "", "Daily planning");
-        requirement.setProjectionId((long)4);
+        requirement.setId((long) 4);
         requirements.add(requirement);
 
         requirement = TestHelper.getRequirement("fsn_2", "dummy_warehouse_1",RequirementApprovalStates.CDO_REVIEW.toString(), true, snapshot1 , 22, "DEF",
                 10, 9, "USD", 4, "", "Daily planning");
-        requirement.setProjectionId((long)5);
+        requirement.setId((long) 5);
         requirements.add(requirement);
 
         requirement = TestHelper.getRequirement("fsn_2", "dummy_warehouse_2",RequirementApprovalStates.CDO_REVIEW.toString(), true, snapshot1 , 22, "DEF",
                 10, 9, "USD", 4, "", "Daily planning");
-        requirement.setProjectionId((long)6);
+        requirement.setId((long) 6);
         requirements.add(requirement);
 
 

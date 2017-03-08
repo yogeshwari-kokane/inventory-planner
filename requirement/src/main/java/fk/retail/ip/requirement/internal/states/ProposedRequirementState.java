@@ -3,11 +3,12 @@ package fk.retail.ip.requirement.internal.states;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import fk.retail.ip.requirement.internal.command.download.DownloadProposedCommand;
-import fk.retail.ip.requirement.internal.command.upload.UploadProposedCommand;
+import fk.retail.ip.requirement.internal.command.upload.ProposedUploadCommand;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
 import fk.retail.ip.requirement.model.RequirementUploadLineItem;
 
+import java.io.IOException;
 import java.util.List;
 import javax.ws.rs.core.StreamingOutput;
 
@@ -17,10 +18,10 @@ import javax.ws.rs.core.StreamingOutput;
 public class ProposedRequirementState implements RequirementState {
 
     private final Provider<DownloadProposedCommand> downloadProposedCommandProvider;
-    private final Provider<UploadProposedCommand> uploadProposedCommandProvider;
+    private final Provider<ProposedUploadCommand> uploadProposedCommandProvider;
 
     @Inject
-    public ProposedRequirementState(Provider<DownloadProposedCommand> downloadProposedCommandProvider, Provider<UploadProposedCommand> uploadProposedCommandProvider) {
+    public ProposedRequirementState(Provider<DownloadProposedCommand> downloadProposedCommandProvider, Provider<ProposedUploadCommand> uploadProposedCommandProvider) {
         this.downloadProposedCommandProvider = downloadProposedCommandProvider;
         this.uploadProposedCommandProvider = uploadProposedCommandProvider;
     }
@@ -31,7 +32,7 @@ public class ProposedRequirementState implements RequirementState {
 //    }
 
     @Override
-    public List<RequirementUploadLineItem> upload(List<Requirement> requirements, List<RequirementDownloadLineItem> parsedJson) {
+    public List<RequirementUploadLineItem> upload(List<Requirement> requirements, List<RequirementDownloadLineItem> parsedJson) throws IOException {
         return uploadProposedCommandProvider.get().execute(parsedJson, requirements);
     }
 

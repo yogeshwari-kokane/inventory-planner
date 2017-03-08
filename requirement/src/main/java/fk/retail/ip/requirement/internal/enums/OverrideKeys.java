@@ -9,11 +9,7 @@ public enum OverrideKeys {
     QUANTITY("quantity"),
     APP("app"),
     SUPPLIER("supplier"),
-    OVERRIDE_COMMENT("override_comment"),
-    SUCCESS("success"),
-    FAILURE("failure"),
-    STATUS("status"),
-    UPDATE("update");
+    OVERRIDE_COMMENT("override_comment");
 
     private String key;
 
