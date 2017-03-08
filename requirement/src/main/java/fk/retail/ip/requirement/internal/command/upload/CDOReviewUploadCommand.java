@@ -18,10 +18,10 @@ import java.util.Optional;
  */
 
 @Slf4j
-public class CdoReviewUploadCommand extends UploadCommand {
+public class CDOReviewUploadCommand extends UploadCommand {
 
     @Inject
-    public CdoReviewUploadCommand(RequirementRepository requirementRepository) {
+    public CDOReviewUploadCommand(RequirementRepository requirementRepository) {
         super(requirementRepository);
     }
 

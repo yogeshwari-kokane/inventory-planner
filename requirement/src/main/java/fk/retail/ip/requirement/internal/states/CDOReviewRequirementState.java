@@ -3,7 +3,7 @@ package fk.retail.ip.requirement.internal.states;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import fk.retail.ip.requirement.internal.command.download.DownloadCDOReviewCommand;
-import fk.retail.ip.requirement.internal.command.upload.CdoReviewUploadCommand;
+import fk.retail.ip.requirement.internal.command.upload.CDOReviewUploadCommand;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
 import fk.retail.ip.requirement.model.RequirementUploadLineItem;
@@ -15,10 +15,10 @@ import javax.ws.rs.core.StreamingOutput;
  */
 public class CDOReviewRequirementState implements RequirementState {
     private final Provider<DownloadCDOReviewCommand> downloadCDOReviewCommandProvider;
-    private final Provider<CdoReviewUploadCommand> uploadCDOReviewCommandProvider;
+    private final Provider<CDOReviewUploadCommand> uploadCDOReviewCommandProvider;
 
     @Inject
-    public CDOReviewRequirementState(Provider<DownloadCDOReviewCommand> downloadCDOReviewCommandProvider, Provider<CdoReviewUploadCommand> uploadCDOReviewCommandProvider) {
+    public CDOReviewRequirementState(Provider<DownloadCDOReviewCommand> downloadCDOReviewCommandProvider, Provider<CDOReviewUploadCommand> uploadCDOReviewCommandProvider) {
         this.downloadCDOReviewCommandProvider = downloadCDOReviewCommandProvider;
         this.uploadCDOReviewCommandProvider = uploadCDOReviewCommandProvider;
     }

@@ -26,10 +26,10 @@ import java.util.List;
  */
 @RunWith(JukitoRunner.class)
 @UseModules(TestModule.class)
-public class CdoReviewUploadCommandTest {
+public class CDOReviewUploadCommandTest {
 
     @InjectMocks
-    CdoReviewUploadCommand CDOReviewUploadCommand;
+    CDOReviewUploadCommand CDOReviewUploadCommand;
 
     @Mock
     RequirementRepository requirementRepository;
