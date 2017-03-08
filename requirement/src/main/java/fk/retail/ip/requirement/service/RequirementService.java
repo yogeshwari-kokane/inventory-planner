@@ -18,6 +18,11 @@ import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
 import java.util.List;
 import java.util.Map;
 import java.util.HashSet;
@@ -50,18 +55,9 @@ public class RequirementService {
     public StreamingOutput downloadRequirement(DownloadRequirementRequest downloadRequirementRequest) {
         List<Long> requirementIds = downloadRequirementRequest.getRequirementIds();
         String requirementState = downloadRequirementRequest.getState();
+        Map<String, Object> filters = downloadRequirementRequest.getFilters();
         boolean isLastAppSupplierRequired = downloadRequirementRequest.isLastAppSupplierRequired();
-        List<Requirement> requirements;
-        if (!requirementIds.isEmpty()) {
-            requirements = requirementRepository.findRequirementByIds(requirementIds);
-        } else {
-
-            requirements = requirementRepository.findAllCurrentRequirements(requirementState);
-        }
-        //todo: cleanup remove if 'all' column value for warehouse is removed
-        if (requirements.isEmpty()) {
-            throw new NoRequirementsSelectedException("No requirements were selected in state " + requirementState);
-        }
+        List<Requirement> requirements = requirementRepository.findRequirements(requirementIds, requirementState, filters);
         requirements = requirements.stream().filter(requirement -> !requirement.getWarehouse().equals("all")).collect(Collectors.toList());
         RequirementState state = requirementStateFactory.getRequirementState(requirementState);
         return state.download(requirements, isLastAppSupplierRequired);
@@ -117,9 +113,10 @@ public class RequirementService {
 
         int count = 0;
         int pageNumber = 1;
+        int pageSize = 1000;
         Set<Long> projectionIds = new HashSet<>();
         do {
-            requirements = requirementRepository.findRequirements(ids, state, request.getFilters(), pageNumber++);
+            requirements = requirementRepository.findRequirements(ids, state, request.getFilters(), pageNumber++, pageSize);
             count += requirements.size();
             if (requirements.isEmpty()) {
                 break;

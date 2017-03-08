@@ -5,7 +5,7 @@ import fk.retail.ip.requirement.config.TestModule;
 import fk.retail.ip.requirement.internal.Constants;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.entities.RequirementSnapshot;
-import fk.retail.ip.requirement.internal.enums.RequirementApprovalStates;
+import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.internal.repository.TestHelper;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
@@ -76,32 +76,32 @@ public class CdoReviewUploadCommandTest {
 
         List<Requirement> requirements = Lists.newArrayList();
 
-        Requirement requirement = TestHelper.getRequirement("fsn", "dummy_warehouse_1", RequirementApprovalStates.CDO_REVIEW.toString(), true, snapshot , 21, "ABC",
+        Requirement requirement = TestHelper.getRequirement("fsn", "dummy_warehouse_1", RequirementApprovalState.CDO_REVIEW.toString(), true, snapshot , 21, "ABC",
                 100, 101, "INR", 3, "", "Daily planning");
         requirement.setId((long) 1);
         requirements.add(requirement);
 
-        requirement = TestHelper.getRequirement("fsn", "dummy_warehouse_2",RequirementApprovalStates.CDO_REVIEW.toString(), true, snapshot1 , 22, "DEF",
+        requirement = TestHelper.getRequirement("fsn", "dummy_warehouse_2", RequirementApprovalState.CDO_REVIEW.toString(), true, snapshot1 , 22, "DEF",
                 10, 9, "USD", 4, "", "Daily planning");
         requirement.setId((long) 2);
         requirements.add(requirement);
 
-        requirement = TestHelper.getRequirement("fsn_1", "dummy_warehouse_1",RequirementApprovalStates.CDO_REVIEW.toString(), true, snapshot1 , 22, "DEF",
+        requirement = TestHelper.getRequirement("fsn_1", "dummy_warehouse_1", RequirementApprovalState.CDO_REVIEW.toString(), true, snapshot1 , 22, "DEF",
                 10, 9, "USD", 4, "", "Daily planning");
         requirement.setId((long) 3);
         requirements.add(requirement);
 
-        requirement = TestHelper.getRequirement("fsn_1", "dummy_warehouse_2",RequirementApprovalStates.CDO_REVIEW.toString(), true, snapshot1 , 22, "DEF",
+        requirement = TestHelper.getRequirement("fsn_1", "dummy_warehouse_2", RequirementApprovalState.CDO_REVIEW.toString(), true, snapshot1 , 22, "DEF",
                 10, 9, "USD", 4, "", "Daily planning");
         requirement.setId((long) 4);
         requirements.add(requirement);
 
-        requirement = TestHelper.getRequirement("fsn_2", "dummy_warehouse_1",RequirementApprovalStates.CDO_REVIEW.toString(), true, snapshot1 , 22, "DEF",
+        requirement = TestHelper.getRequirement("fsn_2", "dummy_warehouse_1", RequirementApprovalState.CDO_REVIEW.toString(), true, snapshot1 , 22, "DEF",
                 10, 9, "USD", 4, "", "Daily planning");
         requirement.setId((long) 5);
         requirements.add(requirement);
 
-        requirement = TestHelper.getRequirement("fsn_2", "dummy_warehouse_2",RequirementApprovalStates.CDO_REVIEW.toString(), true, snapshot1 , 22, "DEF",
+        requirement = TestHelper.getRequirement("fsn_2", "dummy_warehouse_2", RequirementApprovalState.CDO_REVIEW.toString(), true, snapshot1 , 22, "DEF",
                 10, 9, "USD", 4, "", "Daily planning");
         requirement.setId((long) 6);
         requirements.add(requirement);

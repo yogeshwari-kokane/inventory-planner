@@ -60,17 +60,13 @@ public class RequirementResource {
     @Path("/download")
     @Timed
     public Response download(DownloadRequirementRequest downloadRequirementRequest) {
-        try {
-            StreamingOutput stream = requirementService.downloadRequirement(downloadRequirementRequest);
-            return Response.ok(stream)
+
+        StreamingOutput stream = requirementService.downloadRequirement(downloadRequirementRequest);
+        return Response.ok(stream)
                     .header(HttpHeaders.CONTENT_TYPE, "application/octet-stream")
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename = projection.xlsx")
                     .build();
-        } catch (InvalidRequirementStateException ise) {
-            return Response.status(400).entity(ise.getMessage()).build();
-        } catch (NoRequirementsSelectedException noreq) {
-            return Response.status(400).entity(noreq.getMessage()).build();
-        }
+
     }
 
     @POST
