@@ -59,7 +59,7 @@ public abstract class UploadCommand {
             } else {
 
                 Map<String, Object> overriddenValues = validateAndSetStateSpecificFields(row);
-                String status = overriddenValues.get(Constants1.getKey(Constants.STATUS)).toString();
+                String status = overriddenValues.get(Constants1.getKey(Constants1.STATUS)).toString();
                 OverrideStatus overrideStatus = OverrideStatus.fromString(status);
 
                 switch(overrideStatus) {
@@ -178,7 +178,7 @@ public abstract class UploadCommand {
     private Optional<String> validateGenericColumns(String fsn, String warehouse){
         String genericValidationComment;
         if (fsn == null || warehouse == null) {
-           genericValidationComment =  Constants1.getKey(Constants.FSN_OR_WAREHOUSE_IS_MISSING);
+           genericValidationComment =  Constants1.getKey(Constants1.FSN_OR_WAREHOUSE_IS_MISSING);
             return Optional.of(genericValidationComment);
         }
         return Optional.empty();
@@ -190,11 +190,11 @@ public abstract class UploadCommand {
             return Optional.empty();
         }
         if (suggestedQuantity <= 0) {
-            validationComment = isEmptyString(overrideComment) ? Constants1.getKey(Constants.INVALID_QUANTITY_WITHOUT_COMMENT) :
-                    Constants1.getKey(Constants.SUGGESTED_QUANTITY_IS_NOT_GREATER_THAN_ZERO);
+            validationComment = isEmptyString(overrideComment) ? Constants1.getKey(Constants1.INVALID_QUANTITY_WITHOUT_COMMENT) :
+                    Constants1.getKey(Constants1.SUGGESTED_QUANTITY_IS_NOT_GREATER_THAN_ZERO);
             return Optional.of(validationComment);
         } else if (suggestedQuantity != currentQuantity && isEmptyString(overrideComment)) {
-            validationComment = Constants1.getKey(Constants.QUANTITY_OVERRIDE_COMMENT_IS_MISSING);
+            validationComment = Constants1.getKey(Constants1.QUANTITY_OVERRIDE_COMMENT_IS_MISSING);
             return Optional.of(validationComment);
         } else {
             return Optional.empty();

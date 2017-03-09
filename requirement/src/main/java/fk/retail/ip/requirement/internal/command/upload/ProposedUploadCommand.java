@@ -36,7 +36,7 @@ public class ProposedUploadCommand extends UploadCommand {
         Optional<String> validationResponse = validateQuantityOverride(currentQuantity, proposedQuantity, quantityOverrideComment);
         if (validationResponse.isPresent()) {
             String validationComment = validationResponse.get();
-            overriddenFields.put(Constants1.getKey(Constants.STATUS), OverrideStatus.FAILURE.toString());
+            overriddenFields.put(Constants1.getKey(Constants1.STATUS), OverrideStatus.FAILURE.toString());
             overriddenFields.put(OverrideKeys.OVERRIDE_COMMENT.toString(), validationComment);
         } else {
             overriddenFields = getOverriddenFields(currentQuantity, proposedQuantity, quantityOverrideComment);
@@ -59,11 +59,11 @@ public class ProposedUploadCommand extends UploadCommand {
         if (proposedQuantity != null && proposedQuantity != currentQuantity) {
             overriddenValues.put(OverrideKeys.QUANTITY.toString(), proposedQuantity);
             JSONObject comment = new JSONObject();
-            comment.put(Constants1.getKey(Constants.QUANTITY_OVERRIDE_COMMENT), quantityOverrideComment);
+            comment.put(Constants1.getKey(Constants1.QUANTITY_OVERRIDE_COMMENT), quantityOverrideComment);
             overriddenValues.put(OverrideKeys.OVERRIDE_COMMENT.toString(), comment);
-            overriddenValues.put(Constants1.getKey(Constants.STATUS), OverrideStatus.UPDATE.toString());
+            overriddenValues.put(Constants1.getKey(Constants1.STATUS), OverrideStatus.UPDATE.toString());
         } else {
-            overriddenValues.put(Constants1.getKey(Constants.STATUS), OverrideStatus.SUCCESS.toString());
+            overriddenValues.put(Constants1.getKey(Constants1.STATUS), OverrideStatus.SUCCESS.toString());
         }
         return overriddenValues;
     }

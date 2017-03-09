@@ -57,14 +57,14 @@ public class CDOReviewUploadCommandTest {
         Assert.assertEquals("new Supplier", argumentCaptor.getAllValues().get(1).getSupplier());
 
         Assert.assertEquals(4, requirementUploadLineItems.size());
-        Assert.assertEquals(Constants1.getKey(Constants.SUGGESTED_QUANTITY_IS_NOT_GREATER_THAN_ZERO),
+        Assert.assertEquals(Constants1.getKey(Constants1.SUGGESTED_QUANTITY_IS_NOT_GREATER_THAN_ZERO),
                 requirementUploadLineItems.get(0).getFailureReason());
-        Assert.assertEquals(Constants1.getKey(Constants.QUANTITY_OVERRIDE_COMMENT_IS_MISSING),
+        Assert.assertEquals(Constants1.getKey(Constants1.QUANTITY_OVERRIDE_COMMENT_IS_MISSING),
                 requirementUploadLineItems.get(1).getFailureReason());
-        Assert.assertEquals(Constants1.getKey(Constants.SLA_QUANTITY_IS_NOT_GREATER_THAN_ZERO)
-                 + System.lineSeparator() + Constants1.getKey(Constants.SUPPLIER_OVERRIDE_COMMENT_IS_MISSING),
+        Assert.assertEquals(Constants1.getKey(Constants1.SLA_QUANTITY_IS_NOT_GREATER_THAN_ZERO)
+                 + System.lineSeparator() + Constants1.getKey(Constants1.SUPPLIER_OVERRIDE_COMMENT_IS_MISSING),
                 requirementUploadLineItems.get(2).getFailureReason());
-        Assert.assertEquals(Constants1.getKey(Constants.INVALID_APP_WITHOUT_COMMENT),
+        Assert.assertEquals(Constants1.getKey(Constants1.INVALID_APP_WITHOUT_COMMENT),
                 requirementUploadLineItems.get(3).getFailureReason());
 
     }
