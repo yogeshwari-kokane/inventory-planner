@@ -28,6 +28,7 @@ public interface Constants {
     String VALID_POLICY_NOT_FOUND = "Valid %s policy for this fsn is not present";
     String UNABLE_TO_PARSE = "Unable to parse: {}";
     String NOT_APPLICABLE = "N/A";
+    String ERROR_STATE = "error";
 
 //    public static final String ERROR_STATE = "error";
 //

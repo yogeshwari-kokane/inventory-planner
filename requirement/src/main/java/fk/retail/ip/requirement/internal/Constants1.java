@@ -37,7 +37,7 @@ public class Constants1 {
     static {
         try {
             properties = new Properties();
-            properties.load(Constants.class.getResourceAsStream(Constants.PROPERTIES_FILE_PATH));
+            properties.load(Constants.class.getResourceAsStream(Constants1.PROPERTIES_FILE_PATH));
         } catch (IOException ioe) {
             System.out.println("Unable to find file");
         }
