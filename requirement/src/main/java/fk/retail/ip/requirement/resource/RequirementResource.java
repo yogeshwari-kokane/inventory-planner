@@ -1,13 +1,25 @@
 package fk.retail.ip.requirement.resource;
 
 import com.codahale.metrics.annotation.Timed;
+import com.google.common.io.FileBackedOutputStream;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
-
+import fk.retail.ip.requirement.internal.enums.OverrideKeys;
 import fk.retail.ip.requirement.internal.exception.InvalidRequirementStateException;
 import fk.retail.ip.requirement.model.CalculateRequirementRequest;
 import fk.retail.ip.requirement.internal.exception.NoRequirementsSelectedException;
 import fk.retail.ip.requirement.model.DownloadRequirementRequest;
+import fk.retail.ip.requirement.model.RequirementUploadLineItem;
+import fk.retail.ip.requirement.model.UploadResponse;
+import fk.retail.ip.requirement.service.RequirementService;
+import io.dropwizard.hibernate.UnitOfWork;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import javax.ws.rs.*;
 import fk.retail.ip.requirement.model.RequirementApprovalRequest;
 import fk.retail.ip.requirement.service.RequirementService;
 import java.io.IOException;
@@ -22,6 +34,10 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
+
+import io.dropwizard.jersey.errors.ErrorMessage;
+import lombok.extern.slf4j.Slf4j;
+import net.minidev.json.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
@@ -52,6 +68,7 @@ public class RequirementResource {
     @Path("/download")
     @Timed
     public Response download(DownloadRequirementRequest downloadRequirementRequest) {
+
         log.info("Download Requirement request received " + downloadRequirementRequest);
         StreamingOutput stream = requirementService.downloadRequirement(downloadRequirementRequest);
         return Response.ok(stream)
@@ -63,12 +80,49 @@ public class RequirementResource {
 
     @POST
     @Path("/upload")
-    public Response uploadProjectionOverride(@FormDataParam("file") InputStream inputStream,
-            @FormDataParam("file") FormDataContentDisposition fileDetails,
-            Map<String, Object> params) throws IOException, InvalidFormatException {
+    @Timed
+    @UnitOfWork
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    public Response uploadProjectionOverride(@FormDataParam("datafile") InputStream inputStream,
+                                           @FormDataParam("state") String state) {
 
-        return Response.ok().build();
+//        if (inputStream.available() > 0) {
+//            System.out.println("stream is present");
+//        } else{
+//            return  " {\"status\" : \"success\"}";
+//        }
+//        BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
+//        StringBuilder stringBuilder = new StringBuilder();
+//        String line;
+//        while((line = br.readLine()) != null) {
+//            stringBuilder.append(line);
+//        }
+//        System.out.println(stringBuilder.toString());
 
+//        byte[] buffer = new byte[1024];
+//        int bytesRead;
+//        OutputStream outputStream = new FileOutputStream(file);
+//        do {
+//             bytesRead = inputStream.read(buffer);
+//                outputStream.write(buffer, 0, bytesRead);
+//        } while(bytesRead == 1024);
+
+//        inputStream.read(buffer);
+
+        //outputStream.write(buffer);
+        System.out.println(state);
+        try {
+            //List<RequirementUploadLineItem> result = requirementService.uploadRequirement(new FileInputStream("/Users/agarwal.vaibhav/Desktop/test_proposed.xlsx"), fileDetails, state);
+            UploadResponse uploadResponse = requirementService.uploadRequirement(inputStream, state);
+            log.info("Successfully uploaded " + uploadResponse.getSuccessfulRowCount() + " records");
+            return Response.ok(uploadResponse).build();
+
+        } catch (IOException ioException) {
+            return Response.status(400).build();
+        } catch (InvalidFormatException invalidFormat) {
+            return Response.status(400).build();
+        }
     }
 
     @PUT
