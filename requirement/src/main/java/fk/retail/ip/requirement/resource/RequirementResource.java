@@ -38,6 +38,7 @@ import javax.ws.rs.core.StreamingOutput;
 import io.dropwizard.jersey.errors.ErrorMessage;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
@@ -68,6 +69,7 @@ public class RequirementResource {
     @Timed
     public Response download(DownloadRequirementRequest downloadRequirementRequest) {
 
+        log.info("Download Requirement request received " + downloadRequirementRequest);
         StreamingOutput stream = requirementService.downloadRequirement(downloadRequirementRequest);
         return Response.ok(stream)
                     .header(HttpHeaders.CONTENT_TYPE, "application/octet-stream")

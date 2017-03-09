@@ -26,7 +26,7 @@ CREATE TABLE `LAST_APP_SUPPLIER` (
 
 
 alter table projection_states add column fsn varchar(20);
-update projection_states as ps set fsn = (select fsn from projections where id = ps.projection_id )
+update projection_states as ps set fsn = (select fsn from projections where id = ps.projection_id ) where fsn = null;
 
 alter table projection_states add column is_current Boolean;
 update projection_states as ps set is_current = 1 where state = (select current_state from projections where id = ps.projection_id);
