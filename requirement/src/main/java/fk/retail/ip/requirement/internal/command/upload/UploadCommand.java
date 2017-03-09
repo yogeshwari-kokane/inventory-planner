@@ -66,6 +66,7 @@ public abstract class UploadCommand {
                     case FAILURE:
                         requirementUploadLineItem.setFailureReason(overriddenValues.get
                                 (OverrideKeys.OVERRIDE_COMMENT.toString()).toString());
+                        System.out.println(requirementUploadLineItem.getFailureReason());
                         log.info("Override failed");
                         requirementUploadLineItem.setFsn(fsn);
                         requirementUploadLineItem.setRowNumber(rowCount);
@@ -105,8 +106,7 @@ public abstract class UploadCommand {
                             requirementRepository.persist(requirement);
 
                         } else {
-
-                            requirementUploadLineItem.setFailureReason(Constants1.getKey("dasd"));
+                            requirementUploadLineItem.setFailureReason(Constants1.getKey(Constants1.REQUIREMENT_NOT_FOUND_FOR_GIVEN_REQUIREMENT_ID));
                             requirementUploadLineItem.setFsn(fsn);
                             requirementUploadLineItem.setRowNumber(rowCount);
                             requirementUploadLineItem.setWarehouse(warehouse);

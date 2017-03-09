@@ -24,6 +24,8 @@ public class Constants1 {
     public static String INVALID_APP_WITHOUT_COMMENT =
             "INVALID_APP_WITHOUT_COMMENT";
 
+    public static String NO_REQUIREMENT_FOUND = "NO_REQUIREMENT_FOUND";
+
     public static String QUANTITY_OVERRIDE_COMMENT = "QUANTITY_OVERRIDE_COMMENT";
     public static String APP_OVERRIDE_COMMENT = "APP_OVERRIDE_COMMENT";
     public static String SUPPLIER_OVERRIDE_COMMENT = "SUPPLIER_OVERRIDE_COMMENT";

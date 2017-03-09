@@ -83,8 +83,7 @@ public class RequirementResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response uploadProjectionOverride(@FormDataParam("datafile") InputStream inputStream,
-                                           @FormDataParam("state") String state)
-            throws IOException, InvalidFormatException {
+                                           @FormDataParam("state") String state) {
 
 //        if (inputStream.available() > 0) {
 //            System.out.println("stream is present");
@@ -114,52 +113,13 @@ public class RequirementResource {
         try {
             //List<RequirementUploadLineItem> result = requirementService.uploadRequirement(new FileInputStream("/Users/agarwal.vaibhav/Desktop/test_proposed.xlsx"), fileDetails, state);
             UploadResponse uploadResponse = requirementService.uploadRequirement(inputStream, state);
-            log.info("Successfully uploaded " + uploadResponse.getSuccessfulRowCount() + "records");
-
-
-            //UploadResponse uploadResponse = new UploadResponse();
-
-            //JSONObject response = new JSONObject();
-//            if (result.isEmpty()) {
-//                //response.put("status", "success");
-//                System.out.println("all were successful");
-//                uploadResponse.setRequirementUploadLineItems(result);
-//                uploadResponse.setStatus(OverrideKeys.SUCCESS.toString());
-//                uploadResponse.setSuccessfulRowCount(0);
-//            } else {
-//                System.out.println("atleast one failed");
-//                uploadResponse.setRequirementUploadLineItems(result);
-//                uploadResponse.setStatus(OverrideKeys.FAILURE.toString());
-//                JSONObject responseBody = new JSONObject();
-//                List<JSONObject> responseList = new ArrayList<>();
-//                for(RequirementUploadLineItem row : result) {
-//                    responseBody.put("failureReason", row.getFailureReason());
-//                    responseBody.put("rowNumber", row.getRowNumber());
-//                    responseBody.put("warehouse", row.getWarehouse());
-//                    responseBody.put("fsn", row.getFsn());
-//                    responseList.add(responseBody);
-//                }
-//                response.put("status", "failed");
-//                response.put("response", responseList);
-
-//                responseBody.put("rowNumber", result.get(0).getRowNumber());
-//                responseBody.put("fsn", result.get(0).getFsn());
-//                responseBody.put("warehouse", result.get(0).getWarehouse());
-//                responseBody.put("failureReason", result.get(0).getFailureReason());
-//                response.put("response", responseBody);
-//                System.out.println(result.get(0).getFailureReason());
-//                System.out.println(result.get(0).getFsn());
-//                System.out.println(result.get(0).getRowNumber());
-//            }
+            log.info("Successfully uploaded " + uploadResponse.getSuccessfulRowCount() + " records");
             return Response.ok(uploadResponse).build();
 
-        } catch (InvalidRequirementStateException invalidStateException) {
-            log.info("Invalid Requirement State");
-            return Response.status(400).entity(invalidStateException.getMessage()).type("text/plain").build();
-        } catch (NoRequirementsSelectedException noRequirement) {
-            log.info("No requirement was found for the Uploaded File");
-            return Response.status(400).entity(new ErrorMessage("No requirement Found"))
-                    .type(MediaType.APPLICATION_JSON).build();
+        } catch (IOException ioException) {
+            return Response.status(400).build();
+        } catch (InvalidFormatException invalidFormat) {
+            return Response.status(400).build();
         }
     }
 

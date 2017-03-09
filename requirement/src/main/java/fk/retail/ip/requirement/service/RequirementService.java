@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import fk.retail.ip.core.poi.SpreadSheetReader;
 import com.google.inject.Provider;
+import fk.retail.ip.requirement.internal.Constants1;
 import fk.retail.ip.requirement.internal.command.CalculateRequirementCommand;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.enums.OverrideStatus;
@@ -74,11 +75,11 @@ public class RequirementService {
         return state.download(requirements, isLastAppSupplierRequired);
     }
 
-    public UploadResponse uploadRequirement(InputStream inputStream, String requirementState)
-            throws IOException, InvalidFormatException {
+    public UploadResponse uploadRequirement(InputStream inputStream, String requirementState) throws IOException, InvalidFormatException {
         SpreadSheetReader spreadSheetReader = new SpreadSheetReader();
         List<Map<String, Object>> parsedMappingList = spreadSheetReader.read(inputStream);
-        log.info("Uploaded file parsed and contains ", parsedMappingList.size(), "records");
+        log.info("Uploaded file parsed and contains " + parsedMappingList.size() +  " records");
+        System.out.println(parsedMappingList.get(0));
         ObjectMapper mapper = new ObjectMapper();
         List<RequirementDownloadLineItem> requirementDownloadLineItems = mapper.convertValue(parsedMappingList,
                 new TypeReference<List<RequirementDownloadLineItem>>() {});
@@ -92,27 +93,29 @@ public class RequirementService {
         System.out.println("the list of requirement ids is : ");
         System.out.println(requirementIds.get(0));
         requirements = requirementRepository.findRequirementByIds(requirementIds);
-        log.info("number of requirements found for uploaded records : " ,requirements.size());
+        log.info("number of requirements found for uploaded records : " + requirements.size());
 
         if (requirements.size() == 0) {
-            System.out.println("no requirement found");
-            NoRequirementsSelectedException noRequirementsSelectedException =
-                    new NoRequirementsSelectedException("no requirement found");
-            throw noRequirementsSelectedException;
-        }
-        RequirementState state = requirementStateFactory.getRequirementState(requirementState);
-        List<RequirementUploadLineItem> uploadLineItems = state.upload(requirements, requirementDownloadLineItems);
-        int successfulRowCount = requirementDownloadLineItems.size() - uploadLineItems.size();
-        UploadResponse uploadResponse = new UploadResponse();
-        uploadResponse.setRequirementUploadLineItems(uploadLineItems);
-        uploadResponse.setSuccessfulRowCount(successfulRowCount);
-        if (uploadLineItems.isEmpty()) {
-            uploadResponse.setStatus(OverrideStatus.SUCCESS.toString());
+            UploadResponse uploadResponse = new UploadResponse();
+            uploadResponse.setStatus(Constants1.getKey(Constants1.NO_REQUIREMENT_FOUND));
+            uploadResponse.setSuccessfulRowCount(0);
+            return uploadResponse;
         } else {
-            uploadResponse.setStatus(OverrideStatus.FAILURE.toString());
+            RequirementState state = requirementStateFactory.getRequirementState(requirementState);
+            List<RequirementUploadLineItem> uploadLineItems = state.upload(requirements, requirementDownloadLineItems);
+            int successfulRowCount = requirementDownloadLineItems.size() - uploadLineItems.size();
+            UploadResponse uploadResponse = new UploadResponse();
+            uploadResponse.setRequirementUploadLineItems(uploadLineItems);
+            uploadResponse.setSuccessfulRowCount(successfulRowCount);
+            if (uploadLineItems.isEmpty()) {
+                uploadResponse.setStatus(OverrideStatus.SUCCESS.toString());
+            } else {
+                uploadResponse.setStatus(OverrideStatus.FAILURE.toString());
+            }
+
+            return uploadResponse;
         }
 
-        return uploadResponse;
     }
 
     public String changeState(RequirementApprovalRequest request) throws JSONException {
