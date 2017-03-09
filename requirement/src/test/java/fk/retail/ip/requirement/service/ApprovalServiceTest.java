@@ -3,7 +3,7 @@ package fk.retail.ip.requirement.service;
 import com.google.inject.Inject;
 import fk.retail.ip.requirement.config.TestModule;
 import fk.retail.ip.requirement.internal.entities.Requirement;
-import fk.retail.ip.requirement.internal.enums.RequirementApprovalStates;
+import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.sp.common.extensions.jpa.TransactionalJpaRepositoryTest;
 import java.math.BigInteger;
@@ -81,7 +81,7 @@ public class ApprovalServiceTest extends TransactionalJpaRepositoryTest {
 
     private void testForwardFlow(String fromState, String toState, String action) {
         Requirement requirement = createRequirement(fromState);
-        Requirement cdoRequirement = createRequirement(RequirementApprovalStates.CDO_REVIEW.toString());
+        Requirement cdoRequirement = createRequirement(RequirementApprovalState.CDO_REVIEW.toString());
         ApprovalService service = new ApprovalService("/requirement-state-actions.json");
         Function<Requirement, String> getter = Requirement::getState;
         service.changeState(Arrays.asList(requirement), "userId", action, getter, new ApprovalService.CopyOnStateChangeAction(requirementRepository));
