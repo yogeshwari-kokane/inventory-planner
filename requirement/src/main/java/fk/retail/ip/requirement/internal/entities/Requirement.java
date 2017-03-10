@@ -1,5 +1,6 @@
 package fk.retail.ip.requirement.internal.entities;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -36,7 +37,7 @@ public class Requirement extends AbstractEntity {
 
     //todo:cleanup
     @Column(name = "qty")
-    private int quantity;
+    private double quantity;
 
     private String supplier;
 
@@ -73,7 +74,7 @@ public class Requirement extends AbstractEntity {
 
     private Long sslId;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "requirement_snapshot_id")
     private RequirementSnapshot requirementSnapshot;
 
