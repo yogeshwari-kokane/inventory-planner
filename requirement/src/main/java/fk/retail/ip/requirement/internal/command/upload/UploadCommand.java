@@ -103,7 +103,7 @@ public abstract class UploadCommand {
                             }
 
                             log.info("Override successful");
-                            requirementRepository.persist(requirement);
+                            //requirementRepository.persist(requirement);
 
                         } else {
                             requirementUploadLineItem.setFailureReason(Constants1.getKey(Constants1.REQUIREMENT_NOT_FOUND_FOR_GIVEN_REQUIREMENT_ID));
