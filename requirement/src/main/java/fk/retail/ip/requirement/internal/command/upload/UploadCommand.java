@@ -2,18 +2,18 @@ package fk.retail.ip.requirement.internal.command.upload;
 
 
 import fk.retail.ip.requirement.internal.Constants;
-import fk.retail.ip.requirement.internal.Constants1;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.enums.OverrideKeys;
 import fk.retail.ip.requirement.internal.enums.OverrideStatus;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
 import fk.retail.ip.requirement.model.RequirementUploadLineItem;
-
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -31,13 +31,12 @@ public abstract class UploadCommand {
         this.requirementRepository = requirementRepository;
     }
 
-    public List<RequirementUploadLineItem> execute(List<RequirementDownloadLineItem> requirementDownloadLineItems, List<Requirement> requirements) {
+    public List<RequirementUploadLineItem> execute(
+            List<RequirementDownloadLineItem> requirementDownloadLineItems, List<Requirement> requirements
+    ) {
 
-        requirements.forEach(requirement -> {
-            System.out.println(requirement.getId() + " " + requirement.getFsn());
-        });
-
-        Map<Long, Requirement> requirementMap = requirements.stream().collect(Collectors.toMap(Requirement::getId, Function.identity()));
+        Map<Long, Requirement> requirementMap = requirements.stream().
+                collect(Collectors.toMap(Requirement::getId, Function.identity()));
 
         ArrayList<RequirementUploadLineItem> requirementUploadLineItems = new ArrayList<>();
         int rowCount = 0;
@@ -59,15 +58,13 @@ public abstract class UploadCommand {
             } else {
 
                 Map<String, Object> overriddenValues = validateAndSetStateSpecificFields(row);
-                String status = overriddenValues.get(Constants1.getKey(Constants1.STATUS)).toString();
+                String status = overriddenValues.get(Constants.STATUS).toString();
                 OverrideStatus overrideStatus = OverrideStatus.fromString(status);
 
                 switch(overrideStatus) {
                     case FAILURE:
                         requirementUploadLineItem.setFailureReason(overriddenValues.get
                                 (OverrideKeys.OVERRIDE_COMMENT.toString()).toString());
-                        System.out.println(requirementUploadLineItem.getFailureReason());
-                        log.info("Override failed");
                         requirementUploadLineItem.setFsn(fsn);
                         requirementUploadLineItem.setRowNumber(rowCount);
                         requirementUploadLineItem.setWarehouse(warehouse);
@@ -79,10 +76,10 @@ public abstract class UploadCommand {
 
                         if (requirementMap.containsKey(requirementId)) {
                             Requirement requirement = requirementMap.get(requirementId);
-                            System.out.println("requirement from map : " + requirement.getId());
 
                             if (overriddenValues.containsKey(OverrideKeys.QUANTITY.toString())) {
-                                requirement.setQuantity((Integer) overriddenValues.get(OverrideKeys.QUANTITY.toString()));
+                                requirement.setQuantity
+                                        ((Integer) overriddenValues.get(OverrideKeys.QUANTITY.toString()));
                             }
 
                             if (overriddenValues.containsKey(OverrideKeys.SLA.toString())) {
@@ -94,19 +91,18 @@ public abstract class UploadCommand {
                             }
 
                             if (overriddenValues.containsKey(OverrideKeys.SUPPLIER.toString())) {
-                                requirement.setSupplier(overriddenValues.get(OverrideKeys.SUPPLIER.toString()).toString());
+                                requirement.setSupplier
+                                        (overriddenValues.get(OverrideKeys.SUPPLIER.toString()).toString());
                             }
 
                             if (overriddenValues.containsKey(OverrideKeys.OVERRIDE_COMMENT.toString())) {
-                                System.out.println("comment to be : " + overriddenValues.get(OverrideKeys.OVERRIDE_COMMENT.toString()));
-                                requirement.setOverrideComment(overriddenValues.get(OverrideKeys.OVERRIDE_COMMENT.toString()).toString());
+                                requirement.setOverrideComment
+                                        (overriddenValues.get(OverrideKeys.OVERRIDE_COMMENT.toString()).toString());
                             }
 
-                            log.info("Override successful");
-                            //requirementRepository.persist(requirement);
-
                         } else {
-                            requirementUploadLineItem.setFailureReason(Constants1.getKey(Constants1.REQUIREMENT_NOT_FOUND_FOR_GIVEN_REQUIREMENT_ID));
+                            requirementUploadLineItem.setFailureReason
+                                    (Constants.REQUIREMENT_NOT_FOUND_FOR_GIVEN_REQUIREMENT_ID);
                             requirementUploadLineItem.setFsn(fsn);
                             requirementUploadLineItem.setRowNumber(rowCount);
                             requirementUploadLineItem.setWarehouse(warehouse);
@@ -178,23 +174,25 @@ public abstract class UploadCommand {
     private Optional<String> validateGenericColumns(String fsn, String warehouse){
         String genericValidationComment;
         if (fsn == null || warehouse == null) {
-           genericValidationComment =  Constants1.getKey(Constants1.FSN_OR_WAREHOUSE_IS_MISSING);
+           genericValidationComment =  Constants.FSN_OR_WAREHOUSE_IS_MISSING;
             return Optional.of(genericValidationComment);
         }
         return Optional.empty();
     }
 
-    protected Optional<String> validateQuantityOverride(Integer currentQuantity, Integer suggestedQuantity, String overrideComment) {
+    protected Optional<String> validateQuantityOverride(
+            Integer currentQuantity, Integer suggestedQuantity, String overrideComment) {
         String validationComment;
         if (suggestedQuantity == null) {
             return Optional.empty();
         }
         if (suggestedQuantity <= 0) {
-            validationComment = isEmptyString(overrideComment) ? Constants1.getKey(Constants1.INVALID_QUANTITY_WITHOUT_COMMENT) :
-                    Constants1.getKey(Constants1.SUGGESTED_QUANTITY_IS_NOT_GREATER_THAN_ZERO);
+            validationComment = isEmptyString(overrideComment) ?
+                    Constants.INVALID_QUANTITY_WITHOUT_COMMENT :
+                    Constants.SUGGESTED_QUANTITY_IS_NOT_GREATER_THAN_ZERO;
             return Optional.of(validationComment);
         } else if (suggestedQuantity != currentQuantity && isEmptyString(overrideComment)) {
-            validationComment = Constants1.getKey(Constants1.QUANTITY_OVERRIDE_COMMENT_IS_MISSING);
+            validationComment = Constants.QUANTITY_OVERRIDE_COMMENT_IS_MISSING;
             return Optional.of(validationComment);
         } else {
             return Optional.empty();
