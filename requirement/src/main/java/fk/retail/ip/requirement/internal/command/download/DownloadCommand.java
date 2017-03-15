@@ -2,7 +2,6 @@ package fk.retail.ip.requirement.internal.command.download;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import fk.retail.ip.requirement.internal.command.GenerateExcelCommand;
 import fk.retail.ip.requirement.internal.entities.FsnBand;
 import fk.retail.ip.requirement.internal.entities.LastAppSupplier;
 import fk.retail.ip.requirement.internal.entities.ProductInfo;

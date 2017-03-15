@@ -55,10 +55,6 @@ public class BizFinReviewUploadCommandTest {
         Assert.assertEquals(100, (int)requirementMap.get((long)3).getQuantity());
         Assert.assertEquals(100, (int)requirementMap.get((long)4).getQuantity());
 
-
-//        Assert.assertEquals(20, (int)argumentCaptor.getAllValues().get(0).getQuantity());
-//        Assert.assertEquals("{\"quantityOverrideComment\":\"test_bizfin\"}", argumentCaptor.getAllValues().get(0).getOverrideComment());
-//        Assert.assertEquals("{\"quantityOverrideComment\":\"test_bizfin\"}", argumentCaptor.getAllValues().get(1).getOverrideComment());
     }
 
     private List<Requirement> getRequirements() {

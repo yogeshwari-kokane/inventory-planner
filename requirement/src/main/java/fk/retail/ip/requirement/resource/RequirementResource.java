@@ -68,30 +68,6 @@ public class RequirementResource {
             @FormDataParam("state") String state
     ) {
 
-//        if (inputStream.available() > 0) {
-//            System.out.println("stream is present");
-//        } else{
-//            return  " {\"status\" : \"success\"}";
-//        }
-//        BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
-//        StringBuilder stringBuilder = new StringBuilder();
-//        String line;
-//        while((line = br.readLine()) != null) {
-//            stringBuilder.append(line);
-//        }
-//        System.out.println(stringBuilder.toString());
-
-//        byte[] buffer = new byte[1024];
-//        int bytesRead;
-//        OutputStream outputStream = new FileOutputStream(file);
-//        do {
-//             bytesRead = inputStream.read(buffer);
-//                outputStream.write(buffer, 0, bytesRead);
-//        } while(bytesRead == 1024);
-
-//        inputStream.read(buffer);
-
-        //outputStream.write(buffer);
         log.info("Upload Requirement request received for " + state + " state");
         try {
             UploadResponse uploadResponse = requirementService.uploadRequirement(inputStream, state);

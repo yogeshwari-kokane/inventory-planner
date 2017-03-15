@@ -18,7 +18,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
-* Created by vaibhav.agarwal on 03/02/17.
+ * Created by vaibhav.agarwal on 03/02/17.
+ * Code never lies.
 */
 @Slf4j
 public abstract class UploadCommand {
@@ -114,56 +115,6 @@ public abstract class UploadCommand {
                         break;
 
                     }
-
-//                if (overrideStatus == OverrideKeys.FAILURE.toString()) {
-//                    requirementUploadLineItem.setFailureReason(overriddenValues.get
-//                            (OverrideKeys.OVERRIDE_COMMENT.toString()).toString());
-//                    log.info("Override failed");
-//                    requirementUploadLineItem.setFsn(fsn);
-//                    requirementUploadLineItem.setRowNumber(rowCount);
-//                    requirementUploadLineItem.setWarehouse(warehouse);
-//                    requirementUploadLineItems.add(requirementUploadLineItem);
-//
-//                } else if (overrideStatus == OverrideKeys.UPDATE.toString()){
-////                Pair<String, String> fsn_warehouse_pair = new ImmutablePair<>(fsn, warehouse);
-//                    Long requirementId = row.getRequirementId();
-//
-//                    if (requirementMap.containsKey(requirementId)) {
-//                        Requirement requirement = requirementMap.get(requirementId);
-//                        System.out.println("requirement from map : " + requirement.getId());
-//
-//                        if (overriddenValues.containsKey(OverrideKeys.QUANTITY.toString())) {
-//                            requirement.setQuantity((Integer) overriddenValues.get(OverrideKeys.QUANTITY.toString()));
-//                        }
-//
-//                        if (overriddenValues.containsKey(OverrideKeys.SLA.toString())) {
-//                            requirement.setSla((Integer) overriddenValues.get(OverrideKeys.SLA.toString()));
-//                        }
-//
-//                        if (overriddenValues.containsKey(OverrideKeys.APP.toString())) {
-//                            requirement.setApp((Integer) overriddenValues.get(OverrideKeys.APP.toString()));
-//                        }
-//
-//                        if (overriddenValues.containsKey(OverrideKeys.SUPPLIER.toString())) {
-//                            requirement.setSupplier(overriddenValues.get(OverrideKeys.SUPPLIER.toString()).toString());
-//                        }
-//
-//                        if (overriddenValues.containsKey(OverrideKeys.OVERRIDE_COMMENT.toString())) {
-//                            System.out.println("comment to be : " + overriddenValues.get(OverrideKeys.OVERRIDE_COMMENT.toString()));
-//                            requirement.setOverrideComment(overriddenValues.get(OverrideKeys.OVERRIDE_COMMENT.toString()).toString());
-//                        }
-//
-//                        log.info("Override successful");
-//                        requirementRepository.persist(requirement);
-//
-//                    } else {
-//
-//                        requirementUploadLineItem.setFailureReason(Constants.getKey("dasd"));
-//                        requirementUploadLineItem.setFsn(fsn);
-//                        requirementUploadLineItem.setRowNumber(rowCount);
-//                        requirementUploadLineItem.setWarehouse(warehouse);
-//                        requirementUploadLineItems.add(requirementUploadLineItem);
-//                    }
 
                 }
             }

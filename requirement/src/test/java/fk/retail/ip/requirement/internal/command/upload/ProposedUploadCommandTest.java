@@ -57,23 +57,12 @@ public class ProposedUploadCommandTest {
         Assert.assertEquals(100, (int)requirementMap.get((long)3).getQuantity());
         Assert.assertEquals(100, (int)requirementMap.get((long)4).getQuantity());
 
-
-//        ArgumentCaptor<Requirement> argumentCaptor = ArgumentCaptor.forClass(Requirement.class);
-//        Mockito.verify(requirementRepository, Mockito.times(1)).persist(argumentCaptor.capture());
-//
-//        Assert.assertEquals(1, argumentCaptor.getAllValues().size());
-//        Assert.assertEquals(20, (int) argumentCaptor.getAllValues().get(0).getQuantity());
-//        Assert.assertEquals("{\"quantityOverrideComment\":\"test_ipc\"}", argumentCaptor.getAllValues().get(0).getOverrideComment());
-//        Assert.assertEquals(3, requirementUploadLineItems.size());
-
         Assert.assertEquals(Constants.QUANTITY_OVERRIDE_COMMENT_IS_MISSING,
                 requirementUploadLineItems.get(0).getFailureReason());
         Assert.assertEquals(Constants.FSN_OR_WAREHOUSE_IS_MISSING,
                 requirementUploadLineItems.get(1).getFailureReason());
         Assert.assertEquals(Constants.SUGGESTED_QUANTITY_IS_NOT_GREATER_THAN_ZERO,
                 requirementUploadLineItems.get(2).getFailureReason());
-
-
     }
 
 
