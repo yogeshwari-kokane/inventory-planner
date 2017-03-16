@@ -2,11 +2,11 @@ dataSource:
   # the name of your JDBC driver
   driverClass: com.mysql.jdbc.Driver
   # the username
-  user: fk_sp_mapipre_rw
+  user: ip_sys_rw
   # the password
-  password: K3nzG9ll
+  password: caiP5yaa
   # the JDBC URL
-  url: jdbc:mysql://seller-mapi-master.nm.flipkart.com/sp_mapi_preprod
+  url: jdbc:mysql://10.32.173.190/erp_inv_db
   # any properties specific to your JDBC driver:
   properties:
     charSet: UTF-8
