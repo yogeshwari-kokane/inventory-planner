@@ -22,7 +22,7 @@ public interface RequirementRepository extends JpaGenericRepository<Requirement,
     List<Requirement> findRequirements(List<Long> projectionIds, String requirementState, Map<String, Object> filters, int pageNumber, int pageSize);
 
     List<Requirement> findRequirements(List<Long> projectionIds, String requirementState, Map<String, Object> filters);
-    
+
     List<Requirement> find(Collection<String> fsns, boolean enabled);
     int updateProjection(Collection<Long> projectionIds, String toState);
 }

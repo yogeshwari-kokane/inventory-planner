@@ -3,8 +3,8 @@ package fk.retail.ip.requirement.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
-import fk.retail.ip.core.poi.SpreadSheetReader;
 import com.google.inject.Provider;
+import fk.retail.ip.core.poi.SpreadSheetReader;
 import fk.retail.ip.requirement.internal.Constants;
 import fk.retail.ip.requirement.internal.command.CalculateRequirementCommand;
 import fk.retail.ip.requirement.internal.entities.Requirement;
@@ -15,9 +15,9 @@ import fk.retail.ip.requirement.internal.states.RequirementState;
 import fk.retail.ip.requirement.model.CalculateRequirementRequest;
 import fk.retail.ip.requirement.model.DownloadRequirementRequest;
 import fk.retail.ip.requirement.model.RequirementApprovalRequest;
-import fk.retail.ip.requirement.model.*;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
+import fk.retail.ip.requirement.model.RequirementUploadLineItem;
+import fk.retail.ip.requirement.model.UploadResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -26,9 +26,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
-
 import java.util.stream.Collectors;
 import javax.ws.rs.core.StreamingOutput;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.json.JSONException;
 
 /**

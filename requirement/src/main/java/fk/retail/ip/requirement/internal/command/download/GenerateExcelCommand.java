@@ -3,6 +3,7 @@ package fk.retail.ip.requirement.internal.command.download;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fk.retail.ip.core.poi.SpreadSheetWriter;
+import fk.retail.ip.requirement.internal.poi.RequirementSpreadSheetWriter;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
 
 import java.io.OutputStream;
@@ -22,7 +23,7 @@ public class GenerateExcelCommand {
 
     public StreamingOutput generateExcel(List<RequirementDownloadLineItem> requirementDownloadLineItems, String templateName) {
         log.info("Generating excel for {} number of requirements",requirementDownloadLineItems.size());
-        SpreadSheetWriter spreadsheet = new SpreadSheetWriter();
+        SpreadSheetWriter spreadsheet = new RequirementSpreadSheetWriter();
         ObjectMapper mapper = new ObjectMapper();
         InputStream template = getClass().getResourceAsStream(templateName);
         StreamingOutput output = (OutputStream out) -> {

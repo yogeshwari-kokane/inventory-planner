@@ -1,7 +1,7 @@
 package fk.retail.ip.requirement.service;
 
 import com.google.inject.Inject;
-import fk.retail.ip.requirement.config.TestModule;
+import fk.retail.ip.requirement.config.TestDbModule;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
@@ -22,11 +22,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /**
- *
  * @author Pragalathan M<pragalathan.m@flipkart.com>
  */
 @RunWith(JukitoRunner.class)
-@UseModules(TestModule.class)
+@UseModules(TestDbModule.class)
 public class ApprovalServiceTest extends TransactionalJpaRepositoryTest {
 
     @Inject
@@ -116,7 +115,7 @@ public class ApprovalServiceTest extends TransactionalJpaRepositoryTest {
         Assert.assertTrue(actual.isCurrent());
         Assert.assertTrue(actual.isEnabled());
 //        Assert.assertEquals(actual.getPreviousStateId(), requirement.getId());
-        Assert.assertEquals(actual.getQuantity(), requirement.getQuantity(),0.01);
+        Assert.assertEquals(actual.getQuantity(), requirement.getQuantity(), 0.01);
         Assert.assertEquals(actual.getSla(), requirement.getSla());
         Assert.assertEquals(actual.getSupplier(), requirement.getSupplier());
         Assert.assertEquals(actual.getApp(), requirement.getApp());

@@ -80,7 +80,7 @@ public class JPARequirementRepository extends SimpleJpaGenericRepository<Require
         List<Requirement> requirements = query.getResultList();
         return requirements;
     }
-  
+
     private TypedQuery<Requirement> getCriteriaQuery(List<Long> projectionIds, String requirementState, Map<String, Object> filters) {
          EntityManager entityManager = getEntityManager();
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
