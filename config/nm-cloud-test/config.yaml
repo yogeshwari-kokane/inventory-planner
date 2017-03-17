@@ -82,6 +82,10 @@ zuluConfiguration:
   clientId: "retail.rp"
   maxBatchSize: 30
 
+bigfootConfiguration:
+  url: "sampleUrl"
+  schema_version: "1.1"
+
 sslClientConfiguration:
   url: http://10.85.52.106
   viewPath: "/supplier_selection"
