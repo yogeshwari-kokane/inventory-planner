@@ -150,8 +150,8 @@ public class CalculateRequirementCommand {
             List<Requirement> requirements = fsnToRequirementMap.get(fsn);
             String state = Constants.ERROR_STATE;
             for (Requirement requirement : requirements) {
-                if (RequirementApprovalStates.PRE_PROPOSED == RequirementApprovalStates.fromString(requirement.getState())) {
-                    state = RequirementApprovalStates.PRE_PROPOSED.toString();
+                if (RequirementApprovalState.PRE_PROPOSED == RequirementApprovalState.fromString(requirement.getState())) {
+                    state = RequirementApprovalState.PRE_PROPOSED.toString();
                     break;
                 }
             }
