@@ -22,7 +22,7 @@ import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.entities.RequirementSnapshot;
 import fk.retail.ip.requirement.internal.entities.Warehouse;
 import fk.retail.ip.requirement.internal.entities.WarehouseInventory;
-import fk.retail.ip.requirement.internal.enums.RequirementApprovalStates;
+import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
 import fk.retail.ip.requirement.internal.repository.ForecastRepository;
 import fk.retail.ip.requirement.internal.repository.GroupFsnRepository;
 import fk.retail.ip.requirement.internal.repository.IwtRequestItemRepository;
@@ -148,17 +148,24 @@ public class CalculateRequirementCommand {
         //TODO: remove backward compatibility changes to add entry in projections table
         for (String fsn : fsnToRequirementMap.keySet()) {
             List<Requirement> requirements = fsnToRequirementMap.get(fsn);
+            String state = Constants.ERROR_STATE;
+            for (Requirement requirement : requirements) {
+                if (RequirementApprovalStates.PRE_PROPOSED == RequirementApprovalStates.fromString(requirement.getState())) {
+                    state = RequirementApprovalStates.PRE_PROPOSED.toString();
+                    break;
+                }
+            }
             Projection projection = new Projection();
             Requirement requirement = requirements.get(0);
             projection.setFsn(requirement.getFsn());
-            projection.setCurrentState(requirement.getState());
-            projection.setEnabled(requirement.isEnabled() ? 1 : 0);
-            projection.setError(requirement.getOverrideComment());
+            projection.setCurrentState(state);
+            projection.setEnabled(Constants.ERROR_STATE.equals(state) ? 0 : 1);
+            projection.setError("YOLO");
             projection.setProcType(requirement.getProcType());
             projection.setForecastId(0L);
             projection.setIntransit(0);
             projection.setInventory(0);
-            projection.setPolicyId(requirement.getRequirementSnapshot().getPolicy());
+            projection.setPolicyId("SWAG");
             projection.setGroupId(requirement.getRequirementSnapshot().getGroup().getId());
             projectionRepository.persist(projection);
             requirements.forEach(requirement1 -> {
@@ -238,7 +245,7 @@ public class CalculateRequirementCommand {
         Requirement requirement = new Requirement();
         requirement.setFsn(fsn);
         requirement.setWarehouse(warehouse);
-        requirement.setState(RequirementApprovalStates.PRE_PROPOSED.toString());
+        requirement.setState(RequirementApprovalState.PRE_PROPOSED.toString());
         requirement.setEnabled(true);
         requirement.setCurrent(true);
 //        requirement.setQuantity(0);
