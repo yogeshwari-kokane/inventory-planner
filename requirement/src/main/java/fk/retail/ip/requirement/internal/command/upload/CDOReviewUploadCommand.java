@@ -116,7 +116,7 @@ public class CDOReviewUploadCommand extends UploadCommand {
     ) {
         String validationComment;
 
-        if (bdProposedSupplier == null) {
+        if (isEmptyString(bdProposedSupplier)) {
             return Optional.empty();
         }
         if (bdProposedSupplier != currentSupplier && isEmptyString(supplierOverrideComment)) {
