@@ -166,7 +166,8 @@ public abstract class DownloadCommand {
         MultiKeyMap<String,Integer> fsnWhBizFinRecommended = new MultiKeyMap();
         MultiKeyMap<String,String> fsnWhBizFinComment = new MultiKeyMap();
         requirements.forEach(r -> {
-            fsnWhBizFinRecommended.put(r.getFsn(),r.getWarehouse(), (int) r.getQuantity());
+            if (fsnWhBizFinRecommended.get(r.getFsn(),r.getWarehouse())!=null && fsnWhBizFinRecommended.get(r.getFsn(),r.getWarehouse()) != r.getQuantity())
+                fsnWhBizFinRecommended.put(r.getFsn(),r.getWarehouse(), (int) r.getQuantity());
             fsnWhBizFinComment.put(r.getFsn(),r.getWarehouse(),r.getOverrideComment());
         });
 
