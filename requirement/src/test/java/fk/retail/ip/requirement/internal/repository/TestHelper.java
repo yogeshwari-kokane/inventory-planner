@@ -188,6 +188,9 @@ public class TestHelper {
     }
 
 
+    /*
+    * Initialize uploaded file data for proposed state
+    * */
     public static List<RequirementDownloadLineItem> getProposedRequirementDownloadLineItem() {
         List<RequirementDownloadLineItem> requirementDownloadLineItems = new ArrayList<>();
 
@@ -237,7 +240,10 @@ public class TestHelper {
         return requirementDownloadLineItems;
     }
 
-    public static List<RequirementDownloadLineItem> getCDOReviewRequirementDownloadLineItem() {
+    /*
+    * Initialize uploaded file data for Cdo review state
+    * */
+    public static List<RequirementDownloadLineItem> getCdoReviewRequirementDownloadLineItem() {
         List<RequirementDownloadLineItem> requirementDownloadLineItems = new ArrayList<>();
 
         /*Quantity, app, supplier, sla should be overridden with comment*/
@@ -304,6 +310,9 @@ public class TestHelper {
 
     }
 
+    /*
+    * Initialize uploaded file data for bizfin review state
+    * */
     public static List<RequirementDownloadLineItem> getBizfinReviewDownloadLineItem() {
         List<RequirementDownloadLineItem> requirementDownloadLineItems = new ArrayList<>();
 
