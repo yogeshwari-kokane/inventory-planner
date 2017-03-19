@@ -2,7 +2,6 @@ package fk.retail.ip.requirement.internal.command.download;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import fk.retail.ip.requirement.internal.command.GenerateExcelCommand;
 import fk.retail.ip.requirement.internal.entities.FsnBand;
 import fk.retail.ip.requirement.internal.entities.LastAppSupplier;
 import fk.retail.ip.requirement.internal.entities.ProductInfo;
@@ -173,7 +172,7 @@ public abstract class DownloadCommand {
 
         requirementDownloadLineItems.forEach(reqItem
                 -> {
-            if (fsnWhBizFinRecommended.get(reqItem.getFsn(),reqItem.getWarehouse())!=null && fsnWhBizFinRecommended.get(reqItem.getFsn(),reqItem.getWarehouse()) != reqItem.getQuantity())
+            if (fsnWhBizFinRecommended.get(reqItem.getFsn(),reqItem.getWarehouse())!=null && fsnWhBizFinRecommended.get(reqItem.getFsn(),reqItem.getWarehouse()) != (int)reqItem.getQuantity())
                 reqItem.setBizFinRecommendedQuantity(fsnWhBizFinRecommended.get(reqItem.getFsn(), reqItem.getWarehouse()));
             reqItem.setBizFinComment(fsnWhBizFinComment.get(reqItem.getFsn(), reqItem.getWarehouse()));
         });

@@ -3,9 +3,9 @@ package fk.retail.ip.requirement.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
-import fk.retail.ip.core.poi.SpreadSheetReader;
 import com.google.inject.Provider;
-import fk.retail.ip.requirement.internal.Constants1;
+import fk.retail.ip.core.poi.SpreadSheetReader;
+import fk.retail.ip.requirement.internal.Constants;
 import fk.retail.ip.requirement.internal.command.CalculateRequirementCommand;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.enums.OverrideStatus;
@@ -15,9 +15,9 @@ import fk.retail.ip.requirement.internal.states.RequirementState;
 import fk.retail.ip.requirement.model.CalculateRequirementRequest;
 import fk.retail.ip.requirement.model.DownloadRequirementRequest;
 import fk.retail.ip.requirement.model.RequirementApprovalRequest;
-import fk.retail.ip.requirement.model.*;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
+import fk.retail.ip.requirement.model.RequirementUploadLineItem;
+import fk.retail.ip.requirement.model.UploadResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -26,9 +26,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
-
 import java.util.stream.Collectors;
 import javax.ws.rs.core.StreamingOutput;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.json.JSONException;
 
 /**
@@ -64,11 +65,14 @@ public class RequirementService {
         return state.download(requirements, isLastAppSupplierRequired);
     }
 
-    public UploadResponse uploadRequirement(InputStream inputStream, String requirementState) throws IOException, InvalidFormatException {
+    public UploadResponse uploadRequirement(
+            InputStream inputStream,
+            String requirementState
+    ) throws IOException, InvalidFormatException {
+
         SpreadSheetReader spreadSheetReader = new SpreadSheetReader();
         List<Map<String, Object>> parsedMappingList = spreadSheetReader.read(inputStream);
         log.info("Uploaded file parsed and contains " + parsedMappingList.size() +  " records");
-        System.out.println(parsedMappingList.get(0));
         ObjectMapper mapper = new ObjectMapper();
         List<RequirementDownloadLineItem> requirementDownloadLineItems = mapper.convertValue(parsedMappingList,
                 new TypeReference<List<RequirementDownloadLineItem>>() {});
@@ -79,14 +83,12 @@ public class RequirementService {
                 requirementIds.add(row.getRequirementId())
         );
 
-        System.out.println("the list of requirement ids is : ");
-        System.out.println(requirementIds.get(0));
         requirements = requirementRepository.findRequirementByIds(requirementIds);
         log.info("number of requirements found for uploaded records : " + requirements.size());
 
         if (requirements.size() == 0) {
             UploadResponse uploadResponse = new UploadResponse();
-            uploadResponse.setStatus(Constants1.getKey(Constants1.NO_REQUIREMENT_FOUND));
+            uploadResponse.setStatus(Constants.NO_REQUIREMENT_FOUND);
             uploadResponse.setSuccessfulRowCount(0);
             return uploadResponse;
         } else {

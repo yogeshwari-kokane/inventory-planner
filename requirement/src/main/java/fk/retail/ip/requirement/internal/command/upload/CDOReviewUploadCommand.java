@@ -2,7 +2,6 @@ package fk.retail.ip.requirement.internal.command.upload;
 
 import com.google.inject.Inject;
 import fk.retail.ip.requirement.internal.Constants;
-import fk.retail.ip.requirement.internal.Constants1;
 import fk.retail.ip.requirement.internal.enums.OverrideKeys;
 import fk.retail.ip.requirement.internal.enums.OverrideStatus;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
@@ -43,7 +42,11 @@ public class CDOReviewUploadCommand extends UploadCommand {
 
         String validationComment = "";
 
-        Optional<String> validationResponse = validateQuantityOverride(currentQuantity, bdProposedQuantity, quantityOverrideComment);
+        Optional<String> validationResponse = validateQuantityOverride(
+                currentQuantity,
+                bdProposedQuantity,
+                quantityOverrideComment
+        );
 
         if (validationResponse.isPresent()) {
             validationComment = convertToLineSeparatedComment(validationComment, validationResponse.get());
@@ -65,7 +68,7 @@ public class CDOReviewUploadCommand extends UploadCommand {
         }
 
         if (!validationComment.isEmpty()) {
-            overriddenValues.put(Constants1.getKey(Constants1.STATUS), OverrideStatus.FAILURE.toString());
+            overriddenValues.put(Constants.STATUS, OverrideStatus.FAILURE.toString());
             overriddenValues.put(OverrideKeys.OVERRIDE_COMMENT.toString(), validationComment);
             return overriddenValues;
         }
@@ -93,11 +96,12 @@ public class CDOReviewUploadCommand extends UploadCommand {
             return Optional.empty();
         }
         if (bdProposedApp <= 0) {
-            validationComment = isEmptyString(appOverrideComment) ? Constants1.getKey(Constants1.INVALID_APP_WITHOUT_COMMENT) :
-                    Constants1.getKey(Constants1.APP_QUANTITY_IS_NOT_GREATER_THAN_ZERO);
+            validationComment = isEmptyString(appOverrideComment) ?
+                    Constants.INVALID_APP_WITHOUT_COMMENT :
+                    Constants.APP_QUANTITY_IS_NOT_GREATER_THAN_ZERO;
             return Optional.of(validationComment);
         } else if(bdProposedApp != currentApp && isEmptyString(appOverrideComment)) {
-            validationComment = Constants1.getKey(Constants1.APP_OVERRIDE_COMMENT_IS_MISSING);
+            validationComment = Constants.APP_OVERRIDE_COMMENT_IS_MISSING;
             return Optional.of(validationComment);
         } else {
             return Optional.empty();
@@ -105,14 +109,18 @@ public class CDOReviewUploadCommand extends UploadCommand {
 
     }
 
-    private Optional<String> validateSupplierOverride(String bdProposedSupplier, String currentSupplier, String supplierOverrideComment) {
+    private Optional<String> validateSupplierOverride(
+            String bdProposedSupplier,
+            String currentSupplier,
+            String supplierOverrideComment
+    ) {
         String validationComment;
 
-        if (bdProposedSupplier == null) {
+        if (isEmptyString(bdProposedSupplier)) {
             return Optional.empty();
         }
         if (bdProposedSupplier != currentSupplier && isEmptyString(supplierOverrideComment)) {
-            validationComment = Constants1.getKey(Constants1.SUPPLIER_OVERRIDE_COMMENT_IS_MISSING);
+            validationComment = Constants.SUPPLIER_OVERRIDE_COMMENT_IS_MISSING;
             return Optional.of(validationComment);
         }
         return Optional.empty();
@@ -125,7 +133,7 @@ public class CDOReviewUploadCommand extends UploadCommand {
         }
 
         if (bdProposedSla <= 0){
-            validationComment = Constants1.getKey(Constants1.SLA_QUANTITY_IS_NOT_GREATER_THAN_ZERO);
+            validationComment = Constants.SLA_QUANTITY_IS_NOT_GREATER_THAN_ZERO;
             return Optional.of(validationComment);
         }
         return Optional.empty();
@@ -147,34 +155,34 @@ public class CDOReviewUploadCommand extends UploadCommand {
 
         Map<String, Object> overriddenValues = new HashMap<>();
         JSONObject overrideComment = new JSONObject();
-        overriddenValues.put(Constants1.getKey(Constants1.STATUS), OverrideStatus.SUCCESS.toString());
+        overriddenValues.put(Constants.STATUS, OverrideStatus.SUCCESS.toString());
 
 
         if (bdProposedQuantity != null && bdProposedQuantity != currentQuantity) {
             Integer quantityToUse = bdProposedQuantity;
             overriddenValues.put(OverrideKeys.QUANTITY.toString(), quantityToUse);
-            overrideComment.put(Constants1.getKey(Constants1.QUANTITY_OVERRIDE_COMMENT), quantityOverrideComment);
-            overriddenValues.put(Constants1.getKey(Constants1.STATUS), OverrideStatus.UPDATE.toString());
+            overrideComment.put(Constants.QUANTITY_OVERRIDE_COMMENT, quantityOverrideComment);
+            overriddenValues.put(Constants.STATUS, OverrideStatus.UPDATE.toString());
         }
 
         if (bdProposedSupplier != null && bdProposedSupplier != currentSupplier) {
             String supplierToUse = bdProposedSupplier.toString();
             overriddenValues.put(OverrideKeys.SUPPLIER.toString(),supplierToUse);
-            overrideComment.put(Constants1.getKey(Constants1.SUPPLIER_OVERRIDE_COMMENT), supplierOverrideComment);
-            overriddenValues.put(Constants1.getKey(Constants1.STATUS), OverrideStatus.UPDATE.toString());
+            overrideComment.put(Constants.SUPPLIER_OVERRIDE_COMMENT, supplierOverrideComment);
+            overriddenValues.put(Constants.STATUS, OverrideStatus.UPDATE.toString());
         }
 
         if (bdProposedApp != null && bdProposedApp != currentApp) {
             Integer appToUse = bdProposedApp;
             overriddenValues.put(OverrideKeys.APP.toString(), appToUse);
-            overrideComment.put(Constants1.getKey(Constants1.APP_OVERRIDE_COMMENT), appOverrideComment);
-            overriddenValues.put(Constants1.getKey(Constants1.STATUS), OverrideStatus.UPDATE.toString());
+            overrideComment.put(Constants.APP_OVERRIDE_COMMENT, appOverrideComment);
+            overriddenValues.put(Constants.STATUS, OverrideStatus.UPDATE.toString());
         }
 
         if (bdProposedSla != null && bdProposedSla != currentSla) {
             Integer slaToUse = bdProposedSla;
             overriddenValues.put(OverrideKeys.SLA.toString(), slaToUse);
-            overriddenValues.put(Constants1.getKey(Constants1.STATUS), OverrideStatus.UPDATE.toString());
+            overriddenValues.put(Constants.STATUS, OverrideStatus.UPDATE.toString());
         }
 
         overriddenValues.put(OverrideKeys.OVERRIDE_COMMENT.toString(), overrideComment);

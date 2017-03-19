@@ -12,12 +12,14 @@ import java.util.Set;
 /**
  * Created by agarwal.vaibhav on 03/03/17.
  */
-//public class Constants {
 public interface Constants {
 
     double DEFAULT_FORECAST = 0.0;
     int DAYS_IN_WEEK = 7;
     int WEEKS_OF_FORECAST = 15;
+    double MIN_CASE_SIZE = 1D;
+    String MAX_COVERAGE_KEY = "max_coverage";
+    String CASE_SIZE_KEY = "case_size";
     Set<String> INTRANSIT_REQUEST_STATUSES = Sets.newHashSet("in-process", "dispatched", "requested");
     String POLICY_DISPLAY_FORMAT = "{\"%s\":%.2f}";
 
@@ -30,48 +32,23 @@ public interface Constants {
     String NOT_APPLICABLE = "N/A";
     String ERROR_STATE = "error";
 
-//    public static final String ERROR_STATE = "error";
-//
-//    public static String FSN_OR_WAREHOUSE_IS_MISSING = "FSN_OR_WAREHOUSE_IS_MISSING";
-//    public static String QUANTITY_OVERRIDE_COMMENT_IS_MISSING = "QUANTITY_OVERRIDE_COMMENT_IS_MISSING";
-//    public static String SUGGESTED_QUANTITY_IS_NOT_GREATER_THAN_ZERO =
-//            "SUGGESTED_QUANTITY_IS_NOT_GREATER_THAN_ZERO";
-//    public static String APP_OVERRIDE_COMMENT_IS_MISSING = "APP_OVERRIDE_COMMENT_IS_MISSING";
-//    public static String SUPPLIER_OVERRIDE_COMMENT_IS_MISSING = "SUPPLIER_OVERRIDE_COMMENT_IS_MISSING";
-//    public static String SUPPLIER_OVERRIDE_COMMENT_IS_MISSING_WHEN_UPDATED_FROM_BLANK =
-//            "SUPPLIER_OVERRIDE_COMMENT_IS_MISSING_WHEN_UPDATED_FROM_BLANK";
-//    public static String SLA_QUANTITY_IS_NOT_GREATER_THAN_ZERO = "SLA_QUANTITY_IS_NOT_GREATER_THAN_ZERO";
-//    public static String APP_QUANTITY_IS_NOT_GREATER_THAN_ZERO = "APP_QUANTITY_IS_NOT_GREATER_THAN_ZERO";
-//    public static String REQUIREMENT_NOT_FOUND_FOR_GIVEN_REQUIREMENT_ID =
-//            "REQUIREMENT_NOT_FOUND_FOR_GIVEN_REQUIREMENT_ID";
-//    public static String INVALID_QUANTITY_WITHOUT_COMMENT =
-//            "INVALID_QUANTITY_WITHOUT_COMMENT";
-//    public static String INVALID_APP_WITHOUT_COMMENT =
-//            "INVALID_APP_WITHOUT_COMMENT";
-//
-//    public static String QUANTITY_OVERRIDE_COMMENT = "QUANTITY_OVERRIDE_COMMENT";
-//    public static String APP_OVERRIDE_COMMENT = "APP_OVERRIDE_COMMENT";
-//    public static String SUPPLIER_OVERRIDE_COMMENT = "SUPPLIER_OVERRIDE_COMMENT";
-//    public static String STATUS = "STATUS";
-//    public static String PROPERTIES_FILE_PATH = "/message.properties";
+    String FSN_OR_WAREHOUSE_IS_MISSING = "FSN or Warehouse is missing";
+    String QUANTITY_OVERRIDE_COMMENT_IS_MISSING = "Quantity override reason is missing";
+    String SUGGESTED_QUANTITY_IS_NOT_GREATER_THAN_ZERO = "Suggested quantity is not greater than zero";
+    String APP_OVERRIDE_COMMENT_IS_MISSING = "Price override reason is missing";
+    String SUPPLIER_OVERRIDE_COMMENT_IS_MISSING = "Supplier override reason is missing";
+    String SLA_QUANTITY_IS_NOT_GREATER_THAN_ZERO = "Suggested SLA should be greater than zero";
+    String APP_QUANTITY_IS_NOT_GREATER_THAN_ZERO = "Suggested price should be greater than zero";
+    String REQUIREMENT_NOT_FOUND_FOR_GIVEN_REQUIREMENT_ID = "Requirement not found for given requirement Id";
+    String INVALID_QUANTITY_WITHOUT_COMMENT = "Invalid quantity without reason";
+    String INVALID_APP_WITHOUT_COMMENT = "Invalid Price without reason";
 
-//    private static Properties properties;
-//
-//    static {
-//        try {
-//            properties = new Properties();
-//            properties.load(Constants.class.getResourceAsStream(Constants.PROPERTIES_FILE_PATH));
-//        } catch (IOException ioe) {
-//            System.out.println("Unable to find file");
-//        }
-//    }
-//
-//    private Constants() {}
-//
-//    public static String getKey(String key) {
-//        return properties.getProperty(key);
-//    }
+    String NO_REQUIREMENT_FOUND = "No Requirement found for the uploaded file";
 
+    String QUANTITY_OVERRIDE_COMMENT = "quantityOverrideComment";
+    String APP_OVERRIDE_COMMENT = "appOverrideComment";
+    String SUPPLIER_OVERRIDE_COMMENT = "supplierOverrideComment";
+    String STATUS = "status";
 
 }
 

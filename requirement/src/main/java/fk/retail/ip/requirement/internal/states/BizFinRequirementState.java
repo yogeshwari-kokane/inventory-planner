@@ -23,11 +23,6 @@ public class BizFinRequirementState implements RequirementState {
         this.uploadBizFinReviewCommandProvider = uploadBizFinReviewCommandProvider;
     }
 
-//    @Inject
-//    public BizFinRequirementState(Provider<UploadBizFinReviewCommand> uploadBizFinReviewCommandProvider) {
-//        this.uploadBizFinReviewCommandProvider = uploadBizFinReviewCommandProvider;
-//    }
-
     @Override
     public List<RequirementUploadLineItem> upload(List<Requirement> requirements,List<RequirementDownloadLineItem> parsedJson) {
         return uploadBizFinReviewCommandProvider.get().execute(parsedJson, requirements);
