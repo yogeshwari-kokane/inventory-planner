@@ -8,6 +8,7 @@ import com.hubspot.dropwizard.guice.GuiceBundle;
 import fk.retail.ip.manager.config.ManagerConfiguration;
 import fk.retail.ip.manager.config.ManagerModule;
 import fk.retail.ip.requirement.config.RequirementModule;
+import fk.retail.ip.ssl.config.SslClientModule;
 import fk.retail.ip.zulu.config.ZuluModule;
 import fk.retail.ip.bigfoot.config.BigfootModule;
 import fk.sp.common.extensions.RequestContextFilter;
@@ -46,6 +47,7 @@ public class ManagerApplication extends Application<ManagerConfiguration> {
                 .addModule(new JerseyClientModule())
                 .addModule(new RequirementModule())
                 .addModule(new ZuluModule())
+                .addModule(new SslClientModule())
                 .addModule(new BigfootModule())
                 .addModule(new JpaWithSpringModule(
                         Sets.newHashSet(

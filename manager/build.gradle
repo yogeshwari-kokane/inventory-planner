@@ -7,7 +7,8 @@ dependencies {
     compile project(':requirement')
     compile project(':core')
     compile project(':zulu-client')
-    compile project(':bigfoot')
+    compile project(':bigfoot-client')
+    compile project(':ssl-client')
     compile 'mysql:mysql-connector-java:5.1.37'
 
 }

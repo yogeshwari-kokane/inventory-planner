@@ -1,5 +1,6 @@
 package fk.retail.ip.manager.config;
 
+import fk.retail.ip.ssl.config.SslClientConfiguration;
 import fk.retail.ip.zulu.config.ZuluConfiguration;
 import fk.retail.ip.bigfoot.config.BigfootConfiguration;
 import fk.sp.common.extensions.dropwizard.db.HasDataSourceFactory;
@@ -9,8 +10,6 @@ import io.dropwizard.client.JerseyClientConfiguration;
 import io.dropwizard.db.DataSourceFactory;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -27,7 +26,10 @@ public class ManagerConfiguration extends Configuration implements HasDataSource
     @NotNull
     private ZuluConfiguration zuluConfiguration;
 
-    @Null
+    @NotNull
+    private SslClientConfiguration sslClientConfiguration;
+
+    @NotNull
     private BigfootConfiguration bigfootConfiguration;
 
     @Valid

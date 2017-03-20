@@ -1,11 +1,11 @@
 package fk.retail.ip.bigfoot.config;
 
-import lombok.Getter;
+import lombok.Data;
 
 /**
  * Created by yogeshwari.k on 17/03/17.
  */
-@Getter
+@Data
 public class BigfootConfiguration {
     String schema_version;
     String url;

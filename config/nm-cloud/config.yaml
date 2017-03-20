@@ -32,48 +32,37 @@ dataSource:
 rotationManagementConfig:
   persistantFilePath: "/var/run/fk-ip-inventory-planner/persistant_state.txt"
 
-
 logging:
   level: INFO
-  loggers:
-    "org.hibernate.ejb.HibernatePersistence": ERROR
-    "org.hibernate.SQL": ERROR
-    "org.hibernate.type": ERROR
-    "com.flipkart.mmq.Dispatcher": ERROR
   appenders:
   - type: file
-    threshold: ALL
-    currentLogFilename: /var/log/flipkart/rp/fk-ip-inventory-planner/production.log
+    threshold: ERROR
+    timeZone: IST
     logFormat: "%-5p [%d{ISO8601}] [%X{reqId} %X{txnId}] %replace(%c: %m){'\n', '\n '}%n%replace(%ex){'(?m)^(.)',' $1'}%nopex"
-    archivedLogFilenamePattern: /var/log/flipkart/rp/fk-ip-inventory-planner/production-%d.log.gz
-    archive: true
+    currentLogFilename: /var/log/flipkart/sp/fk-sp-inventory-planner/app.log
+    archivedLogFilenamePattern: /var/log/flipkart/sp/fk-sp-inventory-planner/app-%d.log.gz
     archivedFileCount: 30
-    timeZone: Asia/Calcutta
 
 server:
   applicationConnectors:
   - type: http
-    port: 32000
+    port: 9999
     acceptQueueSize: 0
   adminConnectors:
   - type: http
-    port: 32001
+    port: 9991
   minThreads: 150
   maxThreads: 150
   gzip:
     enabled: true
-    minimumEntitySize: 256 bytes
-    bufferSize: 8KiB
-    excludedUserAgents: []
-    compressedMimeTypes: []
   requestLog:
     timeZone: IST
     appenders:
     - type: file
       logFormat: "%-5p [%d{ISO8601}] [%X{reqId} %X{txnId}] %replace(%c: %m){'\n', '\n '}%n%replace(%ex){'(?m)^(.)',' $1'}%nopex"
-      currentLogFilename: /var/log/flipkart/rp/fk-ip-inventory-planner/requests.log
+      currentLogFilename: /var/log/flipkart/sp/fk-sp-inventory-planner/requests.log
       archive: true
-      archivedLogFilenamePattern: /var/log/flipkart/rp/fk-ip-inventory-planner/requests-%d.log.gz
+      archivedLogFilenamePattern: /var/log/flipkart/sp/fk-sp-inventory-planner/requests-%d.log.gz
       archivedFileCount: 30
 
 
