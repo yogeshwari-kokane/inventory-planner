@@ -7,7 +7,7 @@ import fk.retail.ip.requirement.internal.entities.RequirementSnapshot;
 import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
 import fk.retail.ip.requirement.internal.repository.TestHelper;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
-import fk.retail.ip.requirement.model.RequirementUploadLineItem;
+import fk.retail.ip.requirement.model.UploadOverrideFailureLineItem;
 import org.jukito.JukitoRunner;
 import org.jukito.UseModules;
 import org.junit.Assert;
@@ -42,12 +42,12 @@ public class BizFinReviewUploadCommandTest {
     public void uploadTest() throws IOException {
         List<RequirementDownloadLineItem> requirementDownloadLineItems = TestHelper.getBizfinReviewDownloadLineItem();
         List<Requirement> requirements = getRequirements();
-        List<RequirementUploadLineItem> requirementUploadLineItems = bizFinReviewUploadCommand.execute(requirementDownloadLineItems, requirements);
+        List<UploadOverrideFailureLineItem> uploadOverrideFailureLineItems = bizFinReviewUploadCommand.execute(requirementDownloadLineItems, requirements);
 
         Map<Long, Requirement> requirementMap = requirements.stream().collect
                 (Collectors.toMap(Requirement::getId, Function.identity()));
 
-        Assert.assertEquals(1, requirementUploadLineItems.size());
+        Assert.assertEquals(1, uploadOverrideFailureLineItems.size());
         Assert.assertEquals(20, (int)requirementMap.get((long)1).getQuantity());
         Assert.assertEquals("{\"quantityOverrideComment\":\"test_bizfin\"}", requirementMap.get((long)1).getOverrideComment());
         Assert.assertEquals(100, (int)requirementMap.get((long)2).getQuantity());

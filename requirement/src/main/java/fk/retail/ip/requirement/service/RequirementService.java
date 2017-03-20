@@ -26,10 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.List;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.ws.rs.core.StreamingOutput;
 import org.json.JSONException;
@@ -95,18 +91,27 @@ public class RequirementService {
             return uploadResponse;
         } else {
             RequirementState state = requirementStateFactory.getRequirementState(requirementState);
-            List<RequirementUploadLineItem> uploadLineItems = state.upload(requirements, requirementDownloadLineItems);
-            int successfulRowCount = requirementDownloadLineItems.size() - uploadLineItems.size();
-            UploadResponse uploadResponse = new UploadResponse();
-            uploadResponse.setRequirementUploadLineItems(uploadLineItems);
-            uploadResponse.setSuccessfulRowCount(successfulRowCount);
-            if (uploadLineItems.isEmpty()) {
-                uploadResponse.setStatus(OverrideStatus.SUCCESS.toString());
-            } else {
-                uploadResponse.setStatus(OverrideStatus.FAILURE.toString());
+            try {
+                List<UploadOverrideFailureLineItem> uploadLineItems = state.upload(requirements, requirementDownloadLineItems);
+                int successfulRowCount = requirementDownloadLineItems.size() - uploadLineItems.size();
+                UploadResponse uploadResponse = new UploadResponse();
+                uploadResponse.setUploadOverrideFailureLineItems(uploadLineItems);
+                uploadResponse.setSuccessfulRowCount(successfulRowCount);
+                if (uploadLineItems.isEmpty()) {
+                    uploadResponse.setStatus(OverrideStatus.SUCCESS.toString());
+                } else {
+                    uploadResponse.setStatus(OverrideStatus.FAILURE.toString());
+                }
+                return uploadResponse;
+
+            } catch(UnsupportedOperationException ex) {
+                log.error("Unsupported operation");
+                UploadResponse uploadResponse = new UploadResponse();
+                uploadResponse.setStatus(Constants.UNSUPPORTED_OPERATION);
+                uploadResponse.setSuccessfulRowCount(0);
+                return uploadResponse;
             }
 
-            return uploadResponse;
         }
 
     }

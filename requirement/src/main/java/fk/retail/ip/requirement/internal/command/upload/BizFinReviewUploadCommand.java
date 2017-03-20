@@ -2,7 +2,7 @@ package fk.retail.ip.requirement.internal.command.upload;
 
 import com.google.inject.Inject;
 import fk.retail.ip.requirement.internal.Constants;
-import fk.retail.ip.requirement.internal.enums.OverrideKeys;
+import fk.retail.ip.requirement.internal.enums.OverrideKey;
 import fk.retail.ip.requirement.internal.enums.OverrideStatus;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
@@ -38,7 +38,7 @@ public class BizFinReviewUploadCommand extends UploadCommand {
         if (validationResponse.isPresent()) {
             String validationComment = validationResponse.get();
             overriddenValues.put(Constants.STATUS, OverrideStatus.FAILURE.toString());
-            overriddenValues.put(OverrideKeys.OVERRIDE_COMMENT.toString(), validationComment);
+            overriddenValues.put(OverrideKey.OVERRIDE_COMMENT.toString(), validationComment);
         } else {
             overriddenValues = getOverriddenFields(bizfinProposedQuantity, quantityOverrideComment);
         }
@@ -51,16 +51,16 @@ public class BizFinReviewUploadCommand extends UploadCommand {
 
         if (bizfinProposedQuantity != null) {
             Integer quantityToUse = bizfinProposedQuantity;
-            overriddenValues.put(OverrideKeys.QUANTITY.toString(), quantityToUse);
+            overriddenValues.put(OverrideKey.QUANTITY.toString(), quantityToUse);
             JSONObject overrideComment = new JSONObject();
             overrideComment.put(Constants.QUANTITY_OVERRIDE_COMMENT, quantityOverrideComment);
-            overriddenValues.put(OverrideKeys.OVERRIDE_COMMENT.toString(), overrideComment);
+            overriddenValues.put(OverrideKey.OVERRIDE_COMMENT.toString(), overrideComment);
             overriddenValues.put(Constants.STATUS, OverrideStatus.UPDATE.toString());
         } else {
             if (!isEmptyString(quantityOverrideComment)) {
                 JSONObject overrideComment = new JSONObject();
                 overrideComment.put(Constants.QUANTITY_OVERRIDE_COMMENT, quantityOverrideComment);
-                overriddenValues.put(OverrideKeys.OVERRIDE_COMMENT.toString(), overrideComment);
+                overriddenValues.put(OverrideKey.OVERRIDE_COMMENT.toString(), overrideComment);
                 overriddenValues.put(Constants.STATUS, OverrideStatus.UPDATE.toString());
             }
         }

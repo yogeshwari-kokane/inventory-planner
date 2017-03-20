@@ -1,7 +1,6 @@
 package fk.retail.ip.requirement.internal.repository;
 
 import com.google.common.collect.Lists;
-import fk.retail.ip.requirement.internal.entities.*;
 
 import java.util.*;
 import fk.retail.ip.requirement.internal.entities.Forecast;
@@ -25,9 +24,6 @@ import java.util.List;
 import java.util.Map;
 
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
-import fk.retail.ip.requirement.model.RequirementUploadLineItem;
-import fk.retail.ip.zulu.internal.entities.EntityView;
-import fk.retail.ip.zulu.internal.entities.RetailProductAttributeResponse;
 
 public class TestHelper {
 

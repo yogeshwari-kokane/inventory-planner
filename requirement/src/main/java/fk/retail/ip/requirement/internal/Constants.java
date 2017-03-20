@@ -41,6 +41,7 @@ public interface Constants {
     String INVALID_APP_WITHOUT_COMMENT = "Invalid Price without reason";
 
     String NO_REQUIREMENT_FOUND = "No Requirement found for the uploaded file";
+    String UNSUPPORTED_OPERATION = "Unsupported Operation for the given state";
 
     String QUANTITY_OVERRIDE_COMMENT = "quantityOverrideComment";
     String APP_OVERRIDE_COMMENT = "appOverrideComment";

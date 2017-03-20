@@ -3,7 +3,7 @@ package fk.retail.ip.requirement.internal.enums;
 /**
  * Created by agarwal.vaibhav on 03/03/17.
  */
-public enum OverrideKeys {
+public enum OverrideKey {
 
     SLA("sla"),
     QUANTITY("quantity"),
@@ -13,7 +13,7 @@ public enum OverrideKeys {
 
     private String key;
 
-    OverrideKeys(String key) {
+    OverrideKey(String key) {
         this.key = key;
     }
 
