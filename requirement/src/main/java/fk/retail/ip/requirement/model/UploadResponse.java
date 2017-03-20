@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 @Setter
 public class UploadResponse {
-    private List<RequirementUploadLineItem> requirementUploadLineItems;
+    private List<UploadOverrideFailureLineItem> uploadOverrideFailureLineItems;
     private String status;
     private int successfulRowCount;
 }
