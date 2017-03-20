@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
+import fk.retail.ip.zulu.internal.entities.EntityView;
+import fk.retail.ip.zulu.internal.entities.RetailProductAttributeResponse;
 
 public class TestHelper {
 
