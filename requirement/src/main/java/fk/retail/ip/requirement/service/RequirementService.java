@@ -3,8 +3,8 @@ package fk.retail.ip.requirement.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
-import fk.retail.ip.core.poi.SpreadSheetReader;
 import com.google.inject.Provider;
+import fk.retail.ip.core.poi.SpreadSheetReader;
 import fk.retail.ip.requirement.internal.Constants;
 import fk.retail.ip.requirement.internal.command.CalculateRequirementCommand;
 import fk.retail.ip.requirement.internal.entities.Requirement;
@@ -15,9 +15,9 @@ import fk.retail.ip.requirement.internal.states.RequirementState;
 import fk.retail.ip.requirement.model.CalculateRequirementRequest;
 import fk.retail.ip.requirement.model.DownloadRequirementRequest;
 import fk.retail.ip.requirement.model.RequirementApprovalRequest;
-import fk.retail.ip.requirement.model.*;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
+import fk.retail.ip.requirement.model.UploadOverrideFailureLineItem;
+import fk.retail.ip.requirement.model.UploadResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -28,6 +28,8 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.ws.rs.core.StreamingOutput;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.json.JSONException;
 
 /**
@@ -122,22 +124,10 @@ public class RequirementService {
         List<Requirement> requirements;
         List<Long> ids = (List<Long>) request.getFilters().get("id");
         String state = (String) request.getFilters().get("state");
-
-        int count = 0;
-        int pageNumber = 1;
-        int pageSize = 1000;
         Set<Long> projectionIds = new HashSet<>();
-        do {
-            requirements = requirementRepository.findRequirements(ids, state, request.getFilters(), pageNumber++, pageSize);
-            count += requirements.size();
-            if (requirements.isEmpty()) {
-                break;
-            }
-            log.info("Loaded {} records from page {}", requirements.size(), pageNumber - 1);
-            requirements.stream().forEach(e -> projectionIds.add(e.getProjectionId()));
-            approvalService.changeState(requirements, "dummyUser", action, getter, new ApprovalService.CopyOnStateChangeAction(requirementRepository));
-        } while (requirements.size() == RequirementRepository.PAGE_SIZE);
-
+        requirements = requirementRepository.findRequirements(ids, state, request.getFilters());
+        requirements.stream().forEach(e -> projectionIds.add(e.getProjectionId()));
+        approvalService.changeState(requirements, "dummyUser", action, getter, new ApprovalService.CopyOnStateChangeAction(requirementRepository));
         requirementRepository.updateProjection(projectionIds, approvalService.getTargetState(action));
         return "{\"msg\":\"Moved " + projectionIds.size() + " projections to new state.\"}";
     }

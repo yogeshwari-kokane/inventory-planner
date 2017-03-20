@@ -12,14 +12,22 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.json.JSONException;
+import java.io.IOException;
+import java.io.InputStream;
 import javax.validation.Valid;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
-import java.io.IOException;
-import java.io.InputStream;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.glassfish.jersey.media.multipart.FormDataParam;
+import org.json.JSONException;
 
 /**
  * Created by nidhigupta.m on 26/01/17.
@@ -45,7 +53,6 @@ public class RequirementResource {
     @Path("/download")
     @Timed
     public Response download(DownloadRequirementRequest downloadRequirementRequest) {
-
         log.info("Download Requirement request received " + downloadRequirementRequest);
         StreamingOutput stream = requirementService.downloadRequirement(downloadRequirementRequest);
         return Response.ok(stream)
