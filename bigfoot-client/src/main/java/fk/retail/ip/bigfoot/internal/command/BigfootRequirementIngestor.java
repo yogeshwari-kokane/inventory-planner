@@ -2,7 +2,6 @@ package fk.retail.ip.bigfoot.internal.command;
 
 import fk.retail.ip.bigfoot.model.*;
 import fk.retail.ip.requirement.internal.entities.Requirement;
-import fk.retail.ip.requirement.model.ChangeMap;
 import fk.retail.ip.requirement.model.RequirementChangeRequest;
 import java.util.List;
 /**

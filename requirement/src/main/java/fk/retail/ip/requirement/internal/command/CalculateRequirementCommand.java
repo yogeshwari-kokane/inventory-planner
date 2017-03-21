@@ -7,6 +7,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Table;
 import com.google.inject.Inject;
+import fk.retail.ip.bigfoot.internal.command.BigfootRequirementIngestor;
 import fk.retail.ip.requirement.internal.Constants;
 import fk.retail.ip.requirement.internal.context.ForecastContext;
 import fk.retail.ip.requirement.internal.context.OnHandQuantityContext;
@@ -32,6 +33,8 @@ import fk.retail.ip.requirement.internal.repository.ProjectionRepository;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.internal.repository.WarehouseInventoryRepository;
 import fk.retail.ip.requirement.internal.repository.WarehouseRepository;
+import fk.retail.ip.requirement.model.ChangeMap;
+import fk.retail.ip.requirement.model.RequirementChangeRequest;
 import fk.retail.ip.ssl.client.SslClient;
 import fk.retail.ip.ssl.model.SupplierSelectionRequest;
 import fk.retail.ip.ssl.model.SupplierSelectionResponse;
@@ -64,6 +67,7 @@ public class CalculateRequirementCommand {
     private PolicyContext policyContext;
     private ForecastContext forecastContext;
     private OnHandQuantityContext onHandQuantityContext;
+    private List<RequirementChangeRequest> bigfootRequests = Lists.newArrayList();
 
     @Inject
     public CalculateRequirementCommand(WarehouseRepository warehouseRepository, GroupFsnRepository groupFsnRepository, PolicyRepository policyRepository, ForecastRepository forecastRepository, WarehouseInventoryRepository warehouseInventoryRepository, IwtRequestItemRepository iwtRequestItemRepository, OpenRequirementAndPurchaseOrderRepository openRequirementAndPurchaseOrderRepository, RequirementRepository requirementRepository, SslClient sslClient, ProjectionRepository projectionRepository, ObjectMapper objectMapper) {
@@ -137,6 +141,8 @@ public class CalculateRequirementCommand {
         List<Requirement> validRequirements = allRequirements.stream().filter(requirement -> !Constants.ERROR_STATE.equals(requirement.getState())).collect(Collectors.toList());
         populateSupplier(validRequirements);
 
+        BigfootRequirementIngestor bigfootRequirementIngestor = new BigfootRequirementIngestor();
+
         //create dummy error entry for fsns without forecast or group
         Set<String> fsnsWithoutGroups = new HashSet<>(fsns);
         fsnsWithoutGroups.removeAll(fsnToGroupMap.keySet());
@@ -177,6 +183,19 @@ public class CalculateRequirementCommand {
         }
         //save
         requirementRepository.persist(allRequirements);
+
+        //Add PROJECTION_CREATED events to bigfoot request
+        allRequirements.forEach(requirement -> {
+            RequirementChangeRequest requirementChangeRequest = new RequirementChangeRequest();
+            List<ChangeMap> changeMaps = Lists.newArrayList();
+            changeMaps.add(createChangeMap("Quantity",String.valueOf(requirement.getQuantity()),"PROJECTION_CREATED","Projection created"));
+            requirementChangeRequest.setRequirement(requirement);
+            requirementChangeRequest.setChangeMaps(changeMaps);
+            bigfootRequests.add(requirementChangeRequest);
+        });
+
+        //Push PROJECTION_CREATED, SUPPLIER_ASSIGNED and APP_ASSIGNED events to bigfoot
+        bigfootRequirementIngestor.pushToBigfoot(bigfootRequests);
     }
 
     private Requirement getErredRequirement(String fsn, String errorMessage) {
@@ -203,6 +222,8 @@ public class CalculateRequirementCommand {
         requirements.forEach(requirement -> {
             SupplierSelectionResponse supplierResponse = fsnWhSupplierTable.get(requirement.getFsn(), requirement.getWarehouse());
             if (supplierResponse != null) {
+                RequirementChangeRequest requirementChangeRequest = new RequirementChangeRequest();
+                List<ChangeMap> changeMaps = Lists.newArrayList();
                 SupplierView supplier = supplierResponse.getSuppliers().get(0);
                 requirement.setSupplier(supplier.getSourceId());
                 requirement.setApp(supplier.getApp());
@@ -212,8 +233,25 @@ public class CalculateRequirementCommand {
                 requirement.setMrpCurrency(supplier.getVendorPreferredCurrency());
                 requirement.setInternational(!supplier.isLocal());
                 requirement.setSslId(supplierResponse.getEntityId());
+                //Add SUPPLIER_ASSIGNED and APP_ASSIGNED events to bigfoot request
+                changeMaps.add(createChangeMap("Supplier",supplier.getSourceId(),"SUPPLIER_ASSIGNED","Supplier assigned"));
+                changeMaps.add(createChangeMap("App",supplier.getApp().toString(),"APP_ASSIGNED","App assigned"));
+                requirementChangeRequest.setRequirement(requirement);
+                requirementChangeRequest.setChangeMaps(changeMaps);
+                bigfootRequests.add(requirementChangeRequest);
             }
         });
+    }
+
+    private ChangeMap createChangeMap(String attribute, String newValue, String eventType, String reason){
+        ChangeMap changeMap = new ChangeMap();
+        changeMap.setAttribute(attribute);
+        changeMap.setOldValue(null);
+        changeMap.setNewValue(newValue);
+        changeMap.setEventType(eventType);
+        changeMap.setReason(reason);
+        changeMap.setUser("dummy_user");
+        return changeMap;
     }
 
     public List<SupplierSelectionRequest> createSupplierSelectionRequest(List<Requirement> requirements) {

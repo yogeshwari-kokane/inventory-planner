@@ -1,10 +1,12 @@
 package fk.retail.ip.requirement.service;
 
 import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Table;
 import com.google.common.io.CharStreams;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import fk.retail.ip.bigfoot.internal.command.BigfootRequirementIngestor;
 import fk.retail.ip.requirement.internal.entities.AbstractEntity;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
@@ -16,6 +18,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import fk.retail.ip.requirement.model.ChangeMap;
+import fk.retail.ip.requirement.model.RequirementChangeRequest;
 import org.json.JSONObject;
 
 /**
@@ -86,10 +91,16 @@ public class ApprovalService<E extends AbstractEntity> {
             List<Requirement> toEntities = repository.findEnabledRequirementsByStateFsn(toState, fsnToRequirements.keySet());
             Table<String, String, Requirement> cdoStateEntityMap = getCDOEntityMap(toState,  fsnToRequirements.keySet());
             boolean isIPCReviewState = RequirementApprovalState.IPC_REVIEW.toString().equals(toState);
+            BigfootRequirementIngestor bigfootRequirementIngestor = new BigfootRequirementIngestor();
+            List<RequirementChangeRequest> bigfootRequests = Lists.newArrayList();
             fsnToRequirements.keySet().stream().forEach((fsn) -> {
                 fsnToRequirements.get(fsn).stream().forEach((entity) -> {
                     Optional<Requirement> toStateEntity = toEntities.stream().filter(e -> e.getWarehouse().equals(entity.getWarehouse()) && e.getFsn().equals(entity.getFsn())).findFirst();
+                    RequirementChangeRequest requirementChangeRequest = new RequirementChangeRequest();
+                    List<ChangeMap> changeMaps = Lists.newArrayList();
                     if (forward) {
+                        //Add APPROVE events to bigfoot request
+                        changeMaps.add(createChangeMap("State",fromState,toState,"APPROVE","Moved to next state",userId));
                         if (toStateEntity.isPresent()) {
                             toStateEntity.get().setQuantity(entity.getQuantity());
                             if(isIPCReviewState) {
@@ -115,13 +126,19 @@ public class ApprovalService<E extends AbstractEntity> {
                             entity.setCurrent(false);
                         }
                     } else {
+                        //Add CANCEL events to bigfoot request
+                        changeMaps.add(createChangeMap("State",fromState,toState,"CANCEL","Moved to previous state",userId));
                         toStateEntity.ifPresent(e -> { // this will always be present
                             e.setCurrent(true);
                             entity.setCurrent(false);
                         });
                     }
+                    requirementChangeRequest.setChangeMaps(changeMaps);
+                    bigfootRequests.add(requirementChangeRequest);
                 });
             });
+            //Push APPROVE and CANCEL events to bigfoot
+            bigfootRequirementIngestor.pushToBigfoot(bigfootRequests);
         }
 
         private Table<String,String,Requirement> getCDOEntityMap(String toState, Set<String> fsns) {
@@ -145,6 +162,17 @@ public class ApprovalService<E extends AbstractEntity> {
             });
 
             return toStateRequirementMap ;
+        }
+
+        private ChangeMap createChangeMap(String attribute, String oldValue, String newValue, String eventType, String reason, String user){
+            ChangeMap changeMap = new ChangeMap();
+            changeMap.setAttribute(attribute);
+            changeMap.setOldValue(oldValue);
+            changeMap.setNewValue(newValue);
+            changeMap.setEventType(eventType);
+            changeMap.setReason(reason);
+            changeMap.setUser(user);
+            return changeMap;
         }
     }
 }
