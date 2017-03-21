@@ -8,7 +8,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class RequirementUploadLineItem {
+public class UploadOverrideFailureLineItem {
     private int rowNumber;
     private String fsn;
     private String warehouse;

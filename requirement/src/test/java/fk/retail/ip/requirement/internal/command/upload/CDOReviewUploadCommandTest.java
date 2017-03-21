@@ -8,7 +8,7 @@ import fk.retail.ip.requirement.internal.entities.RequirementSnapshot;
 import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
 import fk.retail.ip.requirement.internal.repository.TestHelper;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
-import fk.retail.ip.requirement.model.RequirementUploadLineItem;
+import fk.retail.ip.requirement.model.UploadOverrideFailureLineItem;
 import org.junit.Assert;
 import org.jukito.JukitoRunner;
 import org.jukito.UseModules;
@@ -43,7 +43,7 @@ public class CDOReviewUploadCommandTest {
         List<RequirementDownloadLineItem> requirementDownloadLineItems =
                 TestHelper.getCdoReviewRequirementDownloadLineItem();
         List<Requirement> requirements = getRequirements();
-        List<RequirementUploadLineItem> requirementUploadLineItems = CDOReviewUploadCommand.
+        List<UploadOverrideFailureLineItem> uploadOverrideFailureLineItems = CDOReviewUploadCommand.
                 execute(requirementDownloadLineItems ,requirements);
 
         Map<Long, Requirement> requirementMap = requirements.stream().collect
@@ -62,16 +62,16 @@ public class CDOReviewUploadCommandTest {
         Assert.assertEquals("new Supplier", requirementMap.get((long)6).getSupplier());
         Assert.assertEquals(20, (int)requirementMap.get((long)6).getSla());
 
-        Assert.assertEquals(4, requirementUploadLineItems.size());
+        Assert.assertEquals(4, uploadOverrideFailureLineItems.size());
         Assert.assertEquals(Constants.SUGGESTED_QUANTITY_IS_NOT_GREATER_THAN_ZERO,
-                requirementUploadLineItems.get(0).getFailureReason());
+                uploadOverrideFailureLineItems.get(0).getFailureReason());
         Assert.assertEquals(Constants.QUANTITY_OVERRIDE_COMMENT_IS_MISSING,
-                requirementUploadLineItems.get(1).getFailureReason());
+                uploadOverrideFailureLineItems.get(1).getFailureReason());
         Assert.assertEquals(Constants.SLA_QUANTITY_IS_NOT_GREATER_THAN_ZERO
                  + System.lineSeparator() + Constants.SUPPLIER_OVERRIDE_COMMENT_IS_MISSING,
-                requirementUploadLineItems.get(2).getFailureReason());
+                uploadOverrideFailureLineItems.get(2).getFailureReason());
         Assert.assertEquals(Constants.INVALID_APP_WITHOUT_COMMENT,
-                requirementUploadLineItems.get(3).getFailureReason());
+                uploadOverrideFailureLineItems.get(3).getFailureReason());
 
     }
 

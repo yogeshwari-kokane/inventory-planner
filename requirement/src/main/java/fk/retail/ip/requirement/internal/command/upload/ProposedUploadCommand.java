@@ -2,7 +2,7 @@ package fk.retail.ip.requirement.internal.command.upload;
 
 import com.google.inject.Inject;
 import fk.retail.ip.requirement.internal.Constants;
-import fk.retail.ip.requirement.internal.enums.OverrideKeys;
+import fk.retail.ip.requirement.internal.enums.OverrideKey;
 import fk.retail.ip.requirement.internal.enums.OverrideStatus;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
@@ -37,7 +37,7 @@ public class ProposedUploadCommand extends UploadCommand {
         if (validationResponse.isPresent()) {
             String validationComment = validationResponse.get();
             overriddenFields.put(Constants.STATUS, OverrideStatus.FAILURE.toString());
-            overriddenFields.put(OverrideKeys.OVERRIDE_COMMENT.toString(), validationComment);
+            overriddenFields.put(OverrideKey.OVERRIDE_COMMENT.toString(), validationComment);
         } else {
             overriddenFields = getOverriddenFields(currentQuantity, proposedQuantity, quantityOverrideComment);
         }
@@ -53,10 +53,10 @@ public class ProposedUploadCommand extends UploadCommand {
         Map<String, Object> overriddenValues = new HashMap<>();
 
         if (proposedQuantity != null && proposedQuantity != currentQuantity) {
-            overriddenValues.put(OverrideKeys.QUANTITY.toString(), proposedQuantity);
+            overriddenValues.put(OverrideKey.QUANTITY.toString(), proposedQuantity);
             JSONObject comment = new JSONObject();
             comment.put(Constants.QUANTITY_OVERRIDE_COMMENT, quantityOverrideComment);
-            overriddenValues.put(OverrideKeys.OVERRIDE_COMMENT.toString(), comment);
+            overriddenValues.put(OverrideKey.OVERRIDE_COMMENT.toString(), comment);
             overriddenValues.put(Constants.STATUS, OverrideStatus.UPDATE.toString());
         } else {
             overriddenValues.put(Constants.STATUS, OverrideStatus.SUCCESS.toString());

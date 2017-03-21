@@ -3,11 +3,11 @@ package fk.retail.ip.requirement.internal.command.upload;
 
 import fk.retail.ip.requirement.internal.Constants;
 import fk.retail.ip.requirement.internal.entities.Requirement;
-import fk.retail.ip.requirement.internal.enums.OverrideKeys;
+import fk.retail.ip.requirement.internal.enums.OverrideKey;
 import fk.retail.ip.requirement.internal.enums.OverrideStatus;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
-import fk.retail.ip.requirement.model.RequirementUploadLineItem;
+import fk.retail.ip.requirement.model.UploadOverrideFailureLineItem;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -32,17 +32,17 @@ public abstract class UploadCommand {
         this.requirementRepository = requirementRepository;
     }
 
-    public List<RequirementUploadLineItem> execute(
+    public List<UploadOverrideFailureLineItem> execute(
             List<RequirementDownloadLineItem> requirementDownloadLineItems, List<Requirement> requirements
     ) {
 
         Map<Long, Requirement> requirementMap = requirements.stream().
                 collect(Collectors.toMap(Requirement::getId, Function.identity()));
 
-        ArrayList<RequirementUploadLineItem> requirementUploadLineItems = new ArrayList<>();
+        ArrayList<UploadOverrideFailureLineItem> uploadOverrideFailureLineItems = new ArrayList<>();
         int rowCount = 0;
         for(RequirementDownloadLineItem row : requirementDownloadLineItems) {
-            RequirementUploadLineItem requirementUploadLineItem = new RequirementUploadLineItem();
+            UploadOverrideFailureLineItem uploadOverrideFailureLineItem = new UploadOverrideFailureLineItem();
             rowCount += 1;
             String fsn = row.getFsn();
             String warehouse = row.getWarehouseName();
@@ -50,11 +50,11 @@ public abstract class UploadCommand {
             Optional<String> genericComment = validateGenericColumns(fsn, warehouse);
 
             if (genericComment.isPresent()) {
-                requirementUploadLineItem.setFailureReason(genericComment.get());
-                requirementUploadLineItem.setFsn(fsn == null ? "" : fsn);
-                requirementUploadLineItem.setWarehouse(warehouse == null ? "" : warehouse);
-                requirementUploadLineItem.setRowNumber(rowCount);
-                requirementUploadLineItems.add(requirementUploadLineItem);
+                uploadOverrideFailureLineItem.setFailureReason(genericComment.get());
+                uploadOverrideFailureLineItem.setFsn(fsn == null ? "" : fsn);
+                uploadOverrideFailureLineItem.setWarehouse(warehouse == null ? "" : warehouse);
+                uploadOverrideFailureLineItem.setRowNumber(rowCount);
+                uploadOverrideFailureLineItems.add(uploadOverrideFailureLineItem);
 
             } else {
 
@@ -64,12 +64,12 @@ public abstract class UploadCommand {
 
                 switch(overrideStatus) {
                     case FAILURE:
-                        requirementUploadLineItem.setFailureReason(overriddenValues.get
-                                (OverrideKeys.OVERRIDE_COMMENT.toString()).toString());
-                        requirementUploadLineItem.setFsn(fsn);
-                        requirementUploadLineItem.setRowNumber(rowCount);
-                        requirementUploadLineItem.setWarehouse(warehouse);
-                        requirementUploadLineItems.add(requirementUploadLineItem);
+                        uploadOverrideFailureLineItem.setFailureReason(overriddenValues.get
+                                (OverrideKey.OVERRIDE_COMMENT.toString()).toString());
+                        uploadOverrideFailureLineItem.setFsn(fsn);
+                        uploadOverrideFailureLineItem.setRowNumber(rowCount);
+                        uploadOverrideFailureLineItem.setWarehouse(warehouse);
+                        uploadOverrideFailureLineItems.add(uploadOverrideFailureLineItem);
                         break;
 
                     case UPDATE:
@@ -78,36 +78,36 @@ public abstract class UploadCommand {
                         if (requirementMap.containsKey(requirementId)) {
                             Requirement requirement = requirementMap.get(requirementId);
 
-                            if (overriddenValues.containsKey(OverrideKeys.QUANTITY.toString())) {
+                            if (overriddenValues.containsKey(OverrideKey.QUANTITY.toString())) {
                                 requirement.setQuantity
-                                        ((Integer) overriddenValues.get(OverrideKeys.QUANTITY.toString()));
+                                        ((Integer) overriddenValues.get(OverrideKey.QUANTITY.toString()));
                             }
 
-                            if (overriddenValues.containsKey(OverrideKeys.SLA.toString())) {
-                                requirement.setSla((Integer) overriddenValues.get(OverrideKeys.SLA.toString()));
+                            if (overriddenValues.containsKey(OverrideKey.SLA.toString())) {
+                                requirement.setSla((Integer) overriddenValues.get(OverrideKey.SLA.toString()));
                             }
 
-                            if (overriddenValues.containsKey(OverrideKeys.APP.toString())) {
-                                requirement.setApp((Integer) overriddenValues.get(OverrideKeys.APP.toString()));
+                            if (overriddenValues.containsKey(OverrideKey.APP.toString())) {
+                                requirement.setApp((Integer) overriddenValues.get(OverrideKey.APP.toString()));
                             }
 
-                            if (overriddenValues.containsKey(OverrideKeys.SUPPLIER.toString())) {
+                            if (overriddenValues.containsKey(OverrideKey.SUPPLIER.toString())) {
                                 requirement.setSupplier
-                                        (overriddenValues.get(OverrideKeys.SUPPLIER.toString()).toString());
+                                        (overriddenValues.get(OverrideKey.SUPPLIER.toString()).toString());
                             }
 
-                            if (overriddenValues.containsKey(OverrideKeys.OVERRIDE_COMMENT.toString())) {
+                            if (overriddenValues.containsKey(OverrideKey.OVERRIDE_COMMENT.toString())) {
                                 requirement.setOverrideComment
-                                        (overriddenValues.get(OverrideKeys.OVERRIDE_COMMENT.toString()).toString());
+                                        (overriddenValues.get(OverrideKey.OVERRIDE_COMMENT.toString()).toString());
                             }
 
                         } else {
-                            requirementUploadLineItem.setFailureReason
+                            uploadOverrideFailureLineItem.setFailureReason
                                     (Constants.REQUIREMENT_NOT_FOUND_FOR_GIVEN_REQUIREMENT_ID);
-                            requirementUploadLineItem.setFsn(fsn);
-                            requirementUploadLineItem.setRowNumber(rowCount);
-                            requirementUploadLineItem.setWarehouse(warehouse);
-                            requirementUploadLineItems.add(requirementUploadLineItem);
+                            uploadOverrideFailureLineItem.setFsn(fsn);
+                            uploadOverrideFailureLineItem.setRowNumber(rowCount);
+                            uploadOverrideFailureLineItem.setWarehouse(warehouse);
+                            uploadOverrideFailureLineItems.add(uploadOverrideFailureLineItem);
                         }
                         break;
 
@@ -119,7 +119,7 @@ public abstract class UploadCommand {
                 }
             }
 
-        return requirementUploadLineItems;
+        return uploadOverrideFailureLineItems;
     }
 
     private Optional<String> validateGenericColumns(String fsn, String warehouse){
@@ -151,7 +151,7 @@ public abstract class UploadCommand {
     }
 
     protected boolean isEmptyString(String comment) {
-        return true ? comment == null || comment.trim().isEmpty() : false;
+        return comment == null || comment.trim().isEmpty() ? true : false;
     }
 
 }
