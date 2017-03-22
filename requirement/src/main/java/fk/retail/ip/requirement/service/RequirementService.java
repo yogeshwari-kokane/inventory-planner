@@ -2,6 +2,7 @@ package fk.retail.ip.requirement.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import fk.retail.ip.core.poi.SpreadSheetReader;
@@ -16,7 +17,7 @@ import fk.retail.ip.requirement.model.CalculateRequirementRequest;
 import fk.retail.ip.requirement.model.DownloadRequirementRequest;
 import fk.retail.ip.requirement.model.RequirementApprovalRequest;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
-import fk.retail.ip.requirement.model.RequirementUploadLineItem;
+import fk.retail.ip.requirement.model.UploadOverrideFailureLineItem;
 import fk.retail.ip.requirement.model.UploadResponse;
 import java.io.IOException;
 import java.io.InputStream;
@@ -73,37 +74,61 @@ public class RequirementService {
         SpreadSheetReader spreadSheetReader = new SpreadSheetReader();
         List<Map<String, Object>> parsedMappingList = spreadSheetReader.read(inputStream);
         log.info("Uploaded file parsed and contains " + parsedMappingList.size() +  " records");
-        ObjectMapper mapper = new ObjectMapper();
-        List<RequirementDownloadLineItem> requirementDownloadLineItems = mapper.convertValue(parsedMappingList,
-                new TypeReference<List<RequirementDownloadLineItem>>() {});
 
-        List<Requirement> requirements;
-        List<Long> requirementIds = new ArrayList<>();
-        requirementDownloadLineItems.forEach(row ->
-                requirementIds.add(row.getRequirementId())
-        );
-
-        requirements = requirementRepository.findRequirementByIds(requirementIds);
-        log.info("number of requirements found for uploaded records : " + requirements.size());
-
-        if (requirements.size() == 0) {
+        if (parsedMappingList.size() == 0) {
             UploadResponse uploadResponse = new UploadResponse();
-            uploadResponse.setStatus(Constants.NO_REQUIREMENT_FOUND);
+            uploadResponse.setStatus(Constants.EMPTY_RECORDS);
             uploadResponse.setSuccessfulRowCount(0);
             return uploadResponse;
-        } else {
-            RequirementState state = requirementStateFactory.getRequirementState(requirementState);
-            List<RequirementUploadLineItem> uploadLineItems = state.upload(requirements, requirementDownloadLineItems);
-            int successfulRowCount = requirementDownloadLineItems.size() - uploadLineItems.size();
-            UploadResponse uploadResponse = new UploadResponse();
-            uploadResponse.setRequirementUploadLineItems(uploadLineItems);
-            uploadResponse.setSuccessfulRowCount(successfulRowCount);
-            if (uploadLineItems.isEmpty()) {
-                uploadResponse.setStatus(OverrideStatus.SUCCESS.toString());
-            } else {
-                uploadResponse.setStatus(OverrideStatus.FAILURE.toString());
-            }
+        }
+        ObjectMapper mapper = new ObjectMapper();
 
+        try {
+            List<RequirementDownloadLineItem> requirementDownloadLineItems = mapper.convertValue(parsedMappingList,
+                    new TypeReference<List<RequirementDownloadLineItem>>() {});
+            List<Requirement> requirements;
+            List<Long> requirementIds = new ArrayList<>();
+            requirementDownloadLineItems.forEach(row ->
+                            requirementIds.add(row.getRequirementId())
+            );
+
+            requirements = requirementRepository.findRequirementByIds(requirementIds);
+            log.info("number of requirements found for uploaded records : " + requirements.size());
+
+            if (requirements.size() == 0) {
+                UploadResponse uploadResponse = new UploadResponse();
+                uploadResponse.setStatus(Constants.NO_REQUIREMENT_FOUND);
+                uploadResponse.setSuccessfulRowCount(0);
+                return uploadResponse;
+            } else {
+                RequirementState state = requirementStateFactory.getRequirementState(requirementState);
+                try {
+                    List<UploadOverrideFailureLineItem> uploadLineItems = state.upload(requirements, requirementDownloadLineItems);
+                    int successfulRowCount = requirementDownloadLineItems.size() - uploadLineItems.size();
+                    UploadResponse uploadResponse = new UploadResponse();
+                    uploadResponse.setUploadOverrideFailureLineItems(uploadLineItems);
+                    uploadResponse.setSuccessfulRowCount(successfulRowCount);
+                    if (uploadLineItems.isEmpty()) {
+                        uploadResponse.setStatus(OverrideStatus.SUCCESS.toString());
+                    } else {
+                        uploadResponse.setStatus(OverrideStatus.FAILURE.toString());
+                    }
+                    return uploadResponse;
+
+                } catch(UnsupportedOperationException ex) {
+                    log.error("Unsupported operation");
+                    UploadResponse uploadResponse = new UploadResponse();
+                    uploadResponse.setStatus(Constants.UNSUPPORTED_OPERATION);
+                    uploadResponse.setSuccessfulRowCount(0);
+                    return uploadResponse;
+                }
+
+            }
+        } catch(IllegalArgumentException ex) {
+            log.warn("One or more fields were unrecognised", ex.getStackTrace());
+            UploadResponse uploadResponse = new UploadResponse();
+            uploadResponse.setStatus(Constants.UNKNOWN_COLUMN);
+            uploadResponse.setSuccessfulRowCount(0);
             return uploadResponse;
         }
 
@@ -117,9 +142,12 @@ public class RequirementService {
         String state = (String) request.getFilters().get("state");
         Set<Long> projectionIds = new HashSet<>();
         requirements = requirementRepository.findRequirements(ids, state, request.getFilters());
+        log.info("Change state Request for {} number of requirements", requirements.size());
         requirements.stream().forEach(e -> projectionIds.add(e.getProjectionId()));
         approvalService.changeState(requirements, "dummyUser", action, getter, new ApprovalService.CopyOnStateChangeAction(requirementRepository));
+        log.info("State changed for {} number of requirements", requirements.size());
         requirementRepository.updateProjection(projectionIds, approvalService.getTargetState(action));
+        log.info("Projections table updated for Requirements");
         return "{\"msg\":\"Moved " + projectionIds.size() + " projections to new state.\"}";
     }
 

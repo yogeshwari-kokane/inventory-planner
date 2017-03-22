@@ -34,7 +34,7 @@ public interface Constants {
 
     String FSN_OR_WAREHOUSE_IS_MISSING = "FSN or Warehouse is missing";
     String QUANTITY_OVERRIDE_COMMENT_IS_MISSING = "Quantity override reason is missing";
-    String SUGGESTED_QUANTITY_IS_NOT_GREATER_THAN_ZERO = "Suggested quantity is not greater than zero";
+    String SUGGESTED_QUANTITY_IS_NOT_GREATER_THAN_ZERO = "Suggested quantity shouldn't be negative";
     String APP_OVERRIDE_COMMENT_IS_MISSING = "Price override reason is missing";
     String SUPPLIER_OVERRIDE_COMMENT_IS_MISSING = "Supplier override reason is missing";
     String SLA_QUANTITY_IS_NOT_GREATER_THAN_ZERO = "Suggested SLA should be greater than zero";
@@ -44,6 +44,10 @@ public interface Constants {
     String INVALID_APP_WITHOUT_COMMENT = "Invalid Price without reason";
 
     String NO_REQUIREMENT_FOUND = "No Requirement found for the uploaded file";
+    String UNSUPPORTED_OPERATION = "Unsupported Operation for the given state";
+    String UNKNOWN_COLUMN = "The uploaded file contains one or more unknown columns." +
+            "Upload the file with correct column headers";
+    String EMPTY_RECORDS = "The uploaded file contains no meaningful records";
 
     String QUANTITY_OVERRIDE_COMMENT = "quantityOverrideComment";
     String APP_OVERRIDE_COMMENT = "appOverrideComment";

@@ -5,7 +5,7 @@ import com.google.inject.Provider;
 import fk.retail.ip.requirement.internal.command.download.DownloadPreProposedCommand;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
-import fk.retail.ip.requirement.model.RequirementUploadLineItem;
+import fk.retail.ip.requirement.model.UploadOverrideFailureLineItem;
 
 import javax.ws.rs.core.StreamingOutput;
 import java.util.List;
@@ -28,7 +28,7 @@ public class PreProposedRequirementState implements RequirementState {
     }
 
     @Override
-    public List<RequirementUploadLineItem> upload(List<Requirement> requirements, List<RequirementDownloadLineItem> parsedJson) {
-        return null;
+    public List<UploadOverrideFailureLineItem> upload(List<Requirement> requirements, List<RequirementDownloadLineItem> parsedJson) {
+        throw new UnsupportedOperationException("Invalid operation");
     }
 }

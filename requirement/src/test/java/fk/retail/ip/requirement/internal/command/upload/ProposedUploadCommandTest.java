@@ -1,7 +1,6 @@
 package fk.retail.ip.requirement.internal.command.upload;
 
 import com.google.common.collect.Lists;
-import com.google.inject.Inject;
 import fk.retail.ip.requirement.config.TestModule;
 import fk.retail.ip.requirement.internal.Constants;
 import fk.retail.ip.requirement.internal.entities.Requirement;
@@ -9,7 +8,7 @@ import fk.retail.ip.requirement.internal.entities.RequirementSnapshot;
 import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
 import fk.retail.ip.requirement.internal.repository.TestHelper;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
-import fk.retail.ip.requirement.model.RequirementUploadLineItem;
+import fk.retail.ip.requirement.model.UploadOverrideFailureLineItem;
 import org.jukito.JukitoRunner;
 import org.jukito.UseModules;
 import org.junit.Assert;
@@ -43,7 +42,7 @@ public class ProposedUploadCommandTest {
         List<RequirementDownloadLineItem> requirementDownloadLineItems =
                 TestHelper.getProposedRequirementDownloadLineItem();
         List<Requirement> requirements = getRequirements();
-        List<RequirementUploadLineItem> requirementUploadLineItems = uploadProposedCommand.
+        List<UploadOverrideFailureLineItem> uploadOverrideFailureLineItems = uploadProposedCommand.
                 execute(requirementDownloadLineItems, requirements);
 
         Map<Long, Requirement> requirementMap = requirements.stream().collect
@@ -55,14 +54,12 @@ public class ProposedUploadCommandTest {
                 requirementMap.get((long)1).getOverrideComment());
         Assert.assertEquals(100, (int)requirementMap.get((long)2).getQuantity());
         Assert.assertEquals(100, (int)requirementMap.get((long)3).getQuantity());
-        Assert.assertEquals(100, (int)requirementMap.get((long)4).getQuantity());
+        Assert.assertEquals(0, (int)requirementMap.get((long)4).getQuantity());
 
         Assert.assertEquals(Constants.QUANTITY_OVERRIDE_COMMENT_IS_MISSING,
-                requirementUploadLineItems.get(0).getFailureReason());
+                uploadOverrideFailureLineItems.get(0).getFailureReason());
         Assert.assertEquals(Constants.FSN_OR_WAREHOUSE_IS_MISSING,
-                requirementUploadLineItems.get(1).getFailureReason());
-        Assert.assertEquals(Constants.SUGGESTED_QUANTITY_IS_NOT_GREATER_THAN_ZERO,
-                requirementUploadLineItems.get(2).getFailureReason());
+                uploadOverrideFailureLineItems.get(1).getFailureReason());
     }
 
 

@@ -1,19 +1,13 @@
 package fk.retail.ip.requirement.internal.command.upload;
 
 
-import com.google.common.collect.Lists;
-import fk.retail.ip.bigfoot.internal.command.BigfootRequirementIngestor;
 import fk.retail.ip.requirement.internal.Constants;
 import fk.retail.ip.requirement.internal.entities.Requirement;
-import fk.retail.ip.requirement.internal.enums.OverrideKeys;
+import fk.retail.ip.requirement.internal.enums.OverrideKey;
 import fk.retail.ip.requirement.internal.enums.OverrideStatus;
-import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
-import fk.retail.ip.requirement.model.ChangeMap;
-import fk.retail.ip.requirement.model.RequirementChangeRequest;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
-import fk.retail.ip.requirement.model.RequirementUploadLineItem;
-import fk.retail.ip.requirement.internal.command.BigfootRequirementIngestorHelper;
+import fk.retail.ip.requirement.model.UploadOverrideFailureLineItem;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -38,21 +32,17 @@ public abstract class UploadCommand {
         this.requirementRepository = requirementRepository;
     }
 
-    public List<RequirementUploadLineItem> execute(
+    public List<UploadOverrideFailureLineItem> execute(
             List<RequirementDownloadLineItem> requirementDownloadLineItems, List<Requirement> requirements
     ) {
 
         Map<Long, Requirement> requirementMap = requirements.stream().
                 collect(Collectors.toMap(Requirement::getId, Function.identity()));
 
-        ArrayList<RequirementUploadLineItem> requirementUploadLineItems = new ArrayList<>();
+        ArrayList<UploadOverrideFailureLineItem> uploadOverrideFailureLineItems = new ArrayList<>();
         int rowCount = 0;
-
-        BigfootRequirementIngestorHelper bigfootRequirementIngestorHelper = new BigfootRequirementIngestorHelper();
-        List<RequirementChangeRequest> bigfootRequests = Lists.newArrayList();
-
         for(RequirementDownloadLineItem row : requirementDownloadLineItems) {
-            RequirementUploadLineItem requirementUploadLineItem = new RequirementUploadLineItem();
+            UploadOverrideFailureLineItem uploadOverrideFailureLineItem = new UploadOverrideFailureLineItem();
             rowCount += 1;
             String fsn = row.getFsn();
             String warehouse = row.getWarehouseName();
@@ -60,11 +50,11 @@ public abstract class UploadCommand {
             Optional<String> genericComment = validateGenericColumns(fsn, warehouse);
 
             if (genericComment.isPresent()) {
-                requirementUploadLineItem.setFailureReason(genericComment.get());
-                requirementUploadLineItem.setFsn(fsn == null ? "" : fsn);
-                requirementUploadLineItem.setWarehouse(warehouse == null ? "" : warehouse);
-                requirementUploadLineItem.setRowNumber(rowCount);
-                requirementUploadLineItems.add(requirementUploadLineItem);
+                uploadOverrideFailureLineItem.setFailureReason(genericComment.get());
+                uploadOverrideFailureLineItem.setFsn(fsn == null ? "" : fsn);
+                uploadOverrideFailureLineItem.setWarehouse(warehouse == null ? "" : warehouse);
+                uploadOverrideFailureLineItem.setRowNumber(rowCount);
+                uploadOverrideFailureLineItems.add(uploadOverrideFailureLineItem);
 
             } else {
 
@@ -74,12 +64,12 @@ public abstract class UploadCommand {
 
                 switch(overrideStatus) {
                     case FAILURE:
-                        requirementUploadLineItem.setFailureReason(overriddenValues.get
-                                (OverrideKeys.OVERRIDE_COMMENT.toString()).toString());
-                        requirementUploadLineItem.setFsn(fsn);
-                        requirementUploadLineItem.setRowNumber(rowCount);
-                        requirementUploadLineItem.setWarehouse(warehouse);
-                        requirementUploadLineItems.add(requirementUploadLineItem);
+                        uploadOverrideFailureLineItem.setFailureReason(overriddenValues.get
+                                (OverrideKey.OVERRIDE_COMMENT.toString()).toString());
+                        uploadOverrideFailureLineItem.setFsn(fsn);
+                        uploadOverrideFailureLineItem.setRowNumber(rowCount);
+                        uploadOverrideFailureLineItem.setWarehouse(warehouse);
+                        uploadOverrideFailureLineItems.add(uploadOverrideFailureLineItem);
                         break;
 
                     case UPDATE:
@@ -88,58 +78,36 @@ public abstract class UploadCommand {
                         if (requirementMap.containsKey(requirementId)) {
                             Requirement requirement = requirementMap.get(requirementId);
 
-                            RequirementChangeRequest requirementChangeRequest = new RequirementChangeRequest();
-                            List<ChangeMap> changeMaps = Lists.newArrayList();
-                            requirementChangeRequest.setRequirement(requirement);
-
-                            if (overriddenValues.containsKey(OverrideKeys.QUANTITY.toString())) {
-                                //Add IPC_QUANTITY_OVERRIDE/CDO_QUANTITY_OVERRIDE events to bigfoot request
-                                String eventType = null;
-                                if(RequirementApprovalState.PROPOSED.toString().equals(requirement.getState()))
-                                    eventType = "IPC_QUANTITY_OVERRIDE";
-                                else if(RequirementApprovalState.CDO_REVIEW.toString().equals(requirement.getState()))
-                                    eventType = "CDO_QUANTITY_OVERRIDE";
-                                if (eventType != null) {
-                                    changeMaps.add(createChangeMap("Quantity", String.valueOf(requirement.getQuantity()), overriddenValues.get(OverrideKeys.QUANTITY.toString()).toString(), eventType, overriddenValues.get(OverrideKeys.OVERRIDE_COMMENT.toString()).toString(), "dummy_user"));
-                                }
+                            if (overriddenValues.containsKey(OverrideKey.QUANTITY.toString())) {
                                 requirement.setQuantity
-                                        ((Integer) overriddenValues.get(OverrideKeys.QUANTITY.toString()));
+                                        ((Integer) overriddenValues.get(OverrideKey.QUANTITY.toString()));
                             }
 
-                            if (overriddenValues.containsKey(OverrideKeys.SLA.toString())) {
-                                //Add CDO_SLA_OVERRIDE events to bigfoot request
-                                changeMaps.add(createChangeMap("Sla", requirement.getSla().toString(),overriddenValues.get(OverrideKeys.SLA.toString()).toString(),"CDO_SLA_OVERRIDE", "SLA overridden by CDO", "dummy_user"));
-                                requirement.setSla((Integer) overriddenValues.get(OverrideKeys.SLA.toString()));
+                            if (overriddenValues.containsKey(OverrideKey.SLA.toString())) {
+                                requirement.setSla((Integer) overriddenValues.get(OverrideKey.SLA.toString()));
                             }
 
-                            if (overriddenValues.containsKey(OverrideKeys.APP.toString())) {
-                                //Add CDO_APP_OVERRIDE events to bigfoot request
-                                changeMaps.add(createChangeMap("App", requirement.getApp().toString(),overriddenValues.get(OverrideKeys.APP.toString()).toString(),"CDO_APP_OVERRIDE", row.getCdoPriceOverrideReason(), "dummy_user"));
-                                requirement.setApp((Integer) overriddenValues.get(OverrideKeys.APP.toString()));
+                            if (overriddenValues.containsKey(OverrideKey.APP.toString())) {
+                                requirement.setApp((Integer) overriddenValues.get(OverrideKey.APP.toString()));
                             }
 
-                            if (overriddenValues.containsKey(OverrideKeys.SUPPLIER.toString())) {
-                                //Add CDO_SUPPLIER_OVERRIDE events to bigfoot request
-                                changeMaps.add(createChangeMap("Supplier", requirement.getSupplier(),overriddenValues.get(OverrideKeys.SUPPLIER.toString()).toString(),"CDO_SUPPLIER_OVERRIDE", row.getCdoSupplierOverrideReason(), "dummy_user"));
+                            if (overriddenValues.containsKey(OverrideKey.SUPPLIER.toString())) {
                                 requirement.setSupplier
-                                        (overriddenValues.get(OverrideKeys.SUPPLIER.toString()).toString());
+                                        (overriddenValues.get(OverrideKey.SUPPLIER.toString()).toString());
                             }
 
-                            if (overriddenValues.containsKey(OverrideKeys.OVERRIDE_COMMENT.toString())) {
+                            if (overriddenValues.containsKey(OverrideKey.OVERRIDE_COMMENT.toString())) {
                                 requirement.setOverrideComment
-                                        (overriddenValues.get(OverrideKeys.OVERRIDE_COMMENT.toString()).toString());
+                                        (overriddenValues.get(OverrideKey.OVERRIDE_COMMENT.toString()).toString());
                             }
-
-                            requirementChangeRequest.setChangeMaps(changeMaps);
-                            bigfootRequests.add(requirementChangeRequest);
 
                         } else {
-                            requirementUploadLineItem.setFailureReason
+                            uploadOverrideFailureLineItem.setFailureReason
                                     (Constants.REQUIREMENT_NOT_FOUND_FOR_GIVEN_REQUIREMENT_ID);
-                            requirementUploadLineItem.setFsn(fsn);
-                            requirementUploadLineItem.setRowNumber(rowCount);
-                            requirementUploadLineItem.setWarehouse(warehouse);
-                            requirementUploadLineItems.add(requirementUploadLineItem);
+                            uploadOverrideFailureLineItem.setFsn(fsn);
+                            uploadOverrideFailureLineItem.setRowNumber(rowCount);
+                            uploadOverrideFailureLineItem.setWarehouse(warehouse);
+                            uploadOverrideFailureLineItems.add(uploadOverrideFailureLineItem);
                         }
                         break;
 
@@ -151,21 +119,7 @@ public abstract class UploadCommand {
                 }
             }
 
-        //Push IPC_QUANTITY_OVERRIDE, CDO_QUANTITY_OVERRIDE, CDO_APP_OVERRIDE, CDO_SLA_OVERRIDE, CDO_SUPPLIER_OVERRIDE events to bigfoot
-        bigfootRequirementIngestorHelper.pushToBigfoot(bigfootRequests);
-
-        return requirementUploadLineItems;
-    }
-
-    private ChangeMap createChangeMap(String attribute, String oldValue, String newValue, String eventType, String reason, String user){
-        ChangeMap changeMap = new ChangeMap();
-        changeMap.setAttribute(attribute);
-        changeMap.setOldValue(oldValue);
-        changeMap.setNewValue(newValue);
-        changeMap.setEventType(eventType);
-        changeMap.setReason(reason);
-        changeMap.setUser(user);
-        return changeMap;
+        return uploadOverrideFailureLineItems;
     }
 
     private Optional<String> validateGenericColumns(String fsn, String warehouse){
@@ -183,7 +137,7 @@ public abstract class UploadCommand {
         if (suggestedQuantity == null) {
             return Optional.empty();
         }
-        if (suggestedQuantity <= 0) {
+        if (suggestedQuantity < 0) {
             validationComment = isEmptyString(overrideComment) ?
                     Constants.INVALID_QUANTITY_WITHOUT_COMMENT :
                     Constants.SUGGESTED_QUANTITY_IS_NOT_GREATER_THAN_ZERO;
@@ -197,7 +151,7 @@ public abstract class UploadCommand {
     }
 
     protected boolean isEmptyString(String comment) {
-        return true ? comment == null || comment.trim().isEmpty() : false;
+        return comment == null || comment.trim().isEmpty() ? true : false;
     }
 
 }

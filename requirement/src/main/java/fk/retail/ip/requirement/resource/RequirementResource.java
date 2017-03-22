@@ -8,7 +8,6 @@ import fk.retail.ip.requirement.model.DownloadRequirementRequest;
 import fk.retail.ip.requirement.model.RequirementApprovalRequest;
 import fk.retail.ip.requirement.model.UploadResponse;
 import fk.retail.ip.requirement.service.RequirementService;
-import io.dropwizard.hibernate.UnitOfWork;
 import java.io.IOException;
 import java.io.InputStream;
 import javax.validation.Valid;
@@ -62,7 +61,6 @@ public class RequirementResource {
     @POST
     @Path("/upload")
     @Timed
-    @UnitOfWork
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response uploadProjectionOverride(
@@ -76,10 +74,10 @@ public class RequirementResource {
             log.info("Successfully updated " + uploadResponse.getSuccessfulRowCount() + " records");
             return Response.ok(uploadResponse).build();
         } catch (IOException ioException) {
-            log.info("IO exception occurred");
+            log.warn("IO exception occurred", ioException.getStackTrace());
             return Response.status(400).build();
         } catch (InvalidFormatException invalidFormat) {
-            log.info("Invalid format exception");
+            log.warn("Invalid format exception", invalidFormat.getStackTrace());
             return Response.status(400).build();
         }
     }
