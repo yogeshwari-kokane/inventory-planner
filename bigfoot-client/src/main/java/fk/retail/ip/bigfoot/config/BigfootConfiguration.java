@@ -9,4 +9,5 @@ import lombok.Data;
 public class BigfootConfiguration {
     String schema_version;
     String url;
+    String requirementQueueName;
 }

@@ -1,6 +1,7 @@
-package fk.retail.ip.bigfoot.model;
+package fk.retail.ip.requirement.model;
 
 import com.google.common.collect.Lists;
+import fk.retail.ip.bigfoot.model.RequirementEventPayload;
 import fk.retail.ip.requirement.model.ChangeMap;
 import java.util.List;
 /**
@@ -9,7 +10,7 @@ import java.util.List;
 public class CreateRequirementEventPayload implements RequirementEventMapper{
 
     @Override
-    public List<RequirementEventPayload> convertRequirementToEventPayload(String requirementId,List<ChangeMap> changeMaps) {
+    public List<RequirementEventPayload> convertRequirementToEventPayload(String requirementId, List<ChangeMap> changeMaps) {
         List<RequirementEventPayload> requirementEventPayloadList = Lists.newArrayList();
         changeMaps.forEach(changeMap -> {
             RequirementEventPayload requirementEventPayload=new RequirementEventPayload();

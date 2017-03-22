@@ -141,7 +141,7 @@ public class CalculateRequirementCommand {
         List<Requirement> validRequirements = allRequirements.stream().filter(requirement -> !Constants.ERROR_STATE.equals(requirement.getState())).collect(Collectors.toList());
         populateSupplier(validRequirements);
 
-        BigfootRequirementIngestor bigfootRequirementIngestor = new BigfootRequirementIngestor();
+        BigfootRequirementIngestorHelper bigfootRequirementIngestorHelper = new BigfootRequirementIngestorHelper();
 
         //create dummy error entry for fsns without forecast or group
         Set<String> fsnsWithoutGroups = new HashSet<>(fsns);
@@ -195,7 +195,7 @@ public class CalculateRequirementCommand {
         });
 
         //Push PROJECTION_CREATED, SUPPLIER_ASSIGNED and APP_ASSIGNED events to bigfoot
-        bigfootRequirementIngestor.pushToBigfoot(bigfootRequests);
+        bigfootRequirementIngestorHelper.pushToBigfoot(bigfootRequests);
     }
 
     private Requirement getErredRequirement(String fsn, String errorMessage) {

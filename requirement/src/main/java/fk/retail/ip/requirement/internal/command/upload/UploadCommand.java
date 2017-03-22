@@ -13,6 +13,7 @@ import fk.retail.ip.requirement.model.ChangeMap;
 import fk.retail.ip.requirement.model.RequirementChangeRequest;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
 import fk.retail.ip.requirement.model.RequirementUploadLineItem;
+import fk.retail.ip.requirement.internal.command.BigfootRequirementIngestorHelper;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -47,7 +48,7 @@ public abstract class UploadCommand {
         ArrayList<RequirementUploadLineItem> requirementUploadLineItems = new ArrayList<>();
         int rowCount = 0;
 
-        BigfootRequirementIngestor bigfootRequirementIngestor = new BigfootRequirementIngestor();
+        BigfootRequirementIngestorHelper bigfootRequirementIngestorHelper = new BigfootRequirementIngestorHelper();
         List<RequirementChangeRequest> bigfootRequests = Lists.newArrayList();
 
         for(RequirementDownloadLineItem row : requirementDownloadLineItems) {
@@ -151,7 +152,7 @@ public abstract class UploadCommand {
             }
 
         //Push IPC_QUANTITY_OVERRIDE, CDO_QUANTITY_OVERRIDE, CDO_APP_OVERRIDE, CDO_SLA_OVERRIDE, CDO_SUPPLIER_OVERRIDE events to bigfoot
-        bigfootRequirementIngestor.pushToBigfoot(bigfootRequests);
+        bigfootRequirementIngestorHelper.pushToBigfoot(bigfootRequests);
 
         return requirementUploadLineItems;
     }

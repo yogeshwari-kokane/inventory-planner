@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonSnakeCase
 public class RequirementEventPayload {
+    //String entityId;
     String eventType;
     String user;
     String requirementId;

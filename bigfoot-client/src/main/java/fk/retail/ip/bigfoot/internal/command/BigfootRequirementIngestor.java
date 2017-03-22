@@ -1,28 +1,49 @@
 package fk.retail.ip.bigfoot.internal.command;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.flipkart.restbus.client.entity.Message;
+import com.google.inject.Inject;
+import fk.retail.ip.bigfoot.config.BigfootConfiguration;
 import fk.retail.ip.bigfoot.model.*;
-import fk.retail.ip.requirement.internal.entities.Requirement;
-import fk.retail.ip.requirement.model.RequirementChangeRequest;
-import java.util.List;
+import fk.sp.common.restbus.sender.RestbusMessageSender;
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Created by yogeshwari.k on 17/03/17.
  */
+@Slf4j
 public class BigfootRequirementIngestor {
-    BatchBigfootRequirementEventEntityPayload batchBigfootRequirementEventEntityPayload;
-    RequirementEntityMapper requirementEntityMapper;
-    RequirementEventMapper requirementEventMapper;
-    public void pushToBigfoot(List<RequirementChangeRequest> requirementChangeRequests) {
-        requirementChangeRequests.forEach(req -> {
-            String requirementId= getRequirementId(req.getRequirement());
-            RequirementEntityPayload requirementEntityPayload = requirementEntityMapper.convertRequirementToEntityPayload(requirementId,req.getRequirement());
-            List<RequirementEventPayload> requirementEventPayload = requirementEventMapper.convertRequirementToEventPayload(requirementId,req.getChangeMaps());
-            batchBigfootRequirementEventEntityPayload.getRequirementEntityPayloads().add(requirementEntityPayload);
-            batchBigfootRequirementEventEntityPayload.getRequirementEventPayloads().addAll(requirementEventPayload);
-        });
+    private final RestbusMessageSender restbusMessageSender;
+    private final ObjectMapper mapper;
+    private final BigfootConfiguration bigfootConfiguration;
+
+    @Inject
+    public BigfootRequirementIngestor(RestbusMessageSender restbusMessageSender, ObjectMapper mapper, BigfootConfiguration bigfootConfiguration){
+        this.restbusMessageSender = restbusMessageSender;
+        this.mapper = mapper;
+        this.bigfootConfiguration = bigfootConfiguration;
     }
 
-    private String getRequirementId(Requirement requirement) {
-        String requirementId = requirement.getFsn()+requirement.getWarehouse()+(requirement.getCreatedAt().toString());
-        return requirementId;
+    public void pushToBigfoot(BatchBigfootRequirementEventEntityPayload batchBigfootRequirementEventEntityPayload) {
+        Message message = getMessageInstance();
+        try {
+            message.setPayload(mapper.writeValueAsString(batchBigfootRequirementEventEntityPayload));
+            restbusMessageSender.send(message);
+        } catch (JsonProcessingException e) {
+            log.error("Unable to serialize request object ", e);
+        }
+    }
+
+    private Message getMessageInstance() {
+        Message message = new Message();
+        message.setExchangeName(bigfootConfiguration.getRequirementQueueName());
+        message.setExchangeType("queue");
+        message.setHttpMethod("POST");
+        message.setHttpUri(bigfootConfiguration.getUrl());
+        message.setReplyTo(bigfootConfiguration.getRequirementQueueName());
+        message.setReplyToHttpMethod("POST");
+        message.setAppId("fk-ip-inventory-planner");
+        return message;
     }
 }

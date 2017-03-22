@@ -11,6 +11,7 @@ import fk.retail.ip.requirement.internal.entities.AbstractEntity;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
+import fk.retail.ip.requirement.internal.command.BigfootRequirementIngestorHelper;
 import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Map;
@@ -91,7 +92,7 @@ public class ApprovalService<E extends AbstractEntity> {
             List<Requirement> toEntities = repository.findEnabledRequirementsByStateFsn(toState, fsnToRequirements.keySet());
             Table<String, String, Requirement> cdoStateEntityMap = getCDOEntityMap(toState,  fsnToRequirements.keySet());
             boolean isIPCReviewState = RequirementApprovalState.IPC_REVIEW.toString().equals(toState);
-            BigfootRequirementIngestor bigfootRequirementIngestor = new BigfootRequirementIngestor();
+            BigfootRequirementIngestorHelper bigfootRequirementIngestorHelper = new BigfootRequirementIngestorHelper();
             List<RequirementChangeRequest> bigfootRequests = Lists.newArrayList();
             fsnToRequirements.keySet().stream().forEach((fsn) -> {
                 fsnToRequirements.get(fsn).stream().forEach((entity) -> {
@@ -138,7 +139,7 @@ public class ApprovalService<E extends AbstractEntity> {
                 });
             });
             //Push APPROVE and CANCEL events to bigfoot
-            bigfootRequirementIngestor.pushToBigfoot(bigfootRequests);
+            bigfootRequirementIngestorHelper.pushToBigfoot(bigfootRequests);
         }
 
         private Table<String,String,Requirement> getCDOEntityMap(String toState, Set<String> fsns) {
