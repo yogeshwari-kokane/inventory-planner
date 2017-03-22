@@ -22,43 +22,36 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalField;
 import java.time.temporal.WeekFields;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import javax.ws.rs.core.StreamingOutput;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.map.MultiKeyMap;
 import org.json.JSONObject;
 
-import static java.util.stream.Collectors.toList;
-
 /**
- * Created by nidhigupta.m on 26/01/17.
+ * Created by nidhigupta.m on 20/03/17.
  */
 
 @Slf4j
-public abstract class DownloadCommand {
+public class RequirementDataAggregator {
 
     private final FsnBandRepository fsnBandRepository;
     private final WeeklySaleRepository weeklySaleRepository;
     private final ProductInfoRepository productInfoRepository;
     private final LastAppSupplierRepository lastAppSupplierRepository;
-    private final GenerateExcelCommand generateExcelCommand;
     private final RequirementRepository requirementRepository;
     private final WarehouseRepository warehouseRepository;
-
     private final ZuluClient zuluClient;
 
-    public DownloadCommand(FsnBandRepository fsnBandRepository, WeeklySaleRepository weeklySaleRepository, GenerateExcelCommand generateExcelCommand, LastAppSupplierRepository lastAppSupplierRepository,
-                           ProductInfoRepository productInfoRepository, ZuluClient zuluClient, RequirementRepository requirementRepository, WarehouseRepository warehouseRepository) {
+    public RequirementDataAggregator(FsnBandRepository fsnBandRepository, WeeklySaleRepository weeklySaleRepository, LastAppSupplierRepository lastAppSupplierRepository,
+                                     ProductInfoRepository productInfoRepository, ZuluClient zuluClient, RequirementRepository requirementRepository, WarehouseRepository warehouseRepository) {
 
         this.fsnBandRepository = fsnBandRepository;
         this.weeklySaleRepository = weeklySaleRepository;
-        this.generateExcelCommand = generateExcelCommand;
         this.productInfoRepository = productInfoRepository;
         this.zuluClient = zuluClient;
         this.lastAppSupplierRepository = lastAppSupplierRepository;
@@ -67,40 +60,24 @@ public abstract class DownloadCommand {
 
     }
 
-    public StreamingOutput execute(List<Requirement> requirements, boolean isLastAppSupplierRequired) {
-        log.info("Download Request for {} number of requirements", requirements.size());
-        if (requirements.isEmpty()) {
-            log.info("No requirements found for download. Generating empty file");
-            return generateExcelCommand.generateExcel(Collections.EMPTY_LIST, getTemplateName(isLastAppSupplierRequired));
-        }
-        List<RequirementDownloadLineItem> requirementDownloadLineItems = requirements.stream().map(RequirementDownloadLineItem::new).collect(toList());
-        Map<String, List<RequirementDownloadLineItem>> fsnToRequirement = requirementDownloadLineItems.stream().collect(Collectors.groupingBy(RequirementDownloadLineItem::getFsn));
-        Set<String> fsns = fsnToRequirement.keySet();
-        Map<String, List<RequirementDownloadLineItem>> WhToRequirement = requirementDownloadLineItems.stream().collect(Collectors.groupingBy(RequirementDownloadLineItem::getWarehouse));
-        Set<String> requirementWhs =  WhToRequirement.keySet();
-        fetchProductData(fsns,fsnToRequirement );
-        fetchFsnBandData(fsns,fsnToRequirement);
-        fetchSalesBucketData(fsns,requirementDownloadLineItems);
-        fetchWarehouseName(requirementWhs,requirementDownloadLineItems);
-        fetchRequirementStateData(isLastAppSupplierRequired, fsns,requirementDownloadLineItems);
-        return generateExcelCommand.generateExcel(requirementDownloadLineItems, getTemplateName(isLastAppSupplierRequired));
-    }
-
     /*
-    Fetch product data for list of fsns from db. If not found from db fetch the data from zulu.
-    *
-    * */
-    protected void fetchProductData(Set<String> fsns, Map<String, List<RequirementDownloadLineItem>> fsnToRequirement) {
+ Fetch product data for list of fsns from db. If not found from db fetch the data from zulu.
+ *
+ * */
+    protected void fetchProductData(Map<String, List<RequirementDownloadLineItem>> fsnToRequirement) {
         log.info("Fetching Product Data for downloading requirements");
-        Set<String> zuluFsns = fetchDataFromProductInfo(fsns, fsnToRequirement);
+        Set<String> zuluFsns = fetchDataFromProductInfo(fsnToRequirement);
         if (zuluFsns.size() > 0) {
             log.info("Fetching product data from Zulu for download for fns size " + zuluFsns.size());
             fetchDataFromZulu(zuluFsns, fsnToRequirement);
         }
     }
 
-    protected void fetchFsnBandData(Set<String> fsns, Map<String, List<RequirementDownloadLineItem>> fsnToRequirement) {
+
+
+    protected void fetchFsnBandData(Map<String, List<RequirementDownloadLineItem>> fsnToRequirement) {
         log.info("Fetching Fsn Band data for downloading requirements");
+        Set<String> fsns = fsnToRequirement.keySet();
         List<FsnBand> bands = fsnBandRepository.fetchBandDataForFSNs(fsns);
         bands.stream().forEach(b -> {
             List<RequirementDownloadLineItem> items = fsnToRequirement.get(b.getFsn());
@@ -137,9 +114,7 @@ public abstract class DownloadCommand {
         List<Warehouse> warehouses = warehouseRepository.fetchWarehouseNameByCode(requirementWhs);
         Map<String,String> whCodeNameMap = warehouses.stream().collect(Collectors.toMap(Warehouse::getCode, Warehouse::getName));
         requirementDownloadLineItems.forEach(reqItem -> reqItem.setWarehouseName(Optional.ofNullable(whCodeNameMap.get(reqItem.getWarehouse())).orElse(reqItem.getWarehouse())));
-
     }
-
 
     protected void fetchLastAppSupplierDataFromProc(Set<String> fsns, List<RequirementDownloadLineItem> requirementDownloadLineItems) {
         log.info("Fetching last app and supplier for downloading requirements");
@@ -153,8 +128,8 @@ public abstract class DownloadCommand {
 
         requirementDownloadLineItems.forEach(reqItem
                         -> {
-                        reqItem.setLastApp(fsnWhLastAppMap.get(reqItem.getFsn(),reqItem.getWarehouse()));
-                        reqItem.setLastSupplier(fsnWhLastSupplierMap.get(reqItem.getFsn(),reqItem.getWarehouse()));
+                    reqItem.setLastApp(fsnWhLastAppMap.get(reqItem.getFsn(),reqItem.getWarehouse()));
+                    reqItem.setLastSupplier(fsnWhLastSupplierMap.get(reqItem.getFsn(),reqItem.getWarehouse()));
                 }
         );
     }
@@ -185,7 +160,7 @@ public abstract class DownloadCommand {
         MultiKeyMap<String,Integer> fsnWhIpcProposedQuantity = new MultiKeyMap();
         requirements.forEach(r -> {
             fsnWhIpcProposedQuantity.put(r.getFsn(),r.getWarehouse(), (int) r.getQuantity());
-});
+        });
         requirementDownloadLineItems.stream()
                 .forEach(reqItem ->reqItem.setIpcProposedQuantity(fsnWhIpcProposedQuantity.get(reqItem.getFsn(),reqItem.getWarehouse())) );
     }
@@ -230,31 +205,31 @@ public abstract class DownloadCommand {
                 productInfo.setVertical(vertical);
                 productInfoRepository.persist(productInfo);
             } catch (Exception e) {
-              log.error("Error in fetching data from zulu " + e);
+                log.error("Error in fetching data from zulu " + e);
             }} );
     }
 
-    private Set<String> fetchDataFromProductInfo(Set<String> fsns, Map<String, List<RequirementDownloadLineItem>> fsnToRequirement ) {
+    private Set<String> fetchDataFromProductInfo(Map<String, List<RequirementDownloadLineItem>> fsnToRequirement ) {
         log.info("Fetching product info data from db for downloading requirements");
-        List<ProductInfo> productInfo = productInfoRepository.getProductInfo(Lists.newArrayList(fsns));
+        Set<String> fsns = fsnToRequirement.keySet();
+        List<ProductInfo> productInfo = productInfoRepository.getProductInfo(fsns);
         Set<String> cachedFsns = Sets.newHashSet();
         productInfo.stream().forEach(pi -> {
-        cachedFsns.add(pi.getFsn());
-        List<RequirementDownloadLineItem> items = fsnToRequirement.get(pi.getFsn());
-        items.forEach(i -> {
-            i.setVertical(pi.getVertical());
-            i.setCategory(pi.getCategory());
-            i.setSuperCategory(pi.getSuperCategory());
-            i.setTitle(pi.getTitle());
-            i.setFsp(pi.getFsp());
-            i.setBrand(pi.getBrand());
+            cachedFsns.add(pi.getFsn());
+            List<RequirementDownloadLineItem> items = fsnToRequirement.get(pi.getFsn());
+            items.forEach(i -> {
+                i.setVertical(pi.getVertical());
+                i.setCategory(pi.getCategory());
+                i.setSuperCategory(pi.getSuperCategory());
+                i.setTitle(pi.getTitle());
+                i.setFsp(pi.getFsp());
+                i.setBrand(pi.getBrand());
             });
         });
         Set<String> fsnsCopy = Sets.newHashSet(fsns);
         fsnsCopy.removeAll(cachedFsns);
         return fsnsCopy;
     }
-
 
 
     protected void populateCdoData(Set<String> fsns, List<RequirementDownloadLineItem> requirementDownloadLineItems) {
@@ -269,13 +244,9 @@ public abstract class DownloadCommand {
 
         requirementDownloadLineItems.forEach(reqItem
                 -> {
-                reqItem.setCdoOverrideReason(fsnWhCdoComment.get(reqItem.getFsn(),reqItem.getWarehouse()));
-                reqItem.setQuantity(fsnWhQuantity.get(reqItem.getFsn(),reqItem.getWarehouse()));
+            reqItem.setCdoOverrideReason(fsnWhCdoComment.get(reqItem.getFsn(),reqItem.getWarehouse()));
+            reqItem.setQuantity(fsnWhQuantity.get(reqItem.getFsn(),reqItem.getWarehouse()));
         });
     }
-
-    protected abstract String getTemplateName(boolean isLastAppSupplierRequired);
-
-    abstract void fetchRequirementStateData(boolean isLastAppSupplierRequired, Set<String> fsns, List<RequirementDownloadLineItem> requirementDownloadLineItems);
 
 }
