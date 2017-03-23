@@ -1,4 +1,4 @@
-package fk.retail.ip.bigfoot.model;
+package fk.retail.ip.fdp.model;
 
 import io.dropwizard.jackson.JsonSnakeCase;
 import lombok.AllArgsConstructor;
@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonSnakeCase
-public class RequirementEventPayload {
+public class FdpRequirementEventPayload {
     String eventType;
     String user;
     String requirementId;

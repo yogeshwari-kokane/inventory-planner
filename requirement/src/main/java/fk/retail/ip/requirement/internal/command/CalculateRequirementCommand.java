@@ -7,7 +7,6 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Table;
 import com.google.inject.Inject;
-import fk.retail.ip.bigfoot.internal.command.BigfootRequirementIngestor;
 import fk.retail.ip.requirement.internal.Constants;
 import fk.retail.ip.requirement.internal.context.ForecastContext;
 import fk.retail.ip.requirement.internal.context.OnHandQuantityContext;
@@ -75,7 +74,7 @@ public class CalculateRequirementCommand {
     private PolicyContext policyContext;
     private ForecastContext forecastContext;
     private OnHandQuantityContext onHandQuantityContext;
-    private List<RequirementChangeRequest> bigfootRequests = Lists.newArrayList();
+    private List<RequirementChangeRequest> fdpRequests = Lists.newArrayList();
 
     @Inject
     public CalculateRequirementCommand(WarehouseRepository warehouseRepository, GroupFsnRepository groupFsnRepository, PolicyRepository policyRepository, ForecastRepository forecastRepository, WarehouseInventoryRepository warehouseInventoryRepository, IwtRequestItemRepository iwtRequestItemRepository, OpenRequirementAndPurchaseOrderRepository openRequirementAndPurchaseOrderRepository, RequirementRepository requirementRepository, ProductInfoRepository productInfoRepository, WarehouseSupplierSlaRepository warehouseSupplierSlaRepository, SslClient sslClient, ProjectionRepository projectionRepository, ObjectMapper objectMapper) {
@@ -151,7 +150,7 @@ public class CalculateRequirementCommand {
         List<Requirement> validRequirements = allRequirements.stream().filter(requirement -> !Constants.ERROR_STATE.equals(requirement.getState())).collect(Collectors.toList());
         populateSupplier(validRequirements);
 
-        BigfootRequirementIngestorHelper bigfootRequirementIngestorHelper = new BigfootRequirementIngestorHelper();
+        FdpRequirementIngestorHelper fdpRequirementIngestorHelper = new FdpRequirementIngestorHelper();
 
         //create dummy error entry for fsns without forecast or group
         Set<String> fsnsWithoutGroups = new HashSet<>(fsns);
@@ -195,7 +194,7 @@ public class CalculateRequirementCommand {
         //save
         requirementRepository.persist(allRequirements);
 
-        //Add PROJECTION_CREATED events to bigfoot request
+        //Add PROJECTION_CREATED events to fdp request
         allRequirements.forEach(requirement -> {
             if(!requirement.getState().equals(Constants.ERROR_STATE)) {
                 RequirementChangeRequest requirementChangeRequest = new RequirementChangeRequest();
@@ -203,12 +202,12 @@ public class CalculateRequirementCommand {
                 changeMaps.add(createChangeMap("Quantity", String.valueOf(requirement.getQuantity()), "PROJECTION_CREATED", "Projection created"));
                 requirementChangeRequest.setRequirement(requirement);
                 requirementChangeRequest.setChangeMaps(changeMaps);
-                bigfootRequests.add(requirementChangeRequest);
+                fdpRequests.add(requirementChangeRequest);
             }
         });
 
-        //Push PROJECTION_CREATED, SUPPLIER_ASSIGNED and APP_ASSIGNED events to bigfoot
-        bigfootRequirementIngestorHelper.pushToBigfoot(bigfootRequests);
+        //Push PROJECTION_CREATED, SUPPLIER_ASSIGNED and APP_ASSIGNED events to fdp
+        fdpRequirementIngestorHelper.pushToFdp(fdpRequests);
     }
 
     private Requirement getErredRequirement(String fsn, String errorMessage) {
@@ -249,12 +248,12 @@ public class CalculateRequirementCommand {
                 requirement.setMrpCurrency(supplier.getVendorPreferredCurrency());
                 requirement.setInternational(!supplier.isLocal());
                 requirement.setSslId(supplierResponse.getEntityId());
-                //Add SUPPLIER_ASSIGNED and APP_ASSIGNED events to bigfoot request
+                //Add SUPPLIER_ASSIGNED and APP_ASSIGNED events to fdp request
                 changeMaps.add(createChangeMap("Supplier",supplier.getSourceId(),"SUPPLIER_ASSIGNED","Supplier assigned"));
                 changeMaps.add(createChangeMap("App",String.valueOf(supplier.getApp()),"APP_ASSIGNED","App assigned"));
                 requirementChangeRequest.setRequirement(requirement);
                 requirementChangeRequest.setChangeMaps(changeMaps);
-                bigfootRequests.add(requirementChangeRequest);
+                fdpRequests.add(requirementChangeRequest);
             }
         });
     }

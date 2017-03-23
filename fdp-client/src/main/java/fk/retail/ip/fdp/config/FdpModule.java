@@ -1,11 +1,11 @@
-package fk.retail.ip.bigfoot.config;
+package fk.retail.ip.fdp.config;
 
 import com.google.inject.AbstractModule;
 
 /**
  * Created by yogeshwari.k on 16/03/17.
  */
-public class BigfootModule extends AbstractModule {
+public class FdpModule extends AbstractModule {
     @Override
     protected void configure() {
     }

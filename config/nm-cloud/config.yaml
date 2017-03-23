@@ -100,7 +100,7 @@ zuluConfiguration:
   clientId: "retail.rp"
   maxBatchSize: 30
 
-bigfootConfiguration:
+fdpConfiguration:
   url: "sampleUrl"
   schema_version: "1.1"
   requirementQueueName: "sampleQueue"

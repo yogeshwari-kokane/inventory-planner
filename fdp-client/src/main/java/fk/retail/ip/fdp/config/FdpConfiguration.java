@@ -1,4 +1,4 @@
-package fk.retail.ip.bigfoot.config;
+package fk.retail.ip.fdp.config;
 
 import lombok.Data;
 
@@ -6,7 +6,7 @@ import lombok.Data;
  * Created by yogeshwari.k on 17/03/17.
  */
 @Data
-public class BigfootConfiguration {
+public class FdpConfiguration {
     String schema_version;
     String url;
     String requirementQueueName;

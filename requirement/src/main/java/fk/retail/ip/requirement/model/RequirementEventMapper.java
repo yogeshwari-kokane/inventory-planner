@@ -1,11 +1,11 @@
 package fk.retail.ip.requirement.model;
 
-import fk.retail.ip.bigfoot.model.RequirementEventPayload;
-import fk.retail.ip.requirement.model.ChangeMap;
+import fk.retail.ip.fdp.model.FdpRequirementEventPayload;
+
 import java.util.List;
 /**
  * Created by yogeshwari.k on 17/03/17.
  */
 public interface RequirementEventMapper {
-    List<RequirementEventPayload> convertRequirementToEventPayload(String RequirementId, List<ChangeMap> changeMaps);
+    List<FdpRequirementEventPayload> convertRequirementToEventPayload(String RequirementId, List<ChangeMap> changeMaps);
 }

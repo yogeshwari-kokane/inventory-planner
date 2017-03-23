@@ -6,12 +6,11 @@ import com.google.common.collect.Table;
 import com.google.common.io.CharStreams;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import fk.retail.ip.bigfoot.internal.command.BigfootRequirementIngestor;
 import fk.retail.ip.requirement.internal.entities.AbstractEntity;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
-import fk.retail.ip.requirement.internal.command.BigfootRequirementIngestorHelper;
+import fk.retail.ip.requirement.internal.command.FdpRequirementIngestorHelper;
 import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Map;
@@ -92,15 +91,15 @@ public class ApprovalService<E extends AbstractEntity> {
             List<Requirement> toEntities = repository.findEnabledRequirementsByStateFsn(toState, fsnToRequirements.keySet());
             Table<String, String, Requirement> cdoStateEntityMap = getCDOEntityMap(toState,  fsnToRequirements.keySet());
             boolean isIPCReviewState = RequirementApprovalState.IPC_REVIEW.toString().equals(toState);
-            BigfootRequirementIngestorHelper bigfootRequirementIngestorHelper = new BigfootRequirementIngestorHelper();
-            List<RequirementChangeRequest> bigfootRequests = Lists.newArrayList();
+            FdpRequirementIngestorHelper fdpRequirementIngestorHelper = new FdpRequirementIngestorHelper();
+            List<RequirementChangeRequest> fdpRequests = Lists.newArrayList();
             fsnToRequirements.keySet().stream().forEach((fsn) -> {
                 fsnToRequirements.get(fsn).stream().forEach((entity) -> {
                     Optional<Requirement> toStateEntity = toEntities.stream().filter(e -> e.getWarehouse().equals(entity.getWarehouse()) && e.getFsn().equals(entity.getFsn())).findFirst();
                     RequirementChangeRequest requirementChangeRequest = new RequirementChangeRequest();
                     List<ChangeMap> changeMaps = Lists.newArrayList();
                     if (forward) {
-                        //Add APPROVE events to bigfoot request
+                        //Add APPROVE events to fdp request
                         changeMaps.add(createChangeMap("State",fromState,toState,"APPROVE","Moved to next state",userId));
                         if (toStateEntity.isPresent()) {
                             toStateEntity.get().setQuantity(entity.getQuantity());
@@ -127,7 +126,7 @@ public class ApprovalService<E extends AbstractEntity> {
                             entity.setCurrent(false);
                         }
                     } else {
-                        //Add CANCEL events to bigfoot request
+                        //Add CANCEL events to fdp request
                         changeMaps.add(createChangeMap("State",fromState,toState,"CANCEL","Moved to previous state",userId));
                         toStateEntity.ifPresent(e -> { // this will always be present
                             e.setCurrent(true);
@@ -135,11 +134,11 @@ public class ApprovalService<E extends AbstractEntity> {
                         });
                     }
                     requirementChangeRequest.setChangeMaps(changeMaps);
-                    bigfootRequests.add(requirementChangeRequest);
+                    fdpRequests.add(requirementChangeRequest);
                 });
             });
-            //Push APPROVE and CANCEL events to bigfoot
-            bigfootRequirementIngestorHelper.pushToBigfoot(bigfootRequests);
+            //Push APPROVE and CANCEL events to fdp
+            fdpRequirementIngestorHelper.pushToFdp(fdpRequests);
         }
 
         private Table<String,String,Requirement> getCDOEntityMap(String toState, Set<String> fsns) {

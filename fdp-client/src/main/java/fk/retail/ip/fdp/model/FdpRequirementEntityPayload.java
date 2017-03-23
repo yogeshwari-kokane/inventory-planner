@@ -1,7 +1,7 @@
-package fk.retail.ip.bigfoot.model;
+package fk.retail.ip.fdp.model;
 
 import java.util.Date;
-import lombok.Getter;
+
 import io.dropwizard.jackson.JsonSnakeCase;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,9 +14,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonSnakeCase
-public class RequirementEntityPayload {
+public class FdpRequirementEntityPayload {
     String entityId;
     Date updatedAt;
     String schemaVersion;
-    RequirementEntityData data;
+    FdpRequirementEntityData data;
 }

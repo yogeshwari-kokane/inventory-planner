@@ -1,9 +1,8 @@
-package fk.retail.ip.bigfoot.model;
+package fk.retail.ip.fdp.model;
 
 import io.dropwizard.jackson.JsonSnakeCase;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
@@ -14,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonSnakeCase
-public class BatchBigfootRequirementEventEntityPayload {
-    List<RequirementEntityPayload> requirementEntity;
-    List<RequirementEventPayload> requirementEvent;
+public class BatchFdpRequirementEventEntityPayload {
+    List<FdpRequirementEntityPayload> requirementEntity;
+    List<FdpRequirementEventPayload> requirementEvent;
 }

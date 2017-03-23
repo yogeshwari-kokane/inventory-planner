@@ -1,7 +1,7 @@
 package fk.retail.ip.requirement.internal.command;
 
 import com.google.common.collect.Lists;
-import fk.retail.ip.bigfoot.model.BatchBigfootRequirementEventEntityPayload;
+import fk.retail.ip.fdp.model.BatchFdpRequirementEventEntityPayload;
 import fk.retail.ip.requirement.config.TestModule;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.entities.RequirementSnapshot;
@@ -21,7 +21,7 @@ import java.util.List;
  */
 @RunWith(JukitoRunner.class)
 @UseModules(TestModule.class)
-public class BigfootRequirementIngestorHelperTest {
+public class FdpRequirementIngestorHelperTest {
     @Test
     public void PayloadCreationTest() throws IOException {
         RequirementSnapshot requirementSnapshot = new RequirementSnapshot();
@@ -47,16 +47,16 @@ public class BigfootRequirementIngestorHelperTest {
         requirement.setState("proposed");
         requirement.setEnabled(true);
 
-        BatchBigfootRequirementEventEntityPayload batchBigfootRequirementEventEntityPayload;
-        BigfootRequirementIngestorHelper bigfootRequirementIngestorHelper = new BigfootRequirementIngestorHelper();
-        List<RequirementChangeRequest> bigfootRequests = Lists.newArrayList();
+        BatchFdpRequirementEventEntityPayload batchFdpRequirementEventEntityPayload;
+        FdpRequirementIngestorHelper fdpRequirementIngestorHelper = new FdpRequirementIngestorHelper();
+        List<RequirementChangeRequest> fdpRequests = Lists.newArrayList();
         RequirementChangeRequest requirementChangeRequest = new RequirementChangeRequest();
         List<ChangeMap> changeMaps = Lists.newArrayList();
         requirementChangeRequest.setRequirement(requirement);
         changeMaps.add(createChangeMap("Sla", requirement.getSla().toString(),"20","CDO_SLA_OVERRIDE", "SLA overridden by CDO", "dummy_user"));
         requirementChangeRequest.setChangeMaps(changeMaps);
-        bigfootRequests.add(requirementChangeRequest);
-        //batchBigfootRequirementEventEntityPayload = bigfootRequirementIngestorHelper.pushToBigfoot(bigfootRequests);
+        fdpRequests.add(requirementChangeRequest);
+        //batchFdpRequirementEventEntityPayload = fdpRequirementIngestorHelper.pushToFdp(fdpRequests);
     }
 
     private ChangeMap createChangeMap(String attribute, String oldValue, String newValue, String eventType, String reason, String user){

@@ -1,4 +1,4 @@
-package fk.retail.ip.bigfoot.model;
+package fk.retail.ip.fdp.model;
 
 import io.dropwizard.jackson.JsonSnakeCase;
 import lombok.AllArgsConstructor;
@@ -17,7 +17,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonSnakeCase
-public class RequirementEntityData {
+public class FdpRequirementEntityData {
     String requirementId;
     String partyId;
     String fsn;
