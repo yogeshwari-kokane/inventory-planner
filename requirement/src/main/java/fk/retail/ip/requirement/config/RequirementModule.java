@@ -32,6 +32,10 @@ import fk.retail.ip.requirement.internal.repository.WarehouseRepository;
 import fk.retail.ip.requirement.internal.repository.WarehouseSupplierSlaRepository;
 import fk.retail.ip.requirement.internal.repository.WarehouseSupplierSlaRepositoryImpl;
 import fk.retail.ip.requirement.internal.repository.WeeklySaleRepository;
+import fk.retail.ip.requirement.model.CreateRequirementEntityPayload;
+import fk.retail.ip.requirement.model.CreateRequirementEventPayload;
+import fk.retail.ip.requirement.model.RequirementEntityMapper;
+import fk.retail.ip.requirement.model.RequirementEventMapper;
 import fk.retail.ip.requirement.resource.RequirementResource;
 import fk.retail.ip.requirement.resource.TestResource;
 
@@ -59,6 +63,8 @@ public class RequirementModule extends AbstractModule {
         bind(ForecastRepository.class).to(JPAForecastRepository.class);
         bind(ProcPurchaseOrderRepository.class).to(ProcPurchaseOrderRepositoryImpl.class);
         bind(WarehouseSupplierSlaRepository.class).to(WarehouseSupplierSlaRepositoryImpl.class);
+        bind(RequirementEntityMapper.class).to(CreateRequirementEntityPayload.class);
+        bind(RequirementEventMapper.class).to(CreateRequirementEventPayload.class);
         //TODO:remove
         bind(ProjectionRepository.class).to(ProjectionRepositoryImpl.class);
 
