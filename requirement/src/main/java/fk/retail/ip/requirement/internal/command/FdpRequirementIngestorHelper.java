@@ -24,7 +24,7 @@ public class FdpRequirementIngestorHelper {
             List<FdpRequirementEventPayload> fdpRequirementEventPayload = createRequirementEventPayload.convertRequirementToEventPayload(requirementId,req.getChangeMaps());
             batchFdpRequirementEventEntityPayload.getRequirementEntity().add(fdpRequirementEntityPayload);
             batchFdpRequirementEventEntityPayload.getRequirementEvent().addAll(fdpRequirementEventPayload);
-            fdpRequirementIngestor.pushToFdp(batchFdpRequirementEventEntityPayload);
+            //fdpRequirementIngestor.pushToFdp(batchFdpRequirementEventEntityPayload);
         });
         return batchFdpRequirementEventEntityPayload;
     }

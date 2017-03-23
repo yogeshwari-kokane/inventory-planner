@@ -24,7 +24,7 @@ import java.util.List;
 @RunWith(JukitoRunner.class)
 @UseModules(TestModule.class)
 public class FdpRequirementIngestorHelperTest {
-    ObjectMapper mapper;
+    ObjectMapper mapper = new ObjectMapper();
     @Test
     public void PayloadCreationTest() throws IOException {
         RequirementSnapshot requirementSnapshot = new RequirementSnapshot();
