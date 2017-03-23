@@ -7,37 +7,24 @@ import com.google.inject.Provider;
 import fk.retail.ip.core.poi.SpreadSheetReader;
 import fk.retail.ip.requirement.internal.Constants;
 import fk.retail.ip.requirement.internal.command.CalculateRequirementCommand;
-import fk.retail.ip.requirement.internal.command.SearchFilterCommand;
 import fk.retail.ip.requirement.internal.command.SearchCommand;
+import fk.retail.ip.requirement.internal.command.SearchFilterCommand;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.enums.OverrideStatus;
 import fk.retail.ip.requirement.internal.factory.RequirementStateFactory;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.internal.states.RequirementState;
-import fk.retail.ip.requirement.model.CalculateRequirementRequest;
-import fk.retail.ip.requirement.model.DownloadRequirementRequest;
-import fk.retail.ip.requirement.model.RequirementApprovalRequest;
-import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
-import fk.retail.ip.requirement.model.UploadOverrideFailureLineItem;
-import fk.retail.ip.requirement.model.UploadResponse;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
 import fk.retail.ip.requirement.model.*;
-import lombok.extern.slf4j.Slf4j;
-import org.json.JSONException;
-
-import javax.ws.rs.core.StreamingOutput;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import javax.ws.rs.core.StreamingOutput;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.json.JSONException;
+
+import javax.ws.rs.core.StreamingOutput;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * @author nidhigupta.m
@@ -168,7 +155,7 @@ public class RequirementService {
     public SearchResponse.GroupedResponse search(RequirementSearchRequest request) throws JSONException {
         List<Requirement> requirements;
         String state = (String) request.getFilters().get("state");
-        List<String> fsns = searchFilterCommand.getSearchFilterFsns(request.getFilters());
+        List<String> fsns = request.getFilters().get("fsns") !=null ? searchFilterCommand.getSearchFilterFsns(request.getFilters()) : null;
         requirements = requirementRepository.findRequirements(null, state, fsns);
         Map<String, List<RequirementSearchLineItem>> fsnToSearchItemsMap =  searchCommandProvider.get().execute(requirements);
         SearchResponse.GroupedResponse groupedResponse = new SearchResponse.GroupedResponse(fsnToSearchItemsMap.size(), PAGE_SIZE);
