@@ -1,5 +1,7 @@
 package fk.retail.ip.requirement.resource;
 
+import com.codahale.metrics.annotation.ExceptionMetered;
+import com.codahale.metrics.annotation.Metered;
 import com.codahale.metrics.annotation.Timed;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
@@ -39,7 +41,9 @@ public class RequirementResource {
     public RequirementResource(RequirementService requirementService) {
         this.requirementService = requirementService;
     }
-
+    @Timed
+    @Metered
+    @ExceptionMetered
     @POST
     public void calculateRequirement(@Valid CalculateRequirementRequest calculateRequirementRequest) {
         requirementService.calculateRequirement(calculateRequirementRequest);
@@ -48,6 +52,8 @@ public class RequirementResource {
     @POST
     @Path("/download")
     @Timed
+    @Metered
+    @ExceptionMetered
     public Response download(DownloadRequirementRequest downloadRequirementRequest) {
         try {
             StreamingOutput stream = requirementService.downloadRequirement(downloadRequirementRequest);
@@ -61,7 +67,9 @@ public class RequirementResource {
             return Response.status(400).entity(noreq.getMessage()).build();
         }
     }
-
+    @Timed
+    @Metered
+    @ExceptionMetered
     @POST
     @Path("/upload")
     public Response uploadProjectionOverride(@FormDataParam("file") InputStream inputStream,
@@ -76,6 +84,8 @@ public class RequirementResource {
     @Path("/state")
     @Produces(MediaType.APPLICATION_JSON)
     @Timed
+    @Metered
+    @ExceptionMetered
     public String changeState(RequirementApprovalRequest request) throws JSONException {
         return requirementService.changeState(request);
     }
