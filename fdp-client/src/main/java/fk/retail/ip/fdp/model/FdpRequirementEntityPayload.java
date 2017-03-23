@@ -1,7 +1,6 @@
 package fk.retail.ip.fdp.model;
 
 import java.util.Date;
-
 import io.dropwizard.jackson.JsonSnakeCase;
 import lombok.AllArgsConstructor;
 import lombok.Data;

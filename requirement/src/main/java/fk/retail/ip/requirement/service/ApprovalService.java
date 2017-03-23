@@ -8,6 +8,8 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import fk.retail.ip.requirement.internal.entities.AbstractEntity;
 import fk.retail.ip.requirement.internal.entities.Requirement;
+import fk.retail.ip.requirement.internal.enums.FdpRequirementEventType;
+import fk.retail.ip.requirement.internal.enums.OverrideKey;
 import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.internal.command.FdpRequirementIngestorHelper;
@@ -100,7 +102,7 @@ public class ApprovalService<E extends AbstractEntity> {
                     List<ChangeMap> changeMaps = Lists.newArrayList();
                     if (forward) {
                         //Add APPROVE events to fdp request
-                        changeMaps.add(createChangeMap("State",fromState,toState,"APPROVE","Moved to next state",userId));
+                        changeMaps.add(fdpRequirementIngestorHelper.createChangeMap(OverrideKey.STATE.toString(), fromState, toState, FdpRequirementEventType.APPROVE.toString(), "Moved to next state", userId));
                         if (toStateEntity.isPresent()) {
                             toStateEntity.get().setQuantity(entity.getQuantity());
                             if(isIPCReviewState) {
@@ -127,7 +129,7 @@ public class ApprovalService<E extends AbstractEntity> {
                         }
                     } else {
                         //Add CANCEL events to fdp request
-                        changeMaps.add(createChangeMap("State",fromState,toState,"CANCEL","Moved to previous state",userId));
+                        changeMaps.add(fdpRequirementIngestorHelper.createChangeMap(OverrideKey.STATE.toString(), fromState, toState, FdpRequirementEventType.CANCEL.toString(), "Moved to previous state", userId));
                         toStateEntity.ifPresent(e -> { // this will always be present
                             e.setCurrent(true);
                             entity.setCurrent(false);
@@ -164,15 +166,5 @@ public class ApprovalService<E extends AbstractEntity> {
             return toStateRequirementMap ;
         }
 
-        private ChangeMap createChangeMap(String attribute, String oldValue, String newValue, String eventType, String reason, String user){
-            ChangeMap changeMap = new ChangeMap();
-            changeMap.setAttribute(attribute);
-            changeMap.setOldValue(oldValue);
-            changeMap.setNewValue(newValue);
-            changeMap.setEventType(eventType);
-            changeMap.setReason(reason);
-            changeMap.setUser(user);
-            return changeMap;
-        }
     }
 }

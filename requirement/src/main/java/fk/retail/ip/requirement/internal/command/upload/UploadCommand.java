@@ -92,25 +92,25 @@ public abstract class UploadCommand {
 
                             if (overriddenValues.containsKey(OverrideKey.QUANTITY.toString())) {
                                 if(RequirementApprovalState.PROPOSED.toString().equals(requirement.getState()))
-                                    changeMaps.add(createChangeMap(OverrideKey.QUANTITY.toString(), String.valueOf(requirement.getQuantity()), row.getIpcQuantityOverride().toString(), "IPC_QUANTITY_OVERRIDE", row.getIpcQuantityOverrideReason(),"dummy_user"));
+                                    changeMaps.add(fdpRequirementIngestorHelper.createChangeMap(OverrideKey.QUANTITY.toString(), String.valueOf(requirement.getQuantity()), row.getIpcQuantityOverride().toString(), "IPC_QUANTITY_OVERRIDE", row.getIpcQuantityOverrideReason(),"dummy_user"));
                                 else if(RequirementApprovalState.CDO_REVIEW.toString().equals(requirement.getState()))
-                                    changeMaps.add(createChangeMap(OverrideKey.QUANTITY.toString(), String.valueOf(requirement.getQuantity()), row.getCdoQuantityOverride().toString(), "CDO_QUANTITY_OVERRIDE", row.getCdoQuantityOverrideReason(),"dummy_user"));
+                                    changeMaps.add(fdpRequirementIngestorHelper.createChangeMap(OverrideKey.QUANTITY.toString(), String.valueOf(requirement.getQuantity()), row.getCdoQuantityOverride().toString(), "CDO_QUANTITY_OVERRIDE", row.getCdoQuantityOverrideReason(),"dummy_user"));
                                 requirement.setQuantity
                                         ((Integer) overriddenValues.get(OverrideKey.QUANTITY.toString()));
                             }
 
                             if (overriddenValues.containsKey(OverrideKey.SLA.toString())) {
-                                changeMaps.add(createChangeMap(OverrideKey.SLA.toString(), String.valueOf(requirement.getSla()),row.getNewSla().toString(), "CDO_SLA_OVERRIDE", "Sla overridden by CDO","dummy_user"));
+                                changeMaps.add(fdpRequirementIngestorHelper.createChangeMap(OverrideKey.SLA.toString(), String.valueOf(requirement.getSla()),row.getNewSla().toString(), "CDO_SLA_OVERRIDE", "Sla overridden by CDO","dummy_user"));
                                 requirement.setSla((Integer) overriddenValues.get(OverrideKey.SLA.toString()));
                             }
 
                             if (overriddenValues.containsKey(OverrideKey.APP.toString())) {
-                                changeMaps.add(createChangeMap(OverrideKey.APP.toString(), String.valueOf(requirement.getApp()),row.getCdoPriceOverride().toString(), "CDO_APP_OVERRIDE", row.getCdoPriceOverrideReason(),"dummy_user"));
+                                changeMaps.add(fdpRequirementIngestorHelper.createChangeMap(OverrideKey.APP.toString(), String.valueOf(requirement.getApp()),row.getCdoPriceOverride().toString(), "CDO_APP_OVERRIDE", row.getCdoPriceOverrideReason(),"dummy_user"));
                                 requirement.setApp((Integer) overriddenValues.get(OverrideKey.APP.toString()));
                             }
 
                             if (overriddenValues.containsKey(OverrideKey.SUPPLIER.toString())) {
-                                changeMaps.add(createChangeMap(OverrideKey.SUPPLIER.toString(), String.valueOf(requirement.getSupplier()),row.getCdoSupplierOverride(), "CDO_SUPPLIER_OVERRIDE", row.getCdoSupplierOverrideReason(),"dummy_user"));
+                                changeMaps.add(fdpRequirementIngestorHelper.createChangeMap(OverrideKey.SUPPLIER.toString(), String.valueOf(requirement.getSupplier()),row.getCdoSupplierOverride(), "CDO_SUPPLIER_OVERRIDE", row.getCdoSupplierOverrideReason(),"dummy_user"));
                                 requirement.setSupplier
                                         (overriddenValues.get(OverrideKey.SUPPLIER.toString()).toString());
                             }
@@ -146,17 +146,6 @@ public abstract class UploadCommand {
         fdpRequirementIngestorHelper.pushToFdp(fdpRequests);
 
         return uploadOverrideFailureLineItems;
-    }
-
-    private ChangeMap createChangeMap(String attribute, String oldValue, String newValue, String eventType, String reason, String user){
-        ChangeMap changeMap = new ChangeMap();
-        changeMap.setAttribute(attribute);
-        changeMap.setOldValue(oldValue);
-        changeMap.setNewValue(newValue);
-        changeMap.setEventType(eventType);
-        changeMap.setReason(reason);
-        changeMap.setUser(user);
-        return changeMap;
     }
 
     private Optional<String> validateGenericColumns(String fsn, String warehouse){

@@ -3,7 +3,6 @@ package fk.retail.ip.fdp.model;
 import io.dropwizard.jackson.JsonSnakeCase;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.joda.time.DateTime;
 
@@ -12,7 +11,6 @@ import java.util.Date;
 /**
  * Created by yogeshwari.k on 17/03/17.
  */
-@Getter
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

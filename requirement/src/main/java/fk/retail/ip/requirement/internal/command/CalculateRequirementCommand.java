@@ -23,6 +23,8 @@ import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.entities.RequirementSnapshot;
 import fk.retail.ip.requirement.internal.entities.Warehouse;
 import fk.retail.ip.requirement.internal.entities.WarehouseInventory;
+import fk.retail.ip.requirement.internal.enums.FdpRequirementEventType;
+import fk.retail.ip.requirement.internal.enums.OverrideKey;
 import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
 import fk.retail.ip.requirement.internal.repository.ForecastRepository;
 import fk.retail.ip.requirement.internal.repository.GroupFsnRepository;
@@ -75,6 +77,7 @@ public class CalculateRequirementCommand {
     private ForecastContext forecastContext;
     private OnHandQuantityContext onHandQuantityContext;
     private List<RequirementChangeRequest> fdpRequests = Lists.newArrayList();
+    private FdpRequirementIngestorHelper fdpRequirementIngestorHelper = new FdpRequirementIngestorHelper();
 
     @Inject
     public CalculateRequirementCommand(WarehouseRepository warehouseRepository, GroupFsnRepository groupFsnRepository, PolicyRepository policyRepository, ForecastRepository forecastRepository, WarehouseInventoryRepository warehouseInventoryRepository, IwtRequestItemRepository iwtRequestItemRepository, OpenRequirementAndPurchaseOrderRepository openRequirementAndPurchaseOrderRepository, RequirementRepository requirementRepository, ProductInfoRepository productInfoRepository, WarehouseSupplierSlaRepository warehouseSupplierSlaRepository, SslClient sslClient, ProjectionRepository projectionRepository, ObjectMapper objectMapper) {
@@ -150,7 +153,6 @@ public class CalculateRequirementCommand {
         List<Requirement> validRequirements = allRequirements.stream().filter(requirement -> !Constants.ERROR_STATE.equals(requirement.getState())).collect(Collectors.toList());
         populateSupplier(validRequirements);
 
-        FdpRequirementIngestorHelper fdpRequirementIngestorHelper = new FdpRequirementIngestorHelper();
 
         //create dummy error entry for fsns without forecast or group
         Set<String> fsnsWithoutGroups = new HashSet<>(fsns);
@@ -199,7 +201,7 @@ public class CalculateRequirementCommand {
             if(!requirement.getState().equals(Constants.ERROR_STATE)) {
                 RequirementChangeRequest requirementChangeRequest = new RequirementChangeRequest();
                 List<ChangeMap> changeMaps = Lists.newArrayList();
-                changeMaps.add(createChangeMap("Quantity", String.valueOf(requirement.getQuantity()), "PROJECTION_CREATED", "Projection created"));
+                changeMaps.add(fdpRequirementIngestorHelper.createChangeMap(OverrideKey.QUANTITY.toString(), null, String.valueOf(requirement.getQuantity()), FdpRequirementEventType.PROJECTION_CREATED.toString(), "Projection created", "dummy_user"));
                 requirementChangeRequest.setRequirement(requirement);
                 requirementChangeRequest.setChangeMaps(changeMaps);
                 fdpRequests.add(requirementChangeRequest);
@@ -249,24 +251,13 @@ public class CalculateRequirementCommand {
                 requirement.setInternational(!supplier.isLocal());
                 requirement.setSslId(supplierResponse.getEntityId());
                 //Add SUPPLIER_ASSIGNED and APP_ASSIGNED events to fdp request
-                changeMaps.add(createChangeMap("Supplier",supplier.getSourceId(),"SUPPLIER_ASSIGNED","Supplier assigned"));
-                changeMaps.add(createChangeMap("App",String.valueOf(supplier.getApp()),"APP_ASSIGNED","App assigned"));
+                changeMaps.add(fdpRequirementIngestorHelper.createChangeMap(OverrideKey.SUPPLIER.toString(), null, supplier.getSourceId(), FdpRequirementEventType.SUPPLIER_ASSIGNED.toString(), "Supplier assigned", "dummy_user"));
+                changeMaps.add(fdpRequirementIngestorHelper.createChangeMap(OverrideKey.APP.toString(), null, String.valueOf(supplier.getApp()), FdpRequirementEventType.APP_ASSIGNED.toString(), "App assigned", "dummy_user"));
                 requirementChangeRequest.setRequirement(requirement);
                 requirementChangeRequest.setChangeMaps(changeMaps);
                 fdpRequests.add(requirementChangeRequest);
             }
         });
-    }
-
-    private ChangeMap createChangeMap(String attribute, String newValue, String eventType, String reason){
-        ChangeMap changeMap = new ChangeMap();
-        changeMap.setAttribute(attribute);
-        changeMap.setOldValue(null);
-        changeMap.setNewValue(newValue);
-        changeMap.setEventType(eventType);
-        changeMap.setReason(reason);
-        changeMap.setUser("dummy_user");
-        return changeMap;
     }
 
     //TODO: optimize this

@@ -1,6 +1,7 @@
 package fk.retail.ip.requirement.internal.command;
 
 import fk.retail.ip.fdp.model.*;
+import fk.retail.ip.requirement.model.ChangeMap;
 import fk.retail.ip.requirement.model.RequirementChangeRequest;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.model.RequirementEntityMapper;
@@ -17,7 +18,7 @@ public class FdpRequirementIngestorHelper {
     RequirementEventMapper requirementEventMapper;
     FdpRequirementIngestor fdpRequirementIngestor;
 
-    public BatchFdpRequirementEventEntityPayload pushToFdp(List<RequirementChangeRequest> requirementChangeRequests){
+    public void pushToFdp(List<RequirementChangeRequest> requirementChangeRequests){
         requirementChangeRequests.forEach(req -> {
             String requirementId= getRequirementId(req.getRequirement());
             FdpRequirementEntityPayload fdpRequirementEntityPayload = requirementEntityMapper.convertRequirementToEntityPayload(requirementId,req.getRequirement());
@@ -26,8 +27,17 @@ public class FdpRequirementIngestorHelper {
             batchFdpRequirementEventEntityPayload.getRequirementEvent().addAll(fdpRequirementEventPayload);
             fdpRequirementIngestor.pushToFdp(batchFdpRequirementEventEntityPayload);
         });
+    }
 
-        return batchFdpRequirementEventEntityPayload;
+    public ChangeMap createChangeMap(String attribute, String oldValue, String newValue, String eventType, String reason, String user){
+        ChangeMap changeMap = new ChangeMap();
+        changeMap.setAttribute(attribute);
+        changeMap.setOldValue(oldValue);
+        changeMap.setNewValue(newValue);
+        changeMap.setEventType(eventType);
+        changeMap.setReason(reason);
+        changeMap.setUser(user);
+        return changeMap;
     }
 
     private String getRequirementId(Requirement requirement) {
