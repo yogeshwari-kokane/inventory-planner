@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import fk.retail.ip.requirement.internal.Constants;
 import fk.retail.ip.requirement.internal.command.FdpRequirementIngestorHelper;
 import fk.retail.ip.requirement.internal.entities.Requirement;
+import fk.retail.ip.requirement.internal.enums.FdpRequirementEventType;
 import fk.retail.ip.requirement.internal.enums.OverrideKey;
 import fk.retail.ip.requirement.internal.enums.OverrideStatus;
 import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
@@ -92,25 +93,25 @@ public abstract class UploadCommand {
 
                             if (overriddenValues.containsKey(OverrideKey.QUANTITY.toString())) {
                                 if(RequirementApprovalState.PROPOSED.toString().equals(requirement.getState()))
-                                    changeMaps.add(fdpRequirementIngestorHelper.createChangeMap(OverrideKey.QUANTITY.toString(), String.valueOf(requirement.getQuantity()), row.getIpcQuantityOverride().toString(), "IPC_QUANTITY_OVERRIDE", row.getIpcQuantityOverrideReason(),"dummy_user"));
+                                    changeMaps.add(fdpRequirementIngestorHelper.createChangeMap(OverrideKey.QUANTITY.toString(), String.valueOf(requirement.getQuantity()), row.getIpcQuantityOverride().toString(), FdpRequirementEventType.IPC_QUANTITY_OVERRIDE.toString(), row.getIpcQuantityOverrideReason(),"dummy_user"));
                                 else if(RequirementApprovalState.CDO_REVIEW.toString().equals(requirement.getState()))
-                                    changeMaps.add(fdpRequirementIngestorHelper.createChangeMap(OverrideKey.QUANTITY.toString(), String.valueOf(requirement.getQuantity()), row.getCdoQuantityOverride().toString(), "CDO_QUANTITY_OVERRIDE", row.getCdoQuantityOverrideReason(),"dummy_user"));
+                                    changeMaps.add(fdpRequirementIngestorHelper.createChangeMap(OverrideKey.QUANTITY.toString(), String.valueOf(requirement.getQuantity()), row.getCdoQuantityOverride().toString(), FdpRequirementEventType.CDO_QUANTITY_OVERRIDE.toString(), row.getCdoQuantityOverrideReason(),"dummy_user"));
                                 requirement.setQuantity
                                         ((Integer) overriddenValues.get(OverrideKey.QUANTITY.toString()));
                             }
 
                             if (overriddenValues.containsKey(OverrideKey.SLA.toString())) {
-                                changeMaps.add(fdpRequirementIngestorHelper.createChangeMap(OverrideKey.SLA.toString(), String.valueOf(requirement.getSla()),row.getNewSla().toString(), "CDO_SLA_OVERRIDE", "Sla overridden by CDO","dummy_user"));
+                                changeMaps.add(fdpRequirementIngestorHelper.createChangeMap(OverrideKey.SLA.toString(), String.valueOf(requirement.getSla()),row.getNewSla().toString(), FdpRequirementEventType.CDO_SLA_OVERRIDE.toString(), "Sla overridden by CDO", "dummy_user"));
                                 requirement.setSla((Integer) overriddenValues.get(OverrideKey.SLA.toString()));
                             }
 
                             if (overriddenValues.containsKey(OverrideKey.APP.toString())) {
-                                changeMaps.add(fdpRequirementIngestorHelper.createChangeMap(OverrideKey.APP.toString(), String.valueOf(requirement.getApp()),row.getCdoPriceOverride().toString(), "CDO_APP_OVERRIDE", row.getCdoPriceOverrideReason(),"dummy_user"));
+                                changeMaps.add(fdpRequirementIngestorHelper.createChangeMap(OverrideKey.APP.toString(), String.valueOf(requirement.getApp()),row.getCdoPriceOverride().toString(), FdpRequirementEventType.CDO_APP_OVERRIDE.toString(), row.getCdoPriceOverrideReason(), "dummy_user"));
                                 requirement.setApp((Integer) overriddenValues.get(OverrideKey.APP.toString()));
                             }
 
                             if (overriddenValues.containsKey(OverrideKey.SUPPLIER.toString())) {
-                                changeMaps.add(fdpRequirementIngestorHelper.createChangeMap(OverrideKey.SUPPLIER.toString(), String.valueOf(requirement.getSupplier()),row.getCdoSupplierOverride(), "CDO_SUPPLIER_OVERRIDE", row.getCdoSupplierOverrideReason(),"dummy_user"));
+                                changeMaps.add(fdpRequirementIngestorHelper.createChangeMap(OverrideKey.SUPPLIER.toString(), String.valueOf(requirement.getSupplier()),row.getCdoSupplierOverride(), FdpRequirementEventType.CDO_SUPPLIER_OVERRIDE.toString(), row.getCdoSupplierOverrideReason(), "dummy_user"));
                                 requirement.setSupplier
                                         (overriddenValues.get(OverrideKey.SUPPLIER.toString()).toString());
                             }
