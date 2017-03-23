@@ -1,21 +1,18 @@
-package fk.retail.ip.requirement.internal.command;
+package fk.retail.ip.requirement.internal.command.download;
 
+import fk.retail.ip.requirement.internal.command.RequirementDataAggregator;
 import fk.retail.ip.requirement.internal.entities.Requirement;
-import fk.retail.ip.requirement.internal.repository.FsnBandRepository;
-import fk.retail.ip.requirement.internal.repository.LastAppSupplierRepository;
-import fk.retail.ip.requirement.internal.repository.ProductInfoRepository;
-import fk.retail.ip.requirement.internal.repository.RequirementRepository;
-import fk.retail.ip.requirement.internal.repository.WarehouseRepository;
-import fk.retail.ip.requirement.internal.repository.WeeklySaleRepository;
+import fk.retail.ip.requirement.internal.repository.*;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
 import fk.retail.ip.zulu.client.ZuluClient;
+import lombok.extern.slf4j.Slf4j;
+
+import javax.ws.rs.core.StreamingOutput;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.ws.rs.core.StreamingOutput;
-import lombok.extern.slf4j.Slf4j;
 
 import static java.util.stream.Collectors.toList;
 
@@ -30,7 +27,7 @@ public abstract class DownloadCommand extends RequirementDataAggregator {
 
     public DownloadCommand(FsnBandRepository fsnBandRepository, WeeklySaleRepository weeklySaleRepository, GenerateExcelCommand generateExcelCommand, LastAppSupplierRepository lastAppSupplierRepository,
                            ProductInfoRepository productInfoRepository, ZuluClient zuluClient, RequirementRepository requirementRepository, WarehouseRepository warehouseRepository) {
-        super(fsnBandRepository, weeklySaleRepository,lastAppSupplierRepository, productInfoRepository, zuluClient, requirementRepository, warehouseRepository);
+        super(fsnBandRepository, weeklySaleRepository, lastAppSupplierRepository, productInfoRepository, zuluClient, requirementRepository, warehouseRepository);
         this.generateExcelCommand = generateExcelCommand;
     }
 
@@ -44,12 +41,12 @@ public abstract class DownloadCommand extends RequirementDataAggregator {
         Map<String, List<RequirementDownloadLineItem>> fsnToRequirement = requirementDownloadLineItems.stream().collect(Collectors.groupingBy(RequirementDownloadLineItem::getFsn));
         Map<String, List<RequirementDownloadLineItem>> WhToRequirement = requirementDownloadLineItems.stream().collect(Collectors.groupingBy(RequirementDownloadLineItem::getWarehouse));
         Set<String> fsns = fsnToRequirement.keySet();
-        Set<String> requirementWhs =  WhToRequirement.keySet();
+        Set<String> requirementWhs = WhToRequirement.keySet();
         fetchProductData(fsnToRequirement);
         fetchFsnBandData(fsnToRequirement);
         fetchSalesBucketData(fsns, requirementDownloadLineItems);
-        fetchWarehouseName(requirementWhs,requirementDownloadLineItems);
-        fetchRequirementStateData(isLastAppSupplierRequired, fsns,requirementDownloadLineItems);
+        fetchWarehouseName(requirementWhs, requirementDownloadLineItems);
+        fetchRequirementStateData(isLastAppSupplierRequired, fsns, requirementDownloadLineItems);
         return generateExcelCommand.generateExcel(requirementDownloadLineItems, getTemplateName(isLastAppSupplierRequired));
     }
 
