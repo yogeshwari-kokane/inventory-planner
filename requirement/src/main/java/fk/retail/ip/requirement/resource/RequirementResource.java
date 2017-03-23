@@ -10,6 +10,11 @@ import fk.retail.ip.requirement.model.UploadResponse;
 import fk.retail.ip.requirement.service.RequirementService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import fk.retail.ip.requirement.model.*;
+import fk.retail.ip.requirement.service.RequirementService;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.json.JSONException;
 
@@ -21,6 +26,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 
 /**
  * Created by nidhigupta.m on 26/01/17.
@@ -85,5 +91,12 @@ public class RequirementResource {
     @Timed
     public String changeState(RequirementApprovalRequest request) throws JSONException {
         return requirementService.changeState(request);
+    }
+
+    @POST
+    @Path("/search")
+    @Produces(MediaType.APPLICATION_JSON)
+    public SearchResponse.GroupedResponse search(RequirementSearchRequest request) throws JSONException {
+        return requirementService.search(request);
     }
 }

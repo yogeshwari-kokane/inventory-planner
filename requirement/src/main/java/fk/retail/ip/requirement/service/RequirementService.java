@@ -8,6 +8,7 @@ import fk.retail.ip.core.poi.SpreadSheetReader;
 import fk.retail.ip.requirement.internal.Constants;
 import fk.retail.ip.requirement.internal.command.CalculateRequirementCommand;
 import fk.retail.ip.requirement.internal.command.SearchFilterCommand;
+import fk.retail.ip.requirement.internal.command.SearchCommand;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.enums.OverrideStatus;
 import fk.retail.ip.requirement.internal.factory.RequirementStateFactory;
@@ -22,6 +23,11 @@ import fk.retail.ip.requirement.model.UploadResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import fk.retail.ip.requirement.model.*;
+import lombok.extern.slf4j.Slf4j;
+import org.json.JSONException;
+
+import javax.ws.rs.core.StreamingOutput;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -46,16 +52,19 @@ public class RequirementService {
     private final ApprovalService approvalService;
     private final Provider<CalculateRequirementCommand> calculateRequirementCommandProvider;
     private final SearchFilterCommand searchFilterCommand;
+    private final Provider<SearchCommand> searchCommandProvider;
+    private final int PAGE_SIZE = 20;
 
     @Inject
     public RequirementService(RequirementRepository requirementRepository, RequirementStateFactory requirementStateFactory,
                               ApprovalService approvalService, Provider<CalculateRequirementCommand> calculateRequirementCommandProvider,
-                              SearchFilterCommand searchFilterCommand) {
+                              SearchFilterCommand searchFilterCommand, Provider<SearchCommand> searchCommandProvider) {
         this.requirementRepository = requirementRepository;
         this.requirementStateFactory = requirementStateFactory;
         this.approvalService = approvalService;
         this.calculateRequirementCommandProvider = calculateRequirementCommandProvider;
         this.searchFilterCommand = searchFilterCommand;
+        this.searchCommandProvider = searchCommandProvider;
     }
 
     public StreamingOutput downloadRequirement(DownloadRequirementRequest downloadRequirementRequest) {
@@ -154,6 +163,20 @@ public class RequirementService {
         requirementRepository.updateProjection(projectionIds, approvalService.getTargetState(action));
         log.info("Projections table updated for Requirements");
         return "{\"msg\":\"Moved " + projectionIds.size() + " projections to new state.\"}";
+    }
+
+    public SearchResponse.GroupedResponse search(RequirementSearchRequest request) throws JSONException {
+        List<Requirement> requirements;
+        String state = (String) request.getFilters().get("state");
+        List<String> fsns = searchFilterCommand.getSearchFilterFsns(request.getFilters());
+        requirements = requirementRepository.findRequirements(null, state, fsns);
+        Map<String, List<RequirementSearchLineItem>> fsnToSearchItemsMap =  searchCommandProvider.get().execute(requirements);
+        SearchResponse.GroupedResponse groupedResponse = new SearchResponse.GroupedResponse(fsnToSearchItemsMap.size(), PAGE_SIZE);
+        for (String fsn : fsnToSearchItemsMap.keySet()) {
+            SearchResponse searchResponse = new SearchResponse(fsnToSearchItemsMap.get(fsn));
+            groupedResponse.getProjections().add(searchResponse);
+        }
+        return groupedResponse;
     }
 
 
