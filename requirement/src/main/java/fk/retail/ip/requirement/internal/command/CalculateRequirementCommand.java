@@ -17,21 +17,24 @@ import fk.retail.ip.requirement.internal.entities.GroupFsn;
 import fk.retail.ip.requirement.internal.entities.IwtRequestItem;
 import fk.retail.ip.requirement.internal.entities.OpenRequirementAndPurchaseOrder;
 import fk.retail.ip.requirement.internal.entities.Policy;
+import fk.retail.ip.requirement.internal.entities.ProductInfo;
 import fk.retail.ip.requirement.internal.entities.Projection;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.entities.RequirementSnapshot;
 import fk.retail.ip.requirement.internal.entities.Warehouse;
 import fk.retail.ip.requirement.internal.entities.WarehouseInventory;
-import fk.retail.ip.requirement.internal.enums.RequirementApprovalStates;
+import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
 import fk.retail.ip.requirement.internal.repository.ForecastRepository;
 import fk.retail.ip.requirement.internal.repository.GroupFsnRepository;
 import fk.retail.ip.requirement.internal.repository.IwtRequestItemRepository;
 import fk.retail.ip.requirement.internal.repository.OpenRequirementAndPurchaseOrderRepository;
 import fk.retail.ip.requirement.internal.repository.PolicyRepository;
+import fk.retail.ip.requirement.internal.repository.ProductInfoRepository;
 import fk.retail.ip.requirement.internal.repository.ProjectionRepository;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.internal.repository.WarehouseInventoryRepository;
 import fk.retail.ip.requirement.internal.repository.WarehouseRepository;
+import fk.retail.ip.requirement.internal.repository.WarehouseSupplierSlaRepository;
 import fk.retail.ip.ssl.client.SslClient;
 import fk.retail.ip.ssl.model.SupplierSelectionRequest;
 import fk.retail.ip.ssl.model.SupplierSelectionResponse;
@@ -39,10 +42,13 @@ import fk.retail.ip.ssl.model.SupplierView;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 
+@Slf4j
 public class CalculateRequirementCommand {
 
     private final WarehouseRepository warehouseRepository;
@@ -53,6 +59,8 @@ public class CalculateRequirementCommand {
     private final IwtRequestItemRepository iwtRequestItemRepository;
     private final OpenRequirementAndPurchaseOrderRepository openRequirementAndPurchaseOrderRepository;
     private final RequirementRepository requirementRepository;
+    private final ProductInfoRepository productInfoRepository;
+    private final WarehouseSupplierSlaRepository warehouseSupplierSlaRepository;
     private final SslClient sslClient;
     //TODO: remove
     private final ProjectionRepository projectionRepository;
@@ -66,7 +74,7 @@ public class CalculateRequirementCommand {
     private OnHandQuantityContext onHandQuantityContext;
 
     @Inject
-    public CalculateRequirementCommand(WarehouseRepository warehouseRepository, GroupFsnRepository groupFsnRepository, PolicyRepository policyRepository, ForecastRepository forecastRepository, WarehouseInventoryRepository warehouseInventoryRepository, IwtRequestItemRepository iwtRequestItemRepository, OpenRequirementAndPurchaseOrderRepository openRequirementAndPurchaseOrderRepository, RequirementRepository requirementRepository, SslClient sslClient, ProjectionRepository projectionRepository, ObjectMapper objectMapper) {
+    public CalculateRequirementCommand(WarehouseRepository warehouseRepository, GroupFsnRepository groupFsnRepository, PolicyRepository policyRepository, ForecastRepository forecastRepository, WarehouseInventoryRepository warehouseInventoryRepository, IwtRequestItemRepository iwtRequestItemRepository, OpenRequirementAndPurchaseOrderRepository openRequirementAndPurchaseOrderRepository, RequirementRepository requirementRepository, ProductInfoRepository productInfoRepository, WarehouseSupplierSlaRepository warehouseSupplierSlaRepository, SslClient sslClient, ProjectionRepository projectionRepository, ObjectMapper objectMapper) {
         this.warehouseRepository = warehouseRepository;
         this.groupFsnRepository = groupFsnRepository;
         this.policyRepository = policyRepository;
@@ -75,6 +83,8 @@ public class CalculateRequirementCommand {
         this.iwtRequestItemRepository = iwtRequestItemRepository;
         this.openRequirementAndPurchaseOrderRepository = openRequirementAndPurchaseOrderRepository;
         this.requirementRepository = requirementRepository;
+        this.productInfoRepository = productInfoRepository;
+        this.warehouseSupplierSlaRepository = warehouseSupplierSlaRepository;
         this.sslClient = sslClient;
         this.projectionRepository = projectionRepository;
         this.objectMapper = objectMapper;
@@ -99,7 +109,10 @@ public class CalculateRequirementCommand {
     public void execute() {
         //mark existing requirements ad disabled
         List<Requirement> existingRequirements = requirementRepository.find(fsns, true);
-        existingRequirements.forEach(requirement -> requirement.setEnabled(false));
+        existingRequirements.forEach(requirement -> {
+            requirement.setEnabled(false);
+            requirement.setCurrent(false);
+        });
         //TODO: remove
         List<Projection> existingProjections = projectionRepository.find(fsns, true);
         existingProjections.forEach(projection -> projection.setEnabled(0));
@@ -148,17 +161,25 @@ public class CalculateRequirementCommand {
         //TODO: remove backward compatibility changes to add entry in projections table
         for (String fsn : fsnToRequirementMap.keySet()) {
             List<Requirement> requirements = fsnToRequirementMap.get(fsn);
+            String state = Constants.ERROR_STATE;
+            for (Requirement requirement : requirements) {
+
+                if (RequirementApprovalState.PRE_PROPOSED == RequirementApprovalState.fromString(requirement.getState())) {
+                    state = RequirementApprovalState.PRE_PROPOSED.toString();
+                    break;
+                }
+            }
             Projection projection = new Projection();
             Requirement requirement = requirements.get(0);
             projection.setFsn(requirement.getFsn());
-            projection.setCurrentState(requirement.getState());
-            projection.setEnabled(requirement.isEnabled() ? 1 : 0);
-            projection.setError(requirement.getOverrideComment());
+            projection.setCurrentState(state);
+            projection.setEnabled(Constants.ERROR_STATE.equals(state) ? 0 : 1);
+            projection.setError("YOLO");
             projection.setProcType(requirement.getProcType());
             projection.setForecastId(0L);
             projection.setIntransit(0);
             projection.setInventory(0);
-            projection.setPolicyId(requirement.getRequirementSnapshot().getPolicy());
+            projection.setPolicyId("SWAG");
             projection.setGroupId(requirement.getRequirementSnapshot().getGroup().getId());
             projectionRepository.persist(projection);
             requirements.forEach(requirement1 -> {
@@ -176,6 +197,7 @@ public class CalculateRequirementCommand {
         requirement.setWarehouse(Constants.NOT_APPLICABLE);
         requirement.setOverrideComment(errorMessage);
         requirement.setEnabled(false);
+        requirement.setCurrent(false);
         return requirement;
     }
 
@@ -189,20 +211,41 @@ public class CalculateRequirementCommand {
         responses.stream().filter(response -> response.getSuppliers().size() > 0).forEach(response -> {
             fsnWhSupplierTable.put(response.getFsn(), response.getWarehouseId(), response);
         });
+        List<ProductInfo> productInfos = productInfoRepository.getProductInfo(forecastContext.getFsns());
+        Map<String, String> fsnToVerticalMap = productInfos.stream().collect(Collectors.toMap(ProductInfo::getFsn, ProductInfo::getVertical, (k1, k2) -> k1));
         requirements.forEach(requirement -> {
             SupplierSelectionResponse supplierResponse = fsnWhSupplierTable.get(requirement.getFsn(), requirement.getWarehouse());
             if (supplierResponse != null) {
                 SupplierView supplier = supplierResponse.getSuppliers().get(0);
-                requirement.setSupplier(supplier.getSource_id());
+                requirement.setSupplier(supplier.getSourceId());
                 requirement.setApp(supplier.getApp());
                 requirement.setMrp(supplier.getMrp());
-                requirement.setSla(supplier.getSla());
-                requirement.setCurrency(supplier.getVendor_preferred_currency());
-                requirement.setMrpCurrency(supplier.getVendor_preferred_currency());
+                int sla = getSla(fsnToVerticalMap.get(requirement.getFsn()), requirement.getWarehouse(), supplier.getSourceId(), supplier.getSla());
+                requirement.setSla(sla);
+                requirement.setCurrency(supplier.getVendorPreferredCurrency());
+                requirement.setMrpCurrency(supplier.getVendorPreferredCurrency());
                 requirement.setInternational(!supplier.isLocal());
                 requirement.setSslId(supplierResponse.getEntityId());
             }
         });
+    }
+
+    //TODO: optimize this
+    private int getSla(String vertical, String warehouse, String supplier, int apiSla) {
+        if (vertical == null || warehouse == null) {
+            return apiSla;
+        }
+        try {
+            Optional<Integer> sla = warehouseSupplierSlaRepository.getSla(vertical, warehouse, supplier);
+            if (sla.isPresent()) {
+                return sla.get();
+            } else {
+                return apiSla;
+            }
+        } catch (Exception e) {
+            log.warn(e.getMessage(), e);
+            return apiSla;
+        }
     }
 
     public List<SupplierSelectionRequest> createSupplierSelectionRequest(List<Requirement> requirements) {
@@ -237,7 +280,7 @@ public class CalculateRequirementCommand {
         Requirement requirement = new Requirement();
         requirement.setFsn(fsn);
         requirement.setWarehouse(warehouse);
-        requirement.setState(RequirementApprovalStates.PRE_PROPOSED.toString());
+        requirement.setState(RequirementApprovalState.PRE_PROPOSED.toString());
         requirement.setEnabled(true);
         requirement.setCurrent(true);
 //        requirement.setQuantity(0);

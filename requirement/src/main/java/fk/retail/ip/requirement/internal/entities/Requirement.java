@@ -58,6 +58,7 @@ public class Requirement extends AbstractEntity {
 
     private String procType;
 
+
     //todo:cleanup
     @Column(name = "enabled")
     private boolean enabled;
@@ -67,7 +68,6 @@ public class Requirement extends AbstractEntity {
 
     //todo: cleanup
     @Column(name = "comment")
-    @Size(max = 100)
     private String overrideComment;
 
     private String createdBy;
@@ -78,6 +78,7 @@ public class Requirement extends AbstractEntity {
     @JoinColumn(name = "requirement_snapshot_id")
     private RequirementSnapshot requirementSnapshot;
 
+    //todo: cleanup (fields for backward compatibilty)
     //TODO: legacy code
     @Column(name = "prev_state_id")
     private Long previousStateId;

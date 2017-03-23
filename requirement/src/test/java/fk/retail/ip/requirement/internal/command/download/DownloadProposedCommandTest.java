@@ -1,4 +1,4 @@
-package fk.retail.ip.requirement.internal.command;
+package fk.retail.ip.requirement.internal.command.download;
 
 import com.google.common.collect.Lists;
 import fk.retail.ip.requirement.config.TestModule;
@@ -6,7 +6,7 @@ import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.entities.RequirementSnapshot;
 import fk.retail.ip.requirement.internal.entities.Warehouse;
 import fk.retail.ip.requirement.internal.entities.WeeklySale;
-import fk.retail.ip.requirement.internal.enums.RequirementApprovalStates;
+import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
 import fk.retail.ip.requirement.internal.repository.JPAFsnBandRepository;
 import fk.retail.ip.requirement.internal.repository.ProductInfoRepository;
 import fk.retail.ip.requirement.internal.repository.TestHelper;
@@ -79,7 +79,7 @@ public class DownloadProposedCommandTest {
         Mockito.when(fsnBandRepository.fetchBandDataForFSNs(Mockito.anySetOf(String.class))).thenReturn(Arrays.asList(TestHelper.getFsnBand("fsn", "Last 30 Days")));
         Mockito.when(weeklySaleRepository.fetchWeeklySalesForFsns(Mockito.anySetOf(String.class))).thenReturn(getWeeklySale());
         Mockito.when(warehouseRepository.fetchWarehouseNameByCode(Mockito.anySetOf(String.class))).thenReturn(getWarehouse());
-        Mockito.when(productInfoRepository.getProductInfo(Mockito.anyList())).thenReturn(TestHelper.getProductInfo());
+        Mockito.when(productInfoRepository.getProductInfo(Mockito.anySet())).thenReturn(TestHelper.getProductInfo());
         Mockito.doReturn(TestHelper.getZuluData()).when(zuluClient).getRetailProductAttributes(Mockito.anyList());
 
         downloadProposedCommand.execute(requirements,false);
@@ -158,16 +158,16 @@ public class DownloadProposedCommandTest {
 
         List<Requirement> requirements = Lists.newArrayList();
 
-        Requirement requirement = TestHelper.getRequirement("fsn", "dummy_warehouse1", RequirementApprovalStates.PROPOSED.toString(), true, snapshot , 21, "ABC",
+        Requirement requirement = TestHelper.getRequirement("fsn", "dummy_warehouse1", RequirementApprovalState.PROPOSED.toString(), true, snapshot , 21, "ABC",
                 100, 101, "INR", 3, "", "Daily planning");
         requirements.add(requirement);
 
-        requirement = TestHelper.getRequirement("fsn", "dummy_warehouse2",RequirementApprovalStates.PROPOSED.toString(), true, snapshot1 , 22, "DEF",
+        requirement = TestHelper.getRequirement("fsn", "dummy_warehouse2", RequirementApprovalState.PROPOSED.toString(), true, snapshot1 , 22, "DEF",
                 10, 9, "USD", 4, "", "Daily planning");
 
         requirements.add(requirement);
 
-//        requirement = TestHelper.getRequirement("zulufsn", "dummy_warehouse2",RequirementApprovalStates.PROPOSED.toString(), true, snapshot1 , 22, "DEF",
+//        requirement = TestHelper.getRequirement("zulufsn", "dummy_warehouse2",RequirementApprovalState.PROPOSED.toString(), true, snapshot1 , 22, "DEF",
 //                10, 9, "USD", 4, "", "Daily planning");
 //
 //        requirements.add(requirement);
