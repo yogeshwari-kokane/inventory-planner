@@ -10,12 +10,11 @@ import java.util.List;
 /**
  * Created by yogeshwari.k on 16/03/17.
  */
-@Getter
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonSnakeCase
 public class BatchBigfootRequirementEventEntityPayload {
-    List<RequirementEntityPayload> requirementEntityPayloads;
-    List<RequirementEventPayload> requirementEventPayloads;
+    List<RequirementEntityPayload> requirementEntity;
+    List<RequirementEventPayload> requirementEvent;
 }

@@ -1,11 +1,16 @@
 package fk.retail.ip.requirement.internal.command.upload;
 
 
+import com.google.common.collect.Lists;
 import fk.retail.ip.requirement.internal.Constants;
+import fk.retail.ip.requirement.internal.command.BigfootRequirementIngestorHelper;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.enums.OverrideKey;
 import fk.retail.ip.requirement.internal.enums.OverrideStatus;
+import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
+import fk.retail.ip.requirement.model.ChangeMap;
+import fk.retail.ip.requirement.model.RequirementChangeRequest;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
 import fk.retail.ip.requirement.model.UploadOverrideFailureLineItem;
 import lombok.extern.slf4j.Slf4j;
@@ -36,11 +41,14 @@ public abstract class UploadCommand {
             List<RequirementDownloadLineItem> requirementDownloadLineItems, List<Requirement> requirements
     ) {
 
+        BigfootRequirementIngestorHelper bigfootRequirementIngestorHelper = new BigfootRequirementIngestorHelper();
+
         Map<Long, Requirement> requirementMap = requirements.stream().
                 collect(Collectors.toMap(Requirement::getId, Function.identity()));
 
         ArrayList<UploadOverrideFailureLineItem> uploadOverrideFailureLineItems = new ArrayList<>();
         int rowCount = 0;
+        List<RequirementChangeRequest> bigfootRequests = Lists.newArrayList();
         for(RequirementDownloadLineItem row : requirementDownloadLineItems) {
             UploadOverrideFailureLineItem uploadOverrideFailureLineItem = new UploadOverrideFailureLineItem();
             rowCount += 1;
@@ -76,22 +84,33 @@ public abstract class UploadCommand {
                         Long requirementId = row.getRequirementId();
 
                         if (requirementMap.containsKey(requirementId)) {
+                            //Add IPC_QUANTITY_OVERRIDE, CDO_QUANTITY_OVERRIDE, CDO_APP_OVERRIDE, CDO_SLA_OVERRIDE, CDO_SUPPLIER_OVERRIDE events to bigfoot request
                             Requirement requirement = requirementMap.get(requirementId);
+                            RequirementChangeRequest requirementChangeRequest = new RequirementChangeRequest();
+                            requirementChangeRequest.setRequirement(requirement);
+                            List<ChangeMap> changeMaps = Lists.newArrayList();
 
                             if (overriddenValues.containsKey(OverrideKey.QUANTITY.toString())) {
+                                if(RequirementApprovalState.PROPOSED.toString().equals(requirement.getState()))
+                                    changeMaps.add(createChangeMap("Quantity", String.valueOf(requirement.getQuantity()), row.getIpcQuantityOverride().toString(), "IPC_QUANTITY_OVERRIDE", row.getIpcQuantityOverrideReason(),"dummy_user"));
+                                else if(RequirementApprovalState.CDO_REVIEW.toString().equals(requirement.getState()))
+                                    changeMaps.add(createChangeMap("Quantity", String.valueOf(requirement.getQuantity()), row.getCdoQuantityOverride().toString(), "CDO_QUANTITY_OVERRIDE", row.getCdoQuantityOverrideReason(),"dummy_user"));
                                 requirement.setQuantity
                                         ((Integer) overriddenValues.get(OverrideKey.QUANTITY.toString()));
                             }
 
                             if (overriddenValues.containsKey(OverrideKey.SLA.toString())) {
+                                changeMaps.add(createChangeMap("Sla", String.valueOf(requirement.getSla()),row.getNewSla().toString(), "CDO_SLA_OVERRIDE", "Sla overridden by CDO","dummy_user"));
                                 requirement.setSla((Integer) overriddenValues.get(OverrideKey.SLA.toString()));
                             }
 
                             if (overriddenValues.containsKey(OverrideKey.APP.toString())) {
+                                changeMaps.add(createChangeMap("App", String.valueOf(requirement.getApp()),row.getCdoPriceOverride().toString(), "CDO_APP_OVERRIDE", row.getCdoPriceOverrideReason(),"dummy_user"));
                                 requirement.setApp((Integer) overriddenValues.get(OverrideKey.APP.toString()));
                             }
 
                             if (overriddenValues.containsKey(OverrideKey.SUPPLIER.toString())) {
+                                changeMaps.add(createChangeMap("Supplier", String.valueOf(requirement.getSupplier()),row.getCdoSupplierOverride(), "CDO_SUPPLIER_OVERRIDE", row.getCdoSupplierOverrideReason(),"dummy_user"));
                                 requirement.setSupplier
                                         (overriddenValues.get(OverrideKey.SUPPLIER.toString()).toString());
                             }
@@ -100,6 +119,9 @@ public abstract class UploadCommand {
                                 requirement.setOverrideComment
                                         (overriddenValues.get(OverrideKey.OVERRIDE_COMMENT.toString()).toString());
                             }
+
+                            requirementChangeRequest.setChangeMaps(changeMaps);
+                            bigfootRequests.add(requirementChangeRequest);
 
                         } else {
                             uploadOverrideFailureLineItem.setFailureReason
@@ -117,9 +139,24 @@ public abstract class UploadCommand {
                     }
 
                 }
+
             }
 
+        //Push IPC_QUANTITY_OVERRIDE, CDO_QUANTITY_OVERRIDE, CDO_APP_OVERRIDE, CDO_SLA_OVERRIDE, CDO_SUPPLIER_OVERRIDE events to bigfoot
+        bigfootRequirementIngestorHelper.pushToBigfoot(bigfootRequests);
+
         return uploadOverrideFailureLineItems;
+    }
+
+    private ChangeMap createChangeMap(String attribute, String oldValue, String newValue, String eventType, String reason, String user){
+        ChangeMap changeMap = new ChangeMap();
+        changeMap.setAttribute(attribute);
+        changeMap.setOldValue(oldValue);
+        changeMap.setNewValue(newValue);
+        changeMap.setEventType(eventType);
+        changeMap.setReason(reason);
+        changeMap.setUser(user);
+        return changeMap;
     }
 
     private Optional<String> validateGenericColumns(String fsn, String warehouse){

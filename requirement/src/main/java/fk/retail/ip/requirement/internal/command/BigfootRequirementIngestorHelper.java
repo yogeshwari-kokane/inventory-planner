@@ -22,9 +22,9 @@ public class BigfootRequirementIngestorHelper {
             String requirementId= getRequirementId(req.getRequirement());
             RequirementEntityPayload requirementEntityPayload = requirementEntityMapper.convertRequirementToEntityPayload(requirementId,req.getRequirement());
             List<RequirementEventPayload> requirementEventPayload = requirementEventMapper.convertRequirementToEventPayload(requirementId,req.getChangeMaps());
-            batchBigfootRequirementEventEntityPayload.getRequirementEntityPayloads().add(requirementEntityPayload);
-            batchBigfootRequirementEventEntityPayload.getRequirementEventPayloads().addAll(requirementEventPayload);
-            //bigfootRequirementIngestor.pushToBigfoot(batchBigfootRequirementEventEntityPayload);
+            batchBigfootRequirementEventEntityPayload.getRequirementEntity().add(requirementEntityPayload);
+            batchBigfootRequirementEventEntityPayload.getRequirementEvent().addAll(requirementEventPayload);
+            bigfootRequirementIngestor.pushToBigfoot(batchBigfootRequirementEventEntityPayload);
         });
 
         return batchBigfootRequirementEventEntityPayload;

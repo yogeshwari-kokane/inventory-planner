@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 /**
  * Created by yogeshwari.k on 17/03/17.
  */
-@Getter
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

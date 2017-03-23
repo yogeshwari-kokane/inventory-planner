@@ -196,12 +196,14 @@ public class CalculateRequirementCommand {
 
         //Add PROJECTION_CREATED events to bigfoot request
         allRequirements.forEach(requirement -> {
-            RequirementChangeRequest requirementChangeRequest = new RequirementChangeRequest();
-            List<ChangeMap> changeMaps = Lists.newArrayList();
-            changeMaps.add(createChangeMap("Quantity",String.valueOf(requirement.getQuantity()),"PROJECTION_CREATED","Projection created"));
-            requirementChangeRequest.setRequirement(requirement);
-            requirementChangeRequest.setChangeMaps(changeMaps);
-            bigfootRequests.add(requirementChangeRequest);
+            if(!requirement.getState().equals(Constants.ERROR_STATE)) {
+                RequirementChangeRequest requirementChangeRequest = new RequirementChangeRequest();
+                List<ChangeMap> changeMaps = Lists.newArrayList();
+                changeMaps.add(createChangeMap("Quantity", String.valueOf(requirement.getQuantity()), "PROJECTION_CREATED", "Projection created"));
+                requirementChangeRequest.setRequirement(requirement);
+                requirementChangeRequest.setChangeMaps(changeMaps);
+                bigfootRequests.add(requirementChangeRequest);
+            }
         });
 
         //Push PROJECTION_CREATED, SUPPLIER_ASSIGNED and APP_ASSIGNED events to bigfoot
@@ -248,7 +250,7 @@ public class CalculateRequirementCommand {
                 requirement.setSslId(supplierResponse.getEntityId());
                 //Add SUPPLIER_ASSIGNED and APP_ASSIGNED events to bigfoot request
                 changeMaps.add(createChangeMap("Supplier",supplier.getSourceId(),"SUPPLIER_ASSIGNED","Supplier assigned"));
-                changeMaps.add(createChangeMap("App",supplier.getApp().toString(),"APP_ASSIGNED","App assigned"));
+                changeMaps.add(createChangeMap("App",String.valueOf(supplier.getApp()),"APP_ASSIGNED","App assigned"));
                 requirementChangeRequest.setRequirement(requirement);
                 requirementChangeRequest.setChangeMaps(changeMaps);
                 bigfootRequests.add(requirementChangeRequest);

@@ -1,5 +1,6 @@
 package fk.retail.ip.requirement.model;
 
+import fk.retail.ip.bigfoot.config.BigfootConfiguration;
 import fk.retail.ip.bigfoot.model.RequirementEntityData;
 import fk.retail.ip.bigfoot.model.RequirementEntityPayload;
 import fk.retail.ip.requirement.internal.entities.Requirement;
@@ -12,29 +13,25 @@ public class CreateRequirementEntityPayload implements RequirementEntityMapper {
 
     @Override
     public RequirementEntityPayload convertRequirementToEntityPayload(String requirementId, Requirement requirement) {
+        BigfootConfiguration bigfootConfiguration = new BigfootConfiguration();
         RequirementEntityPayload requirementEntityPayload = new RequirementEntityPayload();
-        requirementEntityPayload.setEntityId(getRequirementId(requirement));
-        requirementEntityPayload.setData(getRequirementEntityData(requirement));
-        //requirementEntityPayload.setSchemaVersion();
+        requirementEntityPayload.setEntityId(requirementId);
+        requirementEntityPayload.setData(getRequirementEntityData(requirementId,requirement));
+        requirementEntityPayload.setSchemaVersion(bigfootConfiguration.getSchema_version());
         requirementEntityPayload.setUpdatedAt(requirement.getUpdatedAt());
         return requirementEntityPayload;
     }
 
-    private String getRequirementId(Requirement requirement) {
-        String requirementId = requirement.getFsn()+requirement.getWarehouse()+(requirement.getCreatedAt().toString());
-        return requirementId;
-    }
-
-    private RequirementEntityData getRequirementEntityData(Requirement requirement) {
+    private RequirementEntityData getRequirementEntityData(String requirementId, Requirement requirement) {
         RequirementEntityData requirementEntityData = new RequirementEntityData();
         String partyId = "FKI";
         DateTime requiredBydate = DateTime.now().plusDays(requirement.getSla());
-        requirementEntityData.setRequirementId(getRequirementId(requirement));
+        requirementEntityData.setRequirementId(requirementId);
         requirementEntityData.setPartyId(partyId);
         requirementEntityData.setFsn(requirement.getFsn());
         requirementEntityData.setWarehouse(requirement.getWarehouse());
         requirementEntityData.setForecast(requirement.getRequirementSnapshot().getForecast());
-      //  requirementEntityData.setQuantity(requirement.getQuantity());
+        requirementEntityData.setQuantity(requirement.getQuantity());
         requirementEntityData.setSupplier(requirement.getSupplier());
         requirementEntityData.setApp(requirement.getApp());
         requirementEntityData.setMrp(requirement.getMrp());
@@ -46,7 +43,7 @@ public class CreateRequirementEntityPayload implements RequirementEntityMapper {
         requirementEntityData.setIwitIntransitQty(requirement.getRequirementSnapshot().getIwitIntransitQty());
         requirementEntityData.setState(requirement.getState());
         requirementEntityData.setPoId(null);
-      //  requirementEntityData.setEnabled(requirement.getEnabled());
+        requirementEntityData.setEnabled(requirement.isEnabled());
         requirementEntityData.setCreatedAt(requirement.getCreatedAt());
         requirementEntityData.setUpdatedAt(requirement.getUpdatedAt());
         requirementEntityData.setPolicyIds(null);
