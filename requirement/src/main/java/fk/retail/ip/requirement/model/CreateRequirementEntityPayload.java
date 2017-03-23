@@ -1,10 +1,15 @@
 package fk.retail.ip.requirement.model;
 
+import com.google.inject.Inject;
 import fk.retail.ip.fdp.config.FdpConfiguration;
 import fk.retail.ip.fdp.model.FdpRequirementEntityData;
 import fk.retail.ip.fdp.model.FdpRequirementEntityPayload;
 import fk.retail.ip.requirement.internal.entities.Requirement;
+import fk.retail.ip.ssl.internal.command.GetSupplierDetailsCommand;
 import org.joda.time.DateTime;
+
+import javax.inject.Provider;
+import javax.persistence.EntityManager;
 
 /**
  * Created by yogeshwari.k on 16/03/17.

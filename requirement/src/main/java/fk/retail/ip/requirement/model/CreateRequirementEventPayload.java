@@ -21,6 +21,7 @@ public class CreateRequirementEventPayload implements RequirementEventMapper{
             fdpRequirementEventPayload.setReason(changeMap.getReason());
             fdpRequirementEventPayload.setEventType(changeMap.getEventType());
             fdpRequirementEventPayload.setUser(changeMap.getUser());
+            fdpRequirementEventPayloadList.add(fdpRequirementEventPayload);
         });
         return fdpRequirementEventPayloadList;
     }
