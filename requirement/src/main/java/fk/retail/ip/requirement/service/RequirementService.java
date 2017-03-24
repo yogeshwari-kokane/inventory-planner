@@ -2,36 +2,29 @@ package fk.retail.ip.requirement.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import fk.retail.ip.core.poi.SpreadSheetReader;
 import fk.retail.ip.requirement.internal.Constants;
 import fk.retail.ip.requirement.internal.command.CalculateRequirementCommand;
+import fk.retail.ip.requirement.internal.command.SearchCommand;
+import fk.retail.ip.requirement.internal.command.SearchFilterCommand;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.enums.OverrideStatus;
 import fk.retail.ip.requirement.internal.factory.RequirementStateFactory;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.internal.states.RequirementState;
-import fk.retail.ip.requirement.model.CalculateRequirementRequest;
-import fk.retail.ip.requirement.model.DownloadRequirementRequest;
-import fk.retail.ip.requirement.model.RequirementApprovalRequest;
-import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
-import fk.retail.ip.requirement.model.UploadOverrideFailureLineItem;
-import fk.retail.ip.requirement.model.UploadResponse;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import javax.ws.rs.core.StreamingOutput;
+import fk.retail.ip.requirement.model.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.json.JSONException;
+
+import javax.ws.rs.core.StreamingOutput;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * @author nidhigupta.m
@@ -45,14 +38,20 @@ public class RequirementService {
     private final RequirementStateFactory requirementStateFactory;
     private final ApprovalService approvalService;
     private final Provider<CalculateRequirementCommand> calculateRequirementCommandProvider;
+    private final SearchFilterCommand searchFilterCommand;
+    private final Provider<SearchCommand> searchCommandProvider;
+    private final int PAGE_SIZE = 20;
 
     @Inject
     public RequirementService(RequirementRepository requirementRepository, RequirementStateFactory requirementStateFactory,
-                              ApprovalService approvalService, Provider<CalculateRequirementCommand> calculateRequirementCommandProvider) {
+                              ApprovalService approvalService, Provider<CalculateRequirementCommand> calculateRequirementCommandProvider,
+                              SearchFilterCommand searchFilterCommand, Provider<SearchCommand> searchCommandProvider) {
         this.requirementRepository = requirementRepository;
         this.requirementStateFactory = requirementStateFactory;
         this.approvalService = approvalService;
         this.calculateRequirementCommandProvider = calculateRequirementCommandProvider;
+        this.searchFilterCommand = searchFilterCommand;
+        this.searchCommandProvider = searchCommandProvider;
     }
 
     public StreamingOutput downloadRequirement(DownloadRequirementRequest downloadRequirementRequest) {
@@ -60,7 +59,8 @@ public class RequirementService {
         String requirementState = downloadRequirementRequest.getState();
         Map<String, Object> filters = downloadRequirementRequest.getFilters();
         boolean isLastAppSupplierRequired = downloadRequirementRequest.isLastAppSupplierRequired();
-        List<Requirement> requirements = requirementRepository.findRequirements(requirementIds, requirementState, filters);
+        List<String> fsns = searchFilterCommand.getSearchFilterFsns(filters);
+        List<Requirement> requirements = requirementRepository.findRequirements(requirementIds, requirementState, fsns);
         requirements = requirements.stream().filter(requirement -> !requirement.getWarehouse().equals("all")).collect(Collectors.toList());
         RequirementState state = requirementStateFactory.getRequirementState(requirementState);
         return state.download(requirements, isLastAppSupplierRequired);
@@ -141,7 +141,8 @@ public class RequirementService {
         List<Long> ids = (List<Long>) request.getFilters().get("id");
         String state = (String) request.getFilters().get("state");
         Set<Long> projectionIds = new HashSet<>();
-        requirements = requirementRepository.findRequirements(ids, state, request.getFilters());
+        List<String> fsns = searchFilterCommand.getSearchFilterFsns(request.getFilters());
+        requirements = requirementRepository.findRequirements(ids, state, fsns);
         log.info("Change state Request for {} number of requirements", requirements.size());
         requirements.stream().forEach(e -> projectionIds.add(e.getProjectionId()));
         approvalService.changeState(requirements, "dummyUser", action, getter, new ApprovalService.CopyOnStateChangeAction(requirementRepository));
@@ -149,6 +150,20 @@ public class RequirementService {
         requirementRepository.updateProjection(projectionIds, approvalService.getTargetState(action));
         log.info("Projections table updated for Requirements");
         return "{\"msg\":\"Moved " + projectionIds.size() + " projections to new state.\"}";
+    }
+
+    public SearchResponse.GroupedResponse search(RequirementSearchRequest request) throws JSONException {
+        List<Requirement> requirements;
+        String state = (String) request.getFilters().get("state");
+        List<String> fsns = request.getFilters().get("fsns") !=null ? searchFilterCommand.getSearchFilterFsns(request.getFilters()) : null;
+        requirements = requirementRepository.findRequirements(null, state, fsns);
+        Map<String, List<RequirementSearchLineItem>> fsnToSearchItemsMap =  searchCommandProvider.get().execute(requirements);
+        SearchResponse.GroupedResponse groupedResponse = new SearchResponse.GroupedResponse(fsnToSearchItemsMap.size(), PAGE_SIZE);
+        for (String fsn : fsnToSearchItemsMap.keySet()) {
+            SearchResponse searchResponse = new SearchResponse(fsnToSearchItemsMap.get(fsn));
+            groupedResponse.getProjections().add(searchResponse);
+        }
+        return groupedResponse;
     }
 
 
