@@ -153,16 +153,10 @@ public class RequirementService {
     }
 
     public SearchResponse.GroupedResponse search(RequirementSearchRequest request, int pageNo) throws JSONException {
-        int startIndex, endIndex;
         List<Requirement> requirements;
-        List<String> filterFsns;
         String state = (String) request.getFilters().get("state");
         List<String> fsns = searchFilterCommand.getSearchFilterFsns(request.getFilters());
-        if(fsns==null || fsns.size() <= (pageNo-1)*PAGE_SIZE) return new SearchResponse.GroupedResponse(0, PAGE_SIZE);
-        startIndex = (pageNo-1)*PAGE_SIZE;
-        endIndex = (fsns.size() >= pageNo*PAGE_SIZE) ? (pageNo*PAGE_SIZE) : fsns.size();
-        filterFsns = fsns.subList(startIndex, endIndex);
-        requirements = requirementRepository.findRequirements(null, state, filterFsns);
+        requirements = requirementRepository.findRequirements(null, state, fsns);
         Map<String, List<RequirementSearchLineItem>> fsnToSearchItemsMap =  searchCommandProvider.get().execute(requirements);
         SearchResponse.GroupedResponse groupedResponse = new SearchResponse.GroupedResponse(fsnToSearchItemsMap.size(), PAGE_SIZE);
         for (String fsn : fsnToSearchItemsMap.keySet()) {
