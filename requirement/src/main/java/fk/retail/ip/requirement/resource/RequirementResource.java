@@ -68,7 +68,6 @@ public class RequirementResource {
     @ExceptionMetered
     @POST
     @Path("/upload")
-    @Timed
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response uploadProjectionOverride(
