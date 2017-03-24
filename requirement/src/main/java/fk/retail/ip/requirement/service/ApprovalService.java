@@ -116,6 +116,7 @@ public class ApprovalService<E extends AbstractEntity> {
                             toStateEntity.get().setCreatedBy(userId);
                             toStateEntity.get().setCurrent(true);
                             entity.setCurrent(false);
+                            requirementChangeRequest.setRequirement(toStateEntity.orElse(null));
                         } else {
                             Requirement newEntity = new Requirement(entity);
                             if(isIPCReviewState) {
@@ -127,6 +128,7 @@ public class ApprovalService<E extends AbstractEntity> {
                             newEntity.setCurrent(true);
                             repository.persist(newEntity);
                             entity.setCurrent(false);
+                            requirementChangeRequest.setRequirement(newEntity);
                         }
                     } else {
                         //Add CANCEL events to fdp request
@@ -134,12 +136,10 @@ public class ApprovalService<E extends AbstractEntity> {
                         toStateEntity.ifPresent(e -> { // this will always be present
                             e.setCurrent(true);
                             entity.setCurrent(false);
+                            requirementChangeRequest.setRequirement(toStateEntity.orElse(null));
                         });
                     }
-                    /*
-                    if(toStateEntity.isPresent()){
-                        requirementChangeRequest.setRequirement(toStateEntity.ifPresent());
-                    }*/
+
                     requirementChangeRequest.setChangeMaps(changeMaps);
                     fdpRequests.add(requirementChangeRequest);
                 });

@@ -23,8 +23,8 @@ public class FdpRequirementIngestorHelper extends FdpIngestorHelper<List<Require
             String requirementId= getRequirementId(req.getRequirement());
             FdpEntityPayload<FdpRequirementEntityData> fdpRequirementEntityPayload = createRequirementEntityPayload.convertRequirementToEntityPayload(requirementId,req.getRequirement());
             List<FdpEventPayload<FdpRequirementEventData>> fdpRequirementEventPayload = createRequirementEventPayload.convertRequirementToEventPayload(requirementId,req.getChangeMaps());
-            batchFdpRequirementEventEntityPayload.getRequirementEntity().add(fdpRequirementEntityPayload);
-            batchFdpRequirementEventEntityPayload.getRequirementEvent().addAll(fdpRequirementEventPayload);
+            batchFdpRequirementEventEntityPayload.getEntity().add(fdpRequirementEntityPayload);
+            batchFdpRequirementEventEntityPayload.getEvent().addAll(fdpRequirementEventPayload);
             //fdpIngestor.pushToFdp(batchFdpRequirementEventEntityPayload);
         });
 
