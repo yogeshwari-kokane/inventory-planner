@@ -26,11 +26,12 @@ public class SearchCommand extends RequirementSearchDataAggregator {
 
     public Map<String, List<RequirementSearchLineItem>> execute(List<Requirement> requirements) {
         log.info("Search Request for {} number of requirements", requirements.size());
-        if (requirements.isEmpty()) {
-            log.info("No requirements found for search.");
-        }
         List<RequirementSearchLineItem> requirementSearchLineItems = requirements.stream().map(RequirementSearchLineItem::new).collect(toList());
         Map<String, List<RequirementSearchLineItem>> fsnToRequirement = requirementSearchLineItems.stream().collect(Collectors.groupingBy(RequirementSearchLineItem::getFsn));
+        if (requirements.isEmpty()) {
+            log.info("No requirements found for search.");
+            return fsnToRequirement;
+        }
         Set<String> fsns = fsnToRequirement.keySet();
         fetchProductData(fsnToRequirement);
         fetchFsnBandData(fsnToRequirement);
