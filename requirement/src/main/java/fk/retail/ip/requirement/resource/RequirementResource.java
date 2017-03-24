@@ -96,7 +96,7 @@ public class RequirementResource {
     @POST
     @Path("/search")
     @Produces(MediaType.APPLICATION_JSON)
-    public SearchResponse.GroupedResponse search(RequirementSearchRequest request, @QueryParam("page") int pageNo) throws JSONException {
+    public SearchResponse.GroupedResponse search(RequirementSearchRequest request, @DefaultValue("1") @QueryParam("page") int pageNo) throws JSONException {
         return requirementService.search(request, pageNo);
     }
 }
