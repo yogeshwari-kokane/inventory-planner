@@ -157,10 +157,10 @@ public class RequirementService {
         List<Requirement> requirements;
         List<String> filterFsns;
         String state = (String) request.getFilters().get("state");
-        List<String> fsns = request.getFilters().get("fsns") !=null ? searchFilterCommand.getSearchFilterFsns(request.getFilters()) : null;
-        if(fsns.size() < (pageNo-1)*PAGE_SIZE) return new SearchResponse.GroupedResponse(0, PAGE_SIZE);
+        List<String> fsns = searchFilterCommand.getSearchFilterFsns(request.getFilters());
+        if(fsns==null || fsns.size() <= (pageNo-1)*PAGE_SIZE) return new SearchResponse.GroupedResponse(0, PAGE_SIZE);
         startIndex = (pageNo-1)*PAGE_SIZE;
-        endIndex = (fsns.size() >= pageNo*PAGE_SIZE) ? (pageNo*PAGE_SIZE)-1 : fsns.size()-1;
+        endIndex = (fsns.size() >= pageNo*PAGE_SIZE) ? (pageNo*PAGE_SIZE) : fsns.size();
         filterFsns = fsns.subList(startIndex, endIndex);
         requirements = requirementRepository.findRequirements(null, state, filterFsns);
         Map<String, List<RequirementSearchLineItem>> fsnToSearchItemsMap =  searchCommandProvider.get().execute(requirements);
