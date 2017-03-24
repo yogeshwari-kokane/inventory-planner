@@ -17,9 +17,8 @@ public class CreateRequirementEventPayload implements FdpEventMapper<FdpRequirem
         changeMaps.forEach(changeMap -> {
             FdpEventPayload fdpRequirementEventPayload =new FdpEventPayload();
             //fdpRequirementEventPayload.setEventId();
-            fdpRequirementEventPayload.setEventType(changeMap.getEventType());
             fdpRequirementEventPayload.setSchemaVersion(fdpConfiguration.getSchemaVersion());
-            //fdpRequirementEventPayload.setUpdatedAt();
+            //fdpRequirementEventPayload.setEventTime();
             fdpRequirementEventPayload.setData(getRequirementEventData(requirementId.toString(),changeMap));
             fdpRequirementEventPayloadList.add(fdpRequirementEventPayload);
         });
@@ -34,6 +33,7 @@ public class CreateRequirementEventPayload implements FdpEventMapper<FdpRequirem
         fdpRequirementEventData.setNewValue(changeMap.getNewValue());
         fdpRequirementEventData.setReason(changeMap.getReason());
         fdpRequirementEventData.setUser(changeMap.getUser());
+        fdpRequirementEventData.setEventType(changeMap.getEventType());
         return fdpRequirementEventData;
     }
 }

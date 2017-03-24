@@ -10,7 +10,6 @@ import lombok.Data;
 public class FdpEventPayload<T> {
     Object eventId;
     int schemaVersion;
-    String eventType; //in data??
-    Date updatedAt;
+    Date eventTime;
     T data;
 }

@@ -13,4 +13,5 @@ public class FdpRequirementEventData {
     String oldValue;
     String newValue;
     String reason;
+    String eventType;
 }
