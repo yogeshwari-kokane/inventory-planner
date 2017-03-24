@@ -2,12 +2,11 @@ package fk.retail.ip.requirement.internal.command;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
-import fk.retail.ip.fdp.model.BatchFdpRequirementEventEntityPayload;
+import fk.retail.ip.fdp.model.BatchFdpEventEntityPayload;
 import fk.retail.ip.requirement.config.TestModule;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.entities.RequirementSnapshot;
 import fk.retail.ip.requirement.internal.enums.FdpRequirementEventType;
-import fk.retail.ip.requirement.internal.repository.TestHelper;
 import fk.retail.ip.requirement.model.ChangeMap;
 import fk.retail.ip.requirement.model.RequirementChangeRequest;
 import java.util.Date;
@@ -76,25 +75,25 @@ public class FdpRequirementIngestorHelperTest {
         requirement2.setEnabled(true);
 
 
-        FdpRequirementIngestorHelper fdpRequirementIngestorHelper = new FdpRequirementIngestorHelper();
-        List<RequirementChangeRequest> bigfootRequests = Lists.newArrayList();
+        FdpIngestorHelper fdpRequirementIngestorHelper = new FdpRequirementIngestorHelper();
+        List<RequirementChangeRequest> fdpRequests = Lists.newArrayList();
 
         RequirementChangeRequest requirementChangeRequest1 = new RequirementChangeRequest();
         List<ChangeMap> changeMaps1 = Lists.newArrayList();
         requirementChangeRequest1.setRequirement(requirement1);
         changeMaps1.add(fdpRequirementIngestorHelper.createChangeMap("Sla", requirement1.getSla().toString(),"20", FdpRequirementEventType.CDO_SLA_OVERRIDE.toString(), "SLA overridden by CDO", "dummy_user"));
         requirementChangeRequest1.setChangeMaps(changeMaps1);
-        bigfootRequests.add(requirementChangeRequest1);
+        fdpRequests.add(requirementChangeRequest1);
 
         RequirementChangeRequest requirementChangeRequest2 = new RequirementChangeRequest();
         List<ChangeMap> changeMaps2 = Lists.newArrayList();
         requirementChangeRequest2.setRequirement(requirement2);
         changeMaps2.add(fdpRequirementIngestorHelper.createChangeMap("Sla", requirement1.getSla().toString(),"20", FdpRequirementEventType.CDO_SLA_OVERRIDE.toString(), "SLA overridden by CDO", "dummy_user"));
         requirementChangeRequest2.setChangeMaps(changeMaps2);
-        bigfootRequests.add(requirementChangeRequest2);
+        fdpRequests.add(requirementChangeRequest2);
 
-        BatchFdpRequirementEventEntityPayload batchFdpRequirementEventEntityPayload = fdpRequirementIngestorHelper.pushToFdp(bigfootRequests);
-        String result = mapper.writeValueAsString(batchFdpRequirementEventEntityPayload);
+        BatchFdpEventEntityPayload fdpPayload = fdpRequirementIngestorHelper.pushToFdp(fdpRequests);
+        String result = mapper.writeValueAsString(fdpPayload);
         System.out.println("result:"+result);
     }
 

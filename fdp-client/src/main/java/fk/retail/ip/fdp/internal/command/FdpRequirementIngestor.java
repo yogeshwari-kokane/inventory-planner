@@ -25,10 +25,10 @@ public class FdpRequirementIngestor {
         this.fdpConfiguration = fdpConfiguration;
     }
 
-    public void pushToFdp(BatchFdpRequirementEventEntityPayload batchFdpRequirementEventEntityPayload) {
+    public void pushToFdp(BatchFdpEventEntityPayload fdpPayload) {
         Message message = getMessageInstance();
         try {
-            message.setPayload(mapper.writeValueAsString(batchFdpRequirementEventEntityPayload));
+            message.setPayload(mapper.writeValueAsString(fdpPayload));
             restbusMessageSender.send(message);
         } catch (JsonProcessingException e) {
             log.error("Unable to serialize request object ", e);

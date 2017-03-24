@@ -77,7 +77,7 @@ public class CalculateRequirementCommand {
     private ForecastContext forecastContext;
     private OnHandQuantityContext onHandQuantityContext;
     private List<RequirementChangeRequest> fdpRequests = Lists.newArrayList();
-    private FdpRequirementIngestorHelper fdpRequirementIngestorHelper = new FdpRequirementIngestorHelper();
+    private FdpIngestorHelper fdpRequirementIngestorHelper = new FdpRequirementIngestorHelper();
 
     @Inject
     public CalculateRequirementCommand(WarehouseRepository warehouseRepository, GroupFsnRepository groupFsnRepository, PolicyRepository policyRepository, ForecastRepository forecastRepository, WarehouseInventoryRepository warehouseInventoryRepository, IwtRequestItemRepository iwtRequestItemRepository, OpenRequirementAndPurchaseOrderRepository openRequirementAndPurchaseOrderRepository, RequirementRepository requirementRepository, ProductInfoRepository productInfoRepository, WarehouseSupplierSlaRepository warehouseSupplierSlaRepository, SslClient sslClient, ProjectionRepository projectionRepository, ObjectMapper objectMapper) {

@@ -13,6 +13,7 @@ import fk.retail.ip.requirement.internal.enums.OverrideKey;
 import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.internal.command.FdpRequirementIngestorHelper;
+import fk.retail.ip.requirement.internal.command.FdpIngestorHelper;
 import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Map;
@@ -93,7 +94,7 @@ public class ApprovalService<E extends AbstractEntity> {
             List<Requirement> toEntities = repository.findEnabledRequirementsByStateFsn(toState, fsnToRequirements.keySet());
             Table<String, String, Requirement> cdoStateEntityMap = getCDOEntityMap(toState,  fsnToRequirements.keySet());
             boolean isIPCReviewState = RequirementApprovalState.IPC_REVIEW.toString().equals(toState);
-            FdpRequirementIngestorHelper fdpRequirementIngestorHelper = new FdpRequirementIngestorHelper();
+            FdpIngestorHelper fdpRequirementIngestorHelper = new FdpRequirementIngestorHelper();
             List<RequirementChangeRequest> fdpRequests = Lists.newArrayList();
             fsnToRequirements.keySet().stream().forEach((fsn) -> {
                 fsnToRequirements.get(fsn).stream().forEach((entity) -> {
@@ -135,6 +136,10 @@ public class ApprovalService<E extends AbstractEntity> {
                             entity.setCurrent(false);
                         });
                     }
+                    /*
+                    if(toStateEntity.isPresent()){
+                        requirementChangeRequest.setRequirement(toStateEntity.ifPresent());
+                    }*/
                     requirementChangeRequest.setChangeMaps(changeMaps);
                     fdpRequests.add(requirementChangeRequest);
                 });

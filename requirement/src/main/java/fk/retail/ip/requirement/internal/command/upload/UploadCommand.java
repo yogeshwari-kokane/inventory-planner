@@ -3,6 +3,7 @@ package fk.retail.ip.requirement.internal.command.upload;
 
 import com.google.common.collect.Lists;
 import fk.retail.ip.requirement.internal.Constants;
+import fk.retail.ip.requirement.internal.command.FdpIngestorHelper;
 import fk.retail.ip.requirement.internal.command.FdpRequirementIngestorHelper;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.enums.FdpRequirementEventType;
@@ -42,7 +43,7 @@ public abstract class UploadCommand {
             List<RequirementDownloadLineItem> requirementDownloadLineItems, List<Requirement> requirements
     ) {
 
-        FdpRequirementIngestorHelper fdpRequirementIngestorHelper = new FdpRequirementIngestorHelper();
+        FdpIngestorHelper fdpRequirementIngestorHelper = new FdpRequirementIngestorHelper();
 
         Map<Long, Requirement> requirementMap = requirements.stream().
                 collect(Collectors.toMap(Requirement::getId, Function.identity()));
@@ -88,7 +89,6 @@ public abstract class UploadCommand {
                             //Add IPC_QUANTITY_OVERRIDE, CDO_QUANTITY_OVERRIDE, CDO_APP_OVERRIDE, CDO_SLA_OVERRIDE, CDO_SUPPLIER_OVERRIDE events to fdp request
                             Requirement requirement = requirementMap.get(requirementId);
                             RequirementChangeRequest requirementChangeRequest = new RequirementChangeRequest();
-                            requirementChangeRequest.setRequirement(requirement);
                             List<ChangeMap> changeMaps = Lists.newArrayList();
 
                             if (overriddenValues.containsKey(OverrideKey.QUANTITY.toString())) {
@@ -121,6 +121,7 @@ public abstract class UploadCommand {
                                         (overriddenValues.get(OverrideKey.OVERRIDE_COMMENT.toString()).toString());
                             }
 
+                            requirementChangeRequest.setRequirement(requirement);
                             requirementChangeRequest.setChangeMaps(changeMaps);
                             fdpRequests.add(requirementChangeRequest);
 

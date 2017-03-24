@@ -1,28 +1,23 @@
 package fk.retail.ip.requirement.model;
 
-import com.google.inject.Inject;
 import fk.retail.ip.fdp.config.FdpConfiguration;
+import fk.retail.ip.fdp.model.FdpEntityPayload;
 import fk.retail.ip.fdp.model.FdpRequirementEntityData;
-import fk.retail.ip.fdp.model.FdpRequirementEntityPayload;
 import fk.retail.ip.requirement.internal.entities.Requirement;
-import fk.retail.ip.ssl.internal.command.GetSupplierDetailsCommand;
 import org.joda.time.DateTime;
-
-import javax.inject.Provider;
-import javax.persistence.EntityManager;
 
 /**
  * Created by yogeshwari.k on 16/03/17.
  */
-public class CreateRequirementEntityPayload implements RequirementEntityMapper {
+public class CreateRequirementEntityPayload implements FdpEntityMapper<FdpRequirementEntityData,Requirement> {
 
     @Override
-    public FdpRequirementEntityPayload convertRequirementToEntityPayload(String requirementId, Requirement requirement) {
+    public FdpEntityPayload<FdpRequirementEntityData> convertRequirementToEntityPayload(Object requirementId, Requirement requirement) {
         FdpConfiguration fdpConfiguration = new FdpConfiguration();
-        FdpRequirementEntityPayload fdpRequirementEntityPayload = new FdpRequirementEntityPayload();
+        FdpEntityPayload<FdpRequirementEntityData> fdpRequirementEntityPayload= new FdpEntityPayload();
         fdpRequirementEntityPayload.setEntityId(requirementId);
-        fdpRequirementEntityPayload.setData(getRequirementEntityData(requirementId,requirement));
-        fdpRequirementEntityPayload.setSchemaVersion(fdpConfiguration.getSchema_version());
+        fdpRequirementEntityPayload.setData(getRequirementEntityData(requirementId.toString(),requirement));
+        fdpRequirementEntityPayload.setSchemaVersion(fdpConfiguration.getSchemaVersion());
         fdpRequirementEntityPayload.setUpdatedAt(requirement.getUpdatedAt());
         return fdpRequirementEntityPayload;
     }
@@ -51,7 +46,7 @@ public class CreateRequirementEntityPayload implements RequirementEntityMapper {
         fdpRequirementEntityData.setEnabled(requirement.isEnabled());
         fdpRequirementEntityData.setCreatedAt(requirement.getCreatedAt());
         fdpRequirementEntityData.setUpdatedAt(requirement.getUpdatedAt());
-        fdpRequirementEntityData.setPolicyIds(null);
+        //fdpRequirementEntityData.setPolicyIds(null);
         return fdpRequirementEntityData;
     }
 }
