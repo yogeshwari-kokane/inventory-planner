@@ -72,7 +72,7 @@ sslClientConfiguration:
 fdpConfiguration:
   url: "sampleUrl"
   schemaVersion: 1.1
-  requirementQueueName: "sampleQueue"
+  queueName: "sampleQueue"
 
 clientConfiguration:
   timeout: 80000ms

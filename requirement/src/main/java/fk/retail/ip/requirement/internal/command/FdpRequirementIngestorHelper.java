@@ -1,11 +1,12 @@
 package fk.retail.ip.requirement.internal.command;
 
+import fk.retail.ip.fdp.internal.command.FdpIngestor;
 import fk.retail.ip.fdp.model.*;
 import fk.retail.ip.requirement.model.*;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 
 import java.util.List;
-import fk.retail.ip.fdp.internal.command.FdpRequirementIngestor;
+
 /**
  * Created by yogeshwari.k on 22/03/17.
  */
@@ -14,7 +15,7 @@ public class FdpRequirementIngestorHelper extends FdpIngestorHelper<List<Require
     BatchFdpEventEntityPayload<FdpRequirementEntityData,FdpRequirementEventData> batchFdpRequirementEventEntityPayload = new BatchFdpEventEntityPayload();
     FdpEntityMapper createRequirementEntityPayload = new CreateRequirementEntityPayload();
     FdpEventMapper createRequirementEventPayload = new CreateRequirementEventPayload();
-    FdpRequirementIngestor fdpRequirementIngestor;
+    FdpIngestor fdpIngestor;
 
     @Override
     public BatchFdpEventEntityPayload pushToFdp(List<RequirementChangeRequest> requirementChangeRequests){
@@ -24,7 +25,7 @@ public class FdpRequirementIngestorHelper extends FdpIngestorHelper<List<Require
             List<FdpEventPayload<FdpRequirementEventData>> fdpRequirementEventPayload = createRequirementEventPayload.convertRequirementToEventPayload(requirementId,req.getChangeMaps());
             batchFdpRequirementEventEntityPayload.getRequirementEntity().add(fdpRequirementEntityPayload);
             batchFdpRequirementEventEntityPayload.getRequirementEvent().addAll(fdpRequirementEventPayload);
-            //fdpRequirementIngestor.pushToFdp(batchFdpRequirementEventEntityPayload);
+            //fdpIngestor.pushToFdp(batchFdpRequirementEventEntityPayload);
         });
 
         //TODO: remove return (used only for testing payload creation)

@@ -9,5 +9,5 @@ import lombok.Data;
 public class FdpConfiguration {
     int schemaVersion;
     String url;
-    String requirementQueueName;
+    String queueName;
 }

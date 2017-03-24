@@ -13,19 +13,19 @@ import lombok.extern.slf4j.Slf4j;
  * Created by yogeshwari.k on 17/03/17.
  */
 @Slf4j
-public class FdpRequirementIngestor {
+public class FdpIngestor {
     private final RestbusMessageSender restbusMessageSender;
     private final ObjectMapper mapper;
     private final FdpConfiguration fdpConfiguration;
 
     @Inject
-    public FdpRequirementIngestor(RestbusMessageSender restbusMessageSender, ObjectMapper mapper, FdpConfiguration fdpConfiguration){
+    public FdpIngestor(RestbusMessageSender restbusMessageSender, ObjectMapper mapper, FdpConfiguration fdpConfiguration){
         this.restbusMessageSender = restbusMessageSender;
         this.mapper = mapper;
         this.fdpConfiguration = fdpConfiguration;
     }
 
-    public void pushToFdp(BatchFdpEventEntityPayload fdpPayload) {
+    public void pushToFdp(FdpPayload fdpPayload) {
         Message message = getMessageInstance();
         try {
             message.setPayload(mapper.writeValueAsString(fdpPayload));
@@ -37,12 +37,10 @@ public class FdpRequirementIngestor {
 
     private Message getMessageInstance() {
         Message message = new Message();
-        message.setExchangeName(fdpConfiguration.getRequirementQueueName());
+        message.setExchangeName(fdpConfiguration.getQueueName());
         message.setExchangeType("queue");
         message.setHttpMethod("POST");
         message.setHttpUri(fdpConfiguration.getUrl());
-        message.setReplyTo(fdpConfiguration.getRequirementQueueName());
-        message.setReplyToHttpMethod("POST");
         message.setAppId("fk-ip-inventory-planner");
         return message;
     }
