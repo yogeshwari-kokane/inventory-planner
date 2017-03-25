@@ -2,14 +2,17 @@ package fk.retail.ip.requirement.internal.command;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
+import com.google.inject.Inject;
 import fk.retail.ip.fdp.model.BatchFdpEventEntityPayload;
 import fk.retail.ip.requirement.config.TestModule;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.entities.RequirementSnapshot;
 import fk.retail.ip.requirement.internal.enums.FdpRequirementEventType;
-import fk.retail.ip.requirement.model.ChangeMap;
+import fk.retail.ip.requirement.model.RequirementChangeMap;
 import fk.retail.ip.requirement.model.RequirementChangeRequest;
+
 import java.util.Date;
+
 import org.jukito.JukitoRunner;
 import org.jukito.UseModules;
 import org.junit.Test;
@@ -25,6 +28,10 @@ import java.util.List;
 @UseModules(TestModule.class)
 public class FdpRequirementIngestorHelperTest {
     ObjectMapper mapper = new ObjectMapper();
+
+    @Inject
+    FdpIngestor fdpRequirementIngestorHelper;
+
     @Test
     public void PayloadCreationTest() throws IOException {
         RequirementSnapshot requirementSnapshot1 = new RequirementSnapshot();
@@ -74,27 +81,27 @@ public class FdpRequirementIngestorHelperTest {
         requirement2.setState("proposed");
         requirement2.setEnabled(true);
 
-
-        FdpIngestorHelper fdpRequirementIngestorHelper = new FdpRequirementIngestorHelper();
+        PayloadCreationHelper payloadCreationHelper = new PayloadCreationHelper();
         List<RequirementChangeRequest> fdpRequests = Lists.newArrayList();
 
         RequirementChangeRequest requirementChangeRequest1 = new RequirementChangeRequest();
-        List<ChangeMap> changeMaps1 = Lists.newArrayList();
+        List<RequirementChangeMap> requirementChangeMaps1 = Lists.newArrayList();
         requirementChangeRequest1.setRequirement(requirement1);
-        changeMaps1.add(fdpRequirementIngestorHelper.createChangeMap("Sla", requirement1.getSla().toString(),"20", FdpRequirementEventType.CDO_SLA_OVERRIDE.toString(), "SLA overridden by CDO", "dummy_user"));
-        requirementChangeRequest1.setChangeMaps(changeMaps1);
+        requirementChangeMaps1.add(payloadCreationHelper.createChangeMap("Sla", requirement1.getSla().toString(),"20", FdpRequirementEventType.CDO_SLA_OVERRIDE.toString(), "SLA overridden by CDO", "dummy_user"));
+        requirementChangeRequest1.setRequirementChangeMaps(requirementChangeMaps1);
         fdpRequests.add(requirementChangeRequest1);
 
         RequirementChangeRequest requirementChangeRequest2 = new RequirementChangeRequest();
-        List<ChangeMap> changeMaps2 = Lists.newArrayList();
+        List<RequirementChangeMap> requirementChangeMaps2 = Lists.newArrayList();
         requirementChangeRequest2.setRequirement(requirement2);
-        changeMaps2.add(fdpRequirementIngestorHelper.createChangeMap("Sla", requirement1.getSla().toString(),"20", FdpRequirementEventType.CDO_SLA_OVERRIDE.toString(), "SLA overridden by CDO", "dummy_user"));
-        requirementChangeRequest2.setChangeMaps(changeMaps2);
+        requirementChangeMaps2.add(payloadCreationHelper.createChangeMap("Sla", requirement1.getSla().toString(),"20", FdpRequirementEventType.CDO_SLA_OVERRIDE.toString(), "SLA overridden by CDO", "dummy_user"));
+        requirementChangeRequest2.setRequirementChangeMaps(requirementChangeMaps2);
         fdpRequests.add(requirementChangeRequest2);
 
         BatchFdpEventEntityPayload fdpPayload = fdpRequirementIngestorHelper.pushToFdp(fdpRequests);
         String result = mapper.writeValueAsString(fdpPayload);
         System.out.println("result:"+result);
+
     }
 
 }

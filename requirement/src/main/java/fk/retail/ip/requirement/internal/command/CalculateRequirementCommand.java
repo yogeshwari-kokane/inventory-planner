@@ -37,7 +37,7 @@ import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.internal.repository.WarehouseInventoryRepository;
 import fk.retail.ip.requirement.internal.repository.WarehouseRepository;
 import fk.retail.ip.requirement.internal.repository.WarehouseSupplierSlaRepository;
-import fk.retail.ip.requirement.model.ChangeMap;
+import fk.retail.ip.requirement.model.RequirementChangeMap;
 import fk.retail.ip.requirement.model.RequirementChangeRequest;
 import fk.retail.ip.ssl.client.SslClient;
 import fk.retail.ip.ssl.model.SupplierSelectionRequest;
@@ -69,6 +69,7 @@ public class CalculateRequirementCommand {
     //TODO: remove
     private final ProjectionRepository projectionRepository;
     private final ObjectMapper objectMapper;
+    private final FdpIngestor fdpIngestor;
 
     private Set<String> fsns = Sets.newHashSet();
     private Map<String, String> warehouseCodeMap = Maps.newHashMap();
@@ -76,11 +77,12 @@ public class CalculateRequirementCommand {
     private PolicyContext policyContext;
     private ForecastContext forecastContext;
     private OnHandQuantityContext onHandQuantityContext;
-    private List<RequirementChangeRequest> fdpRequests = Lists.newArrayList();
-    private FdpIngestorHelper fdpRequirementIngestorHelper = new FdpRequirementIngestorHelper();
+
+    //TODO:inject
+    private PayloadCreationHelper payloadCreationHelper = new PayloadCreationHelper();
 
     @Inject
-    public CalculateRequirementCommand(WarehouseRepository warehouseRepository, GroupFsnRepository groupFsnRepository, PolicyRepository policyRepository, ForecastRepository forecastRepository, WarehouseInventoryRepository warehouseInventoryRepository, IwtRequestItemRepository iwtRequestItemRepository, OpenRequirementAndPurchaseOrderRepository openRequirementAndPurchaseOrderRepository, RequirementRepository requirementRepository, ProductInfoRepository productInfoRepository, WarehouseSupplierSlaRepository warehouseSupplierSlaRepository, SslClient sslClient, ProjectionRepository projectionRepository, ObjectMapper objectMapper) {
+    public CalculateRequirementCommand(WarehouseRepository warehouseRepository, GroupFsnRepository groupFsnRepository, PolicyRepository policyRepository, ForecastRepository forecastRepository, WarehouseInventoryRepository warehouseInventoryRepository, IwtRequestItemRepository iwtRequestItemRepository, OpenRequirementAndPurchaseOrderRepository openRequirementAndPurchaseOrderRepository, RequirementRepository requirementRepository, ProductInfoRepository productInfoRepository, WarehouseSupplierSlaRepository warehouseSupplierSlaRepository, SslClient sslClient, ProjectionRepository projectionRepository, ObjectMapper objectMapper, FdpIngestor fdpIngestor) {
         this.warehouseRepository = warehouseRepository;
         this.groupFsnRepository = groupFsnRepository;
         this.policyRepository = policyRepository;
@@ -94,6 +96,7 @@ public class CalculateRequirementCommand {
         this.sslClient = sslClient;
         this.projectionRepository = projectionRepository;
         this.objectMapper = objectMapper;
+        this.fdpIngestor = fdpIngestor;
     }
 
     public CalculateRequirementCommand withFsns(Set<String> fsns) {
@@ -113,6 +116,8 @@ public class CalculateRequirementCommand {
     }
 
     public void execute() {
+        List<RequirementChangeRequest> requirementChangeRequestList = Lists.newArrayList();
+
         //mark existing requirements ad disabled
         List<Requirement> existingRequirements = requirementRepository.find(fsns, true);
         existingRequirements.forEach(requirement -> {
@@ -151,7 +156,7 @@ public class CalculateRequirementCommand {
 
         //find supplier for non error fsns
         List<Requirement> validRequirements = allRequirements.stream().filter(requirement -> !Constants.ERROR_STATE.equals(requirement.getState())).collect(Collectors.toList());
-        populateSupplier(validRequirements);
+        populateSupplier(validRequirements,requirementChangeRequestList);
 
 
         //create dummy error entry for fsns without forecast or group
@@ -200,16 +205,16 @@ public class CalculateRequirementCommand {
         allRequirements.forEach(requirement -> {
             if(!requirement.getState().equals(Constants.ERROR_STATE)) {
                 RequirementChangeRequest requirementChangeRequest = new RequirementChangeRequest();
-                List<ChangeMap> changeMaps = Lists.newArrayList();
-                changeMaps.add(fdpRequirementIngestorHelper.createChangeMap(OverrideKey.QUANTITY.toString(), null, String.valueOf(requirement.getQuantity()), FdpRequirementEventType.PROJECTION_CREATED.toString(), "Projection created", "dummy_user"));
+                List<RequirementChangeMap> requirementChangeMaps = Lists.newArrayList();
+                requirementChangeMaps.add(payloadCreationHelper.createChangeMap(OverrideKey.QUANTITY.toString(), null, String.valueOf(requirement.getQuantity()), FdpRequirementEventType.PROJECTION_CREATED.toString(), "Projection created", "system"));
                 requirementChangeRequest.setRequirement(requirement);
-                requirementChangeRequest.setChangeMaps(changeMaps);
-                fdpRequests.add(requirementChangeRequest);
+                requirementChangeRequest.setRequirementChangeMaps(requirementChangeMaps);
+                requirementChangeRequestList.add(requirementChangeRequest);
             }
         });
 
         //Push PROJECTION_CREATED, SUPPLIER_ASSIGNED and APP_ASSIGNED events to fdp
-        fdpRequirementIngestorHelper.pushToFdp(fdpRequests);
+        fdpIngestor.pushToFdp(requirementChangeRequestList);
     }
 
     private Requirement getErredRequirement(String fsn, String errorMessage) {
@@ -223,7 +228,7 @@ public class CalculateRequirementCommand {
         return requirement;
     }
 
-    private void populateSupplier(List<Requirement> requirements) {
+    private void populateSupplier(List<Requirement> requirements, List<RequirementChangeRequest> requirementChangeRequestList) {
         List<SupplierSelectionRequest> requests = createSupplierSelectionRequest(requirements);
         List<SupplierSelectionResponse> responses = sslClient.getSupplierSelectionResponse(requests);
         if (requests.size() != responses.size()) {
@@ -239,7 +244,7 @@ public class CalculateRequirementCommand {
             SupplierSelectionResponse supplierResponse = fsnWhSupplierTable.get(requirement.getFsn(), requirement.getWarehouse());
             if (supplierResponse != null) {
                 RequirementChangeRequest requirementChangeRequest = new RequirementChangeRequest();
-                List<ChangeMap> changeMaps = Lists.newArrayList();
+                List<RequirementChangeMap> requirementChangeMaps = Lists.newArrayList();
                 SupplierView supplier = supplierResponse.getSuppliers().get(0);
                 requirement.setSupplier(supplier.getSourceId());
                 requirement.setApp(supplier.getApp());
@@ -251,11 +256,11 @@ public class CalculateRequirementCommand {
                 requirement.setInternational(!supplier.isLocal());
                 requirement.setSslId(supplierResponse.getEntityId());
                 //Add SUPPLIER_ASSIGNED and APP_ASSIGNED events to fdp request
-                changeMaps.add(fdpRequirementIngestorHelper.createChangeMap(OverrideKey.SUPPLIER.toString(), null, supplier.getSourceId(), FdpRequirementEventType.SUPPLIER_ASSIGNED.toString(), "Supplier assigned", "dummy_user"));
-                changeMaps.add(fdpRequirementIngestorHelper.createChangeMap(OverrideKey.APP.toString(), null, String.valueOf(supplier.getApp()), FdpRequirementEventType.APP_ASSIGNED.toString(), "App assigned", "dummy_user"));
+                requirementChangeMaps.add(payloadCreationHelper.createChangeMap(OverrideKey.SUPPLIER.toString(), null, supplier.getSourceId(), FdpRequirementEventType.SUPPLIER_ASSIGNED.toString(), "Supplier assigned", "system"));
+                requirementChangeMaps.add(payloadCreationHelper.createChangeMap(OverrideKey.APP.toString(), null, String.valueOf(supplier.getApp()), FdpRequirementEventType.APP_ASSIGNED.toString(), "App assigned", "system"));
                 requirementChangeRequest.setRequirement(requirement);
-                requirementChangeRequest.setChangeMaps(changeMaps);
-                fdpRequests.add(requirementChangeRequest);
+                requirementChangeRequest.setRequirementChangeMaps(requirementChangeMaps);
+                requirementChangeRequestList.add(requirementChangeRequest);
             }
         });
     }

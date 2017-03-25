@@ -1,19 +1,27 @@
 package fk.retail.ip.requirement.model;
 
+import com.google.inject.Inject;
 import fk.retail.ip.fdp.config.FdpConfiguration;
 import fk.retail.ip.fdp.model.FdpEntityPayload;
 import fk.retail.ip.fdp.model.FdpRequirementEntityData;
 import fk.retail.ip.requirement.internal.entities.Requirement;
+import java.util.Date;
 import org.joda.time.DateTime;
 
 /**
  * Created by yogeshwari.k on 16/03/17.
  */
-public class CreateRequirementEntityPayload implements FdpEntityMapper<FdpRequirementEntityData,Requirement> {
+public class RequirementToFdpEntityMapper implements FdpEntityMapper<FdpRequirementEntityData,Requirement> {
+
+    private final FdpConfiguration fdpConfiguration;
+
+    @Inject
+    public RequirementToFdpEntityMapper(FdpConfiguration fdpConfiguration){
+        this.fdpConfiguration = fdpConfiguration;
+    }
 
     @Override
     public FdpEntityPayload<FdpRequirementEntityData> convertRequirementToEntityPayload(Object requirementId, Requirement requirement) {
-        FdpConfiguration fdpConfiguration = new FdpConfiguration();
         FdpEntityPayload<FdpRequirementEntityData> fdpRequirementEntityPayload= new FdpEntityPayload();
         fdpRequirementEntityPayload.setEntityId(requirementId);
         fdpRequirementEntityPayload.setData(getRequirementEntityData(requirementId.toString(),requirement));
@@ -36,7 +44,7 @@ public class CreateRequirementEntityPayload implements FdpEntityMapper<FdpRequir
         fdpRequirementEntityData.setApp(requirement.getApp());
         fdpRequirementEntityData.setMrp(requirement.getMrp());
         fdpRequirementEntityData.setCurrency(requirement.getCurrency());
-        fdpRequirementEntityData.setRequiredByDate(requiredBydate);
+        fdpRequirementEntityData.setRequiredByDate(requiredBydate.toDate());
         fdpRequirementEntityData.setInventoryQty(requirement.getRequirementSnapshot().getInventoryQty());
         fdpRequirementEntityData.setPendingPOQty(requirement.getRequirementSnapshot().getPendingPoQty());
         fdpRequirementEntityData.setOpenReqQty(requirement.getRequirementSnapshot().getOpenReqQty());

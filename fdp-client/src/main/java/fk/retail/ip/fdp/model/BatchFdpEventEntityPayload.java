@@ -8,6 +8,6 @@ import com.google.common.collect.Lists;
  */
 @Data
 public class BatchFdpEventEntityPayload<T,V> implements FdpPayload {
-    List<FdpEntityPayload<T>> entity = Lists.newArrayList();
-    List<FdpEventPayload<V>> event = Lists.newArrayList();
+    List<FdpEntityPayload<T>> entities = Lists.newArrayList();
+    List<FdpEventPayload<V>> events = Lists.newArrayList();
 }

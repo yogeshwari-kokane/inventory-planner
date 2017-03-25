@@ -6,5 +6,7 @@ import fk.retail.ip.fdp.model.FdpEntityPayload;
  * Created by yogeshwari.k on 16/03/17.
  */
 public interface FdpEntityMapper<T, V> {
+
     FdpEntityPayload<T> convertRequirementToEntityPayload(Object id, V entityToPush);
+
 }

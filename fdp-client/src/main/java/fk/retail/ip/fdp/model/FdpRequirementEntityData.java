@@ -1,7 +1,6 @@
 package fk.retail.ip.fdp.model;
 
 import lombok.Data;
-import org.joda.time.DateTime;
 import java.util.List;
 import java.util.Date;
 
@@ -20,7 +19,7 @@ public class FdpRequirementEntityData {
     int app;
     int mrp;
     String currency;
-    DateTime requiredByDate;
+    Date requiredByDate;
     int inventoryQty;
     int pendingPOQty;
     int openReqQty;
@@ -30,5 +29,5 @@ public class FdpRequirementEntityData {
     Boolean enabled;
     Date createdAt;
     Date updatedAt;
-    List<String> policyIds; //structure??
+    List<String> policyIds;
 }

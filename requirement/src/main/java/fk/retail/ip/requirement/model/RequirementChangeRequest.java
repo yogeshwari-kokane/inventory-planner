@@ -10,5 +10,5 @@ import java.util.List;
 @Data
 public class RequirementChangeRequest {
     Requirement requirement;
-    List<ChangeMap> changeMaps;
+    List<RequirementChangeMap> requirementChangeMaps;
 }

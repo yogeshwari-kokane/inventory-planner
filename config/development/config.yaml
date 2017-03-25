@@ -71,7 +71,7 @@ sslClientConfiguration:
 
 fdpConfiguration:
   url: "sampleUrl"
-  schemaVersion: 1.1
+  schemaVersion: 1
   queueName: "sampleQueue"
 
 clientConfiguration:
