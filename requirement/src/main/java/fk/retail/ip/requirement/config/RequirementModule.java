@@ -62,7 +62,7 @@ public class RequirementModule extends AbstractModule {
         bind(ForecastRepository.class).to(JPAForecastRepository.class);
         bind(ProcPurchaseOrderRepository.class).to(ProcPurchaseOrderRepositoryImpl.class);
         bind(WarehouseSupplierSlaRepository.class).to(WarehouseSupplierSlaRepositoryImpl.class);
-        //bind(FdpEntityMapper.class).to(RequirementToFdpEntityMapper.class);
+        bind(FdpEntityMapper.class).to(RequirementToFdpEntityMapper.class);
         bind(FdpIngestor.class).to(FdpRequirementIngestorImpl.class);
         bind(FdpEventMapper.class).to(RequirementToFdpEventMapper.class);
         //TODO:remove
