@@ -14,6 +14,8 @@ public enum FdpRequirementEventType {
     CDO_SLA_OVERRIDE,
     CDO_SUPPLIER_OVERRIDE,
     APPROVE,
-    CANCEL;
+    CANCEL,
+    ORDER_POLICY_QUANTITY,
+    CONTROL_POLICY_QUANTITY_OVERRIDE;
 
     }

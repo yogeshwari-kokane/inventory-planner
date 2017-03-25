@@ -149,9 +149,10 @@ public class CalculateRequirementCommand {
         //apply policies, mark error if critical policy is missing
         validFsns.forEach(fsn -> {
             List<Requirement> requirements = fsnToRequirementMap.get(fsn);
-            policyContext.applyPolicies(fsn, requirements, forecastContext, onHandQuantityContext);
+            policyContext.applyPolicies(fsn, requirements, forecastContext, onHandQuantityContext, requirementChangeRequestList);
             //the quantity has to be rounded after policy application
             requirements.forEach(requirement -> requirement.setQuantity(Math.round(requirement.getQuantity())));
+            //do we have to add event here too?
         });
 
         //find supplier for non error fsns
@@ -206,7 +207,7 @@ public class CalculateRequirementCommand {
             if(!requirement.getState().equals(Constants.ERROR_STATE)) {
                 RequirementChangeRequest requirementChangeRequest = new RequirementChangeRequest();
                 List<RequirementChangeMap> requirementChangeMaps = Lists.newArrayList();
-                requirementChangeMaps.add(payloadCreationHelper.createChangeMap(OverrideKey.QUANTITY.toString(), null, String.valueOf(requirement.getQuantity()), FdpRequirementEventType.PROJECTION_CREATED.toString(), "Projection created", "system"));
+                requirementChangeMaps.add(payloadCreationHelper.createChangeMap(OverrideKey.STATE.toString(), null, RequirementApprovalState.PRE_PROPOSED.toString(), FdpRequirementEventType.PROJECTION_CREATED.toString(), "Projection created", "system"));
                 requirementChangeRequest.setRequirement(requirement);
                 requirementChangeRequest.setRequirementChangeMaps(requirementChangeMaps);
                 requirementChangeRequestList.add(requirementChangeRequest);
