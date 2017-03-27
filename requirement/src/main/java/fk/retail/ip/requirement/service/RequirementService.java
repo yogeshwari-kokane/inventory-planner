@@ -153,6 +153,7 @@ public class RequirementService {
     }
 
     public SearchResponse.GroupedResponse search(RequirementSearchRequest request, int pageNo) throws JSONException {
+        System.out.println("page no = " + pageNo);
         List<Requirement> requirements;
         List<Long> projectionIds;
         int startIndex, endIndex;
@@ -161,12 +162,15 @@ public class RequirementService {
         List<String> fsns = searchFilterCommand.getSearchFilterFsns(request.getFilters());
         if(fsns == null || fsns.isEmpty()) return new SearchResponse.GroupedResponse(0, PAGE_SIZE);
         projectionIds = requirementRepository.findProjectionIds(fsns, state);
+        System.out.println("projectionIds = " + projectionIds);
         if(projectionIds==null || projectionIds.isEmpty()) return new SearchResponse.GroupedResponse(0, PAGE_SIZE);
         startIndex = (pageNo-1)*PAGE_SIZE;
         endIndex = (projectionIds.size() >= pageNo*PAGE_SIZE) ? (pageNo*PAGE_SIZE) : projectionIds.size();
         batchProjectionIds = projectionIds.subList(startIndex, endIndex);
+        System.out.println("Batch projection ids = " + batchProjectionIds);
         requirements = requirementRepository.findByProjectionIds(batchProjectionIds);
         Map<String, List<RequirementSearchLineItem>> fsnToSearchItemsMap =  searchCommandProvider.get().execute(requirements);
+        System.out.println("fsnToSearchItemsMap = " + fsnToSearchItemsMap);
         SearchResponse.GroupedResponse groupedResponse = new SearchResponse.GroupedResponse(projectionIds.size(), PAGE_SIZE);
         for (String fsn : fsnToSearchItemsMap.keySet()) {
             SearchResponse searchResponse = new SearchResponse(fsnToSearchItemsMap.get(fsn));

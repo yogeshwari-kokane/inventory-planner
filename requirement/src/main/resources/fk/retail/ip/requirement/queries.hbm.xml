@@ -96,7 +96,7 @@
             WHERE
                 r.state = :state AND
                 r.fsn in :fsns AND
-                r.current = 1
+                r.current = true
                 ORDER BY r.projectionId
                 ]]>
         </query>
