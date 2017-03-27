@@ -20,11 +20,11 @@ public class RequirementToFdpEventMapper implements FdpEventMapper<FdpRequiremen
     }
 
     @Override
-    public List<FdpEventPayload<FdpRequirementEventData>> convertRequirementToEventPayload(Object requirementId, List<RequirementChangeMap> requirementChangeMaps) {
+    public List<FdpEventPayload<FdpRequirementEventData>> convertToEventPayload(Object requirementId, List<RequirementChangeMap> requirementChangeMaps) {
         List<FdpEventPayload<FdpRequirementEventData>> fdpRequirementEventPayloadList = Lists.newArrayList();
         requirementChangeMaps.forEach(changeMap -> {
             FdpEventPayload fdpRequirementEventPayload =new FdpEventPayload();
-            //fdpRequirementEventPayload.setEventId();
+            fdpRequirementEventPayload.setEventId((new Date().getTime() / 1000L) % Integer.MAX_VALUE);
             fdpRequirementEventPayload.setSchemaVersion(fdpConfiguration.getSchemaVersion());
             fdpRequirementEventPayload.setEventTime(new Date());
             fdpRequirementEventPayload.setData(getRequirementEventData(requirementId.toString(),changeMap));

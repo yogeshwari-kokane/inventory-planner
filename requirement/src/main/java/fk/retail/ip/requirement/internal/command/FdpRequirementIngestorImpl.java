@@ -28,8 +28,8 @@ public class FdpRequirementIngestorImpl implements FdpIngestor<List<RequirementC
         BatchFdpEventEntityPayload<FdpRequirementEntityData,FdpRequirementEventData> batchFdpRequirementEventEntityPayload = new BatchFdpEventEntityPayload();
         requirementChangeRequests.forEach(req -> {
             String requirementId= getRequirementId(req.getRequirement());
-            FdpEntityPayload<FdpRequirementEntityData> fdpRequirementEntityPayload = requirementToFdpEntityMapper.convertRequirementToEntityPayload(requirementId,req.getRequirement());
-            List<FdpEventPayload<FdpRequirementEventData>> fdpRequirementEventPayload = requirementToFdpEventMapper.convertRequirementToEventPayload(requirementId,req.getRequirementChangeMaps());
+            FdpEntityPayload<FdpRequirementEntityData> fdpRequirementEntityPayload = requirementToFdpEntityMapper.convertToEntityPayload(requirementId,req.getRequirement());
+            List<FdpEventPayload<FdpRequirementEventData>> fdpRequirementEventPayload = requirementToFdpEventMapper.convertToEventPayload(requirementId,req.getRequirementChangeMaps());
             batchFdpRequirementEventEntityPayload.getEntities().add(fdpRequirementEntityPayload);
             batchFdpRequirementEventEntityPayload.getEvents().addAll(fdpRequirementEventPayload);
             //fdpIngestor.pushToFdp(batchFdpRequirementEventEntityPayload);

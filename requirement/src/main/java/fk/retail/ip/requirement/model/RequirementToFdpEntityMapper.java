@@ -25,7 +25,7 @@ public class RequirementToFdpEntityMapper implements FdpEntityMapper<FdpRequirem
     }
 
     @Override
-    public FdpEntityPayload<FdpRequirementEntityData> convertRequirementToEntityPayload(Object requirementId, Requirement requirement) {
+    public FdpEntityPayload<FdpRequirementEntityData> convertToEntityPayload(Object requirementId, Requirement requirement) {
         FdpEntityPayload<FdpRequirementEntityData> fdpRequirementEntityPayload= new FdpEntityPayload();
         fdpRequirementEntityPayload.setEntityId(requirementId);
         fdpRequirementEntityPayload.setData(getRequirementEntityData(requirementId.toString(),requirement));

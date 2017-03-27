@@ -8,5 +8,5 @@ import java.util.List;
  * Created by yogeshwari.k on 17/03/17.
  */
 public interface FdpEventMapper<T,V> {
-    List<FdpEventPayload<T>> convertRequirementToEventPayload(Object id, V eventToPush);
+    List<FdpEventPayload<T>> convertToEventPayload(Object id, V eventToPush);
 }
