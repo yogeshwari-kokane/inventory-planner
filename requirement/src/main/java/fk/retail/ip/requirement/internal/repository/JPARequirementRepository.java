@@ -4,22 +4,21 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import fk.retail.ip.requirement.internal.entities.Requirement;
-import fk.retail.ip.requirement.internal.entities.RequirementSnapshot;
 import fk.sp.common.extensions.jpa.Page;
 import fk.sp.common.extensions.jpa.PageRequest;
 import fk.sp.common.extensions.jpa.SimpleJpaGenericRepository;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
+
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by nidhigupta.m on 26/01/17.
@@ -152,6 +151,13 @@ public class JPARequirementRepository extends SimpleJpaGenericRepository<Require
                 .build();
 
         return pageRequest;
+    }
+
+    public List<Long> findProjectionIds(List<String> fsns, String state) {
+        TypedQuery<Long> query = getEntityManager().createNamedQuery("Requirement.getProjectionIds",Long.class);
+        query.setParameter("fsns", fsns);
+        query.setParameter("state", state);
+        return query.getResultList();
     }
 
 }

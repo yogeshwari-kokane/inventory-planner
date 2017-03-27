@@ -88,6 +88,20 @@
         </query>
     </named-query>
 
+    <named-query name="Requirement.getProjectionIds">
+        <query>
+            <![CDATA[
+            SELECT DISTINCT(r.projectionId)
+            FROM Requirement r
+            WHERE
+                r.state = :state AND
+                r.fsn in :fsns AND
+                r.current = 1
+                ORDER BY r.projectionId
+                ]]>
+        </query>
+    </named-query>
+
     <named-query name="findCurrentRequirementsByState">
         <query>
             <![CDATA[
