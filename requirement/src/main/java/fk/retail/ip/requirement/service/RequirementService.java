@@ -158,7 +158,7 @@ public class RequirementService {
         List<Long> projectionIds;
         int startIndex, endIndex;
         List<Long> batchProjectionIds;
-        pageNo = Integer.parseInt(request.getFilters().get("page").toString());
+        pageNo = request.getFilters().get("page")!=null ? Integer.parseInt(request.getFilters().get("page").toString()): 0;
         String state = (String) request.getFilters().get("state");
         List<String> fsns = searchFilterCommand.getSearchFilterFsns(request.getFilters());
         if(fsns == null || fsns.isEmpty()) return new SearchResponse.GroupedResponse(0, PAGE_SIZE);
