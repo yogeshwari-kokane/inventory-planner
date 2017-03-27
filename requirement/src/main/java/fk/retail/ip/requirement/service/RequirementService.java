@@ -152,27 +152,25 @@ public class RequirementService {
         return "{\"msg\":\"Moved " + projectionIds.size() + " projections to new state.\"}";
     }
 
-    public SearchResponse.GroupedResponse search(RequirementSearchRequest request, int pageNo) throws JSONException {
-        log.info("Page no = {}", pageNo);
+    public SearchResponse.GroupedResponse search(RequirementSearchRequest request) throws JSONException {
+        Integer pageNo;
         List<Requirement> requirements;
         List<Long> projectionIds;
         int startIndex, endIndex;
         List<Long> batchProjectionIds;
+        pageNo = Integer.parseInt(request.getFilters().get("page").toString());
         String state = (String) request.getFilters().get("state");
         List<String> fsns = searchFilterCommand.getSearchFilterFsns(request.getFilters());
         if(fsns == null || fsns.isEmpty()) return new SearchResponse.GroupedResponse(0, PAGE_SIZE);
         projectionIds = requirementRepository.findProjectionIds(fsns, state);
-        log.info("Projection ids = {} ", projectionIds);
         if(projectionIds==null || projectionIds.isEmpty()) return new SearchResponse.GroupedResponse(0, PAGE_SIZE);
         startIndex = (pageNo-1)*PAGE_SIZE;
         endIndex = (projectionIds.size() >= pageNo*PAGE_SIZE) ? (pageNo*PAGE_SIZE) : projectionIds.size();
         batchProjectionIds = projectionIds.subList(startIndex, endIndex);
-        log.info("Batch projection ids = {} ", batchProjectionIds);
         requirements = requirementRepository.findByProjectionIds(batchProjectionIds);
         Map<String, List<RequirementSearchLineItem>> fsnToSearchItemsMap =  searchCommandProvider.get().execute(requirements);
         SearchResponse.GroupedResponse groupedResponse = new SearchResponse.GroupedResponse(projectionIds.size(), PAGE_SIZE);
         for (String fsn : fsnToSearchItemsMap.keySet()) {
-            log.info("FSN = {} ",fsn);
             SearchResponse searchResponse = new SearchResponse(fsnToSearchItemsMap.get(fsn));
             groupedResponse.getProjections().add(searchResponse);
         }
