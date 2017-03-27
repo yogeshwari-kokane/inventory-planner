@@ -25,7 +25,6 @@ public class MaxCoverageApplicator extends PolicyApplicator {
 
     @Override
     public void applyPolicies(String fsn, List<Requirement> requirements, Map<PolicyType, String> policyTypeMap, ForecastContext forecastContext, OnHandQuantityContext onHandQuantityContext, List<RequirementChangeRequest> requirementChangeRequestList) {
-        PayloadCreationHelper payloadCreationHelper = new PayloadCreationHelper();
         Double maxCoverageDays = parsePolicy(policyTypeMap.get(PolicyType.MAX_COVERAGE), Constants.MAX_COVERAGE_KEY);
         if (isValidMaxCoverage(maxCoverageDays)) {
             double maxCoverageQuantity = convertDaysToQuantity(maxCoverageDays, forecastContext.getForecast(fsn));
@@ -37,14 +36,7 @@ public class MaxCoverageApplicator extends PolicyApplicator {
                     addToSnapshot(requirement, PolicyType.MAX_COVERAGE, maxCoverageDays);
                     double reducedQuantity = requirement.getQuantity() * reductionRatio;
                     reducedQuantity = reducedQuantity > 0 ? reducedQuantity : 0;
-                    //Add CONTROL_POLICY_QUANTITY_OVERRIDE events to fdp request
-                    RequirementChangeRequest requirementChangeRequest = new RequirementChangeRequest();
-                    List<RequirementChangeMap> requirementChangeMaps = Lists.newArrayList();
-                    requirementChangeMaps.add(payloadCreationHelper.createChangeMap(OverrideKey.QUANTITY.toString(), String.valueOf(requirement.getQuantity()), String.valueOf(reducedQuantity), FdpRequirementEventType.CONTROL_POLICY_QUANTITY_OVERRIDE.toString(), "Max Coverage policy applied", "system"));
                     requirement.setQuantity(reducedQuantity);
-                    requirementChangeRequest.setRequirement(requirement);
-                    requirementChangeRequest.setRequirementChangeMaps(requirementChangeMaps);
-                    requirementChangeRequestList.add(requirementChangeRequest);
                 });
             }
         }

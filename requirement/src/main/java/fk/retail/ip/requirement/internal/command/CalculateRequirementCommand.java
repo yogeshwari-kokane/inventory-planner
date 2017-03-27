@@ -152,7 +152,6 @@ public class CalculateRequirementCommand {
             policyContext.applyPolicies(fsn, requirements, forecastContext, onHandQuantityContext, requirementChangeRequestList);
             //the quantity has to be rounded after policy application
             requirements.forEach(requirement -> requirement.setQuantity(Math.round(requirement.getQuantity())));
-            //do we have to add event here too?
         });
 
         //find supplier for non error fsns

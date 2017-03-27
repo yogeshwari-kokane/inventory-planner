@@ -36,7 +36,7 @@ public class CaseSizeApplicator extends PolicyApplicator {
                 requirements.forEach(requirement -> {
                     addToSnapshot(requirement, PolicyType.CASE_SIZE, caseSize);
                     double roundedQuantity = Math.floor(requirement.getQuantity() / caseSize) * caseSize;
-                    requirementChangeMaps.add(payloadCreationHelper.createChangeMap(OverrideKey.QUANTITY.toString(), String.valueOf(requirement.getQuantity()), String.valueOf(roundedQuantity),FdpRequirementEventType.CONTROL_POLICY_QUANTITY_OVERRIDE.toString(), "CaseSize policy applied", "system"));
+                    requirementChangeMaps.add(payloadCreationHelper.createChangeMap(OverrideKey.QUANTITY.toString(), String.valueOf(requirement.getQuantity()), String.valueOf(roundedQuantity),FdpRequirementEventType.CONTROL_POLICY_QUANTITY_OVERRIDE.toString(), "MaxCoverage, CaseSize policies applied", "system"));
                     requirement.setQuantity(roundedQuantity);
                     requirementChangeRequest.setRequirement(requirement);
                 });
@@ -46,7 +46,7 @@ public class CaseSizeApplicator extends PolicyApplicator {
                     addToSnapshot(requirement, PolicyType.CASE_SIZE, caseSize);
                     double roundedQuantity = Math.round(requirement.getQuantity() / caseSize) * caseSize;
                     //Add CONTROL_POLICY_QUANTITY_OVERRIDE events to fdp request
-                    requirementChangeMaps.add(payloadCreationHelper.createChangeMap(OverrideKey.QUANTITY.toString(), String.valueOf(requirement.getQuantity()), String.valueOf(roundedQuantity),FdpRequirementEventType.CONTROL_POLICY_QUANTITY_OVERRIDE.toString(), "CaseSize policy applied", "system"));
+                    requirementChangeMaps.add(payloadCreationHelper.createChangeMap(OverrideKey.QUANTITY.toString(), String.valueOf(requirement.getQuantity()), String.valueOf(roundedQuantity),FdpRequirementEventType.CONTROL_POLICY_QUANTITY_OVERRIDE.toString(), "MaxCoverage, CaseSize policies applied", "system"));
                     requirement.setQuantity(roundedQuantity);
                     requirementChangeRequest.setRequirement(requirement);
                 });
