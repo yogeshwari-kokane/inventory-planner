@@ -34,12 +34,20 @@ public class FdpRequirementIngestorHelperTest {
 
     @Test
     public void PayloadCreationTest() throws IOException {
+        List<String> policyIdList1 = Lists.newArrayList();
+        String policyId1 = "dummy_group_fsn1_warehouse1_Rop";
+        policyIdList1.add(policyId1);
+        policyId1 = "dummy_group_fsn1_warehouse1_Roc";
+        policyIdList1.add(policyId1);
+        String policyIds = String.join(",", policyIdList1);
+
         RequirementSnapshot requirementSnapshot1 = new RequirementSnapshot();
         requirementSnapshot1.setForecast("[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]");
         requirementSnapshot1.setInventoryQty(10);
         requirementSnapshot1.setPendingPoQty(10);
         requirementSnapshot1.setOpenReqQty(10);
         requirementSnapshot1.setIwitIntransitQty(10);
+        requirementSnapshot1.setPolicyIds(policyIds);
 
         Requirement requirement1 = new Requirement();
         requirement1.setFsn("fsn1");
@@ -58,12 +66,20 @@ public class FdpRequirementIngestorHelperTest {
         requirement1.setEnabled(true);
 
 
+        List<String> policyIdList2 = Lists.newArrayList();
+        String policyId2 = "dummy_group_fsn1_warehouse1_Rop";
+        policyIdList2.add(policyId2);
+        policyId2 = "dummy_group_fsn1_warehouse1_Roc";
+        policyIdList2.add(policyId2);
+        policyIds = String.join(",", policyIdList2);
+
         RequirementSnapshot requirementSnapshot2 = new RequirementSnapshot();
         requirementSnapshot2.setForecast("[2,2,2,2,2,2,2,2,2,2,2,2,2,2,2]");
         requirementSnapshot2.setInventoryQty(20);
         requirementSnapshot2.setPendingPoQty(20);
         requirementSnapshot2.setOpenReqQty(20);
         requirementSnapshot2.setIwitIntransitQty(20);
+        requirementSnapshot2.setPolicyIds(policyIds);
 
         Requirement requirement2 = new Requirement();
         requirement2.setFsn("fsn2");

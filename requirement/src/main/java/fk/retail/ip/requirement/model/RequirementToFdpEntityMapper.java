@@ -1,12 +1,16 @@
 package fk.retail.ip.requirement.model;
 
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import fk.retail.ip.fdp.config.FdpConfiguration;
 import fk.retail.ip.fdp.model.FdpEntityPayload;
 import fk.retail.ip.fdp.model.FdpRequirementEntityData;
 import fk.retail.ip.requirement.internal.entities.Requirement;
+
+import java.util.Arrays;
 import java.util.Date;
 import org.joda.time.DateTime;
+import java.util.List;
 
 /**
  * Created by yogeshwari.k on 16/03/17.
@@ -54,7 +58,15 @@ public class RequirementToFdpEntityMapper implements FdpEntityMapper<FdpRequirem
         fdpRequirementEntityData.setEnabled(requirement.isEnabled());
         fdpRequirementEntityData.setCreatedAt(requirement.getCreatedAt());
         fdpRequirementEntityData.setUpdatedAt(requirement.getUpdatedAt());
-        //fdpRequirementEntityData.setPolicyIds(null);
+        fdpRequirementEntityData.setPolicyIds(getPolicyIds(requirement.getRequirementSnapshot().getPolicyIds()));
         return fdpRequirementEntityData;
+    }
+
+    private List<String> getPolicyIds(String policyIds) {
+        if (policyIds==null)
+            return Lists.newArrayList();
+        String[] policyIdArray = policyIds.split(",");
+        List<String> policyIdList = Arrays.asList(policyIds);
+        return  policyIdList;
     }
 }
