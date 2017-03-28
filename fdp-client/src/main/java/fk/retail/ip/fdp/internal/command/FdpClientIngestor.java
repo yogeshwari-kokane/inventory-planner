@@ -13,13 +13,13 @@ import lombok.extern.slf4j.Slf4j;
  * Created by yogeshwari.k on 17/03/17.
  */
 @Slf4j
-public class FdpIngestor {
+public class FdpClientIngestor {
     private final RestbusMessageSender restbusMessageSender;
     private final ObjectMapper mapper;
     private final FdpConfiguration fdpConfiguration;
 
     @Inject
-    public FdpIngestor(RestbusMessageSender restbusMessageSender, ObjectMapper mapper, FdpConfiguration fdpConfiguration){
+    public FdpClientIngestor(RestbusMessageSender restbusMessageSender, ObjectMapper mapper, FdpConfiguration fdpConfiguration){
         this.restbusMessageSender = restbusMessageSender;
         this.mapper = mapper;
         this.fdpConfiguration = fdpConfiguration;

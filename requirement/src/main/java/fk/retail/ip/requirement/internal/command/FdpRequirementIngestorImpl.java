@@ -1,6 +1,7 @@
 package fk.retail.ip.requirement.internal.command;
 
 import com.google.inject.Inject;
+import fk.retail.ip.fdp.internal.command.FdpClientIngestor;
 import fk.retail.ip.fdp.model.*;
 import fk.retail.ip.requirement.model.*;
 import fk.retail.ip.requirement.internal.entities.Requirement;
@@ -15,7 +16,7 @@ public class FdpRequirementIngestorImpl implements FdpIngestor<List<RequirementC
     private final FdpEntityMapper requirementToFdpEntityMapper;
     private final FdpEventMapper requirementToFdpEventMapper;
 
-    fk.retail.ip.fdp.internal.command.FdpIngestor fdpIngestor;
+    FdpClientIngestor fdpClientIngestor;
 
     @Inject
     FdpRequirementIngestorImpl(FdpEntityMapper requirementToFdpEntityMapper, FdpEventMapper requirementToFdpEventMapper) {
@@ -32,7 +33,7 @@ public class FdpRequirementIngestorImpl implements FdpIngestor<List<RequirementC
             List<FdpEventPayload<FdpRequirementEventData>> fdpRequirementEventPayload = requirementToFdpEventMapper.convertToEventPayload(requirementId,req.getRequirementChangeMaps());
             batchFdpRequirementEventEntityPayload.getEntities().add(fdpRequirementEntityPayload);
             batchFdpRequirementEventEntityPayload.getEvents().addAll(fdpRequirementEventPayload);
-            //fdpIngestor.pushToFdp(batchFdpRequirementEventEntityPayload);
+            //fdpClientIngestor.pushToFdp(batchFdpRequirementEventEntityPayload);
         });
 
         //TODO: remove return (used only for testing payload creation)
