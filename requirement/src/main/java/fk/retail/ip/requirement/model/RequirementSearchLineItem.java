@@ -50,6 +50,8 @@ public class RequirementSearchLineItem {
     private boolean enabled;
     private String state;
     private boolean isCurrent;
+    private Long projectionId;
+    private Long groupId;
 
     public RequirementSearchLineItem(Requirement req) {
 
@@ -67,6 +69,7 @@ public class RequirementSearchLineItem {
             this.intransitQty += (pendingPOQty != null ? pendingPOQty : 0);
             this.intransitQty += (openReqQty != null ? openReqQty : 0);
             this.forecast = req.getRequirementSnapshot().getForecast();
+            this.groupId = req.getRequirementSnapshot().getGroup().getId();
         }
         this.qty = (int) req.getQuantity();
         this.supplier = req.getSupplier();
@@ -82,5 +85,6 @@ public class RequirementSearchLineItem {
         this.enabled = req.isEnabled();
         this.state = req.getState();
         this.isCurrent = req.isCurrent();
+        this.projectionId = req.getProjectionId();
     }
 }

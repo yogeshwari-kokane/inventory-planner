@@ -1,5 +1,6 @@
 package fk.retail.ip.requirement.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.Lists;
 import io.dropwizard.jackson.JsonSnakeCase;
 import lombok.Data;
@@ -14,6 +15,10 @@ import java.util.List;
 @NoArgsConstructor
 @JsonSnakeCase
 public class SearchResponse {
+    @JsonProperty("id")
+    Long projectionId;
+    Long groupId;
+    boolean enabled;
     String fsn;
     String currentState;
     int intransit;
@@ -24,6 +29,9 @@ public class SearchResponse {
     public SearchResponse(List<RequirementSearchLineItem> requirementSearchLineItems) {
         //set top level
         FsnBand fsnBand = new FsnBand();
+        projectionId = requirementSearchLineItems.get(0).getProjectionId();
+        groupId = requirementSearchLineItems.get(0).getGroupId();
+        enabled = requirementSearchLineItems.get(0).isEnabled();
         fsn = requirementSearchLineItems.get(0).getFsn();
         currentState = requirementSearchLineItems.get(0).getState();
         requirementSearchLineItems.forEach(requirementSearchLineItem -> {
