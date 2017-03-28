@@ -21,7 +21,7 @@ public enum PolicyType {
     public static PolicyType fromString(String value) {
         for (PolicyType type : values()) {
             if (type.value.equals(value)) {
-                return type;
+                return type;r
             }
         }
         log.warn(Constants.INVALID_POLICY_TYPE, value);
