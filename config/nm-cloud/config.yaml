@@ -104,6 +104,9 @@ fdpConfiguration:
   url: "sampleUrl"
   schemaVersion: 1
   queueName: "sampleQueue"
+  org: "/retail"
+  company: "/flipkart"
+  namespace: "/ip"
 
 sslClientConfiguration:
   url: http://10.85.52.106

@@ -73,6 +73,9 @@ fdpConfiguration:
   url: "sampleUrl"
   schemaVersion: 1
   queueName: "sampleQueue"
+  org: "/retail"
+  company: "/flipkart"
+  namespace: "/ip"
 
 clientConfiguration:
   timeout: 80000ms

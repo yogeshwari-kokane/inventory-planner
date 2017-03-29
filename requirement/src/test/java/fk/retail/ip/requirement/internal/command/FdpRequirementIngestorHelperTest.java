@@ -3,6 +3,7 @@ package fk.retail.ip.requirement.internal.command;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
+import fk.retail.ip.fdp.config.FdpConfiguration;
 import fk.retail.ip.fdp.model.BatchFdpEventEntityPayload;
 import fk.retail.ip.requirement.config.TestModule;
 import fk.retail.ip.requirement.internal.entities.Requirement;
@@ -13,6 +14,7 @@ import fk.retail.ip.requirement.model.RequirementChangeRequest;
 
 import java.util.Date;
 
+import fk.retail.ip.zulu.config.ZuluConfiguration;
 import org.jukito.JukitoRunner;
 import org.jukito.UseModules;
 import org.junit.Test;
@@ -31,6 +33,17 @@ public class FdpRequirementIngestorHelperTest {
 
     @Inject
     FdpIngestor fdpRequirementIngestorHelper;
+
+    @Inject
+    FdpConfiguration fdpConfiguration;
+
+    @Test
+    public void FdpConfigurationTest() {
+        int schemaVersion = fdpConfiguration.getSchemaVersion();
+        System.out.println(schemaVersion);
+        String url = fdpConfiguration.getUrl();
+        System.out.println(url);
+    }
 
     @Test
     public void PayloadCreationTest() throws IOException {

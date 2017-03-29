@@ -25,32 +25,40 @@ public class CaseSizeApplicator extends PolicyApplicator {
 
     @Override
     void applyPolicies(String fsn, List<Requirement> requirements, Map<PolicyType, String> policyTypeMap, ForecastContext forecastContext, OnHandQuantityContext onHandQuantityContext, List<RequirementChangeRequest> requirementChangeRequestList) {
-        PayloadCreationHelper payloadCreationHelper = new PayloadCreationHelper();
         Double maxCoverageDays = parsePolicy(policyTypeMap.get(PolicyType.MAX_COVERAGE), Constants.MAX_COVERAGE_KEY);
         Double caseSize = parsePolicy(policyTypeMap.get(PolicyType.CASE_SIZE), Constants.CASE_SIZE_KEY);
         if (isValidCaseSize(caseSize)) {
-            RequirementChangeRequest requirementChangeRequest = new RequirementChangeRequest();
-            List<RequirementChangeMap> requirementChangeMaps = Lists.newArrayList();
             if (MaxCoverageApplicator.isValidMaxCoverage(maxCoverageDays)) {
                 //max coverage is present, round everything down
                 requirements.forEach(requirement -> {
                     addToSnapshot(requirement, PolicyType.CASE_SIZE, caseSize);
                     double roundedQuantity = Math.floor(requirement.getQuantity() / caseSize) * caseSize;
-                    requirementChangeMaps.add(payloadCreationHelper.createChangeMap(OverrideKey.QUANTITY.toString(), String.valueOf(requirement.getQuantity()), String.valueOf(roundedQuantity),FdpRequirementEventType.CONTROL_POLICY_QUANTITY_OVERRIDE.toString(), "MaxCoverage, CaseSize policies applied", "system"));
+                    double oldQuantity = requirement.getQuantity();
                     requirement.setQuantity(roundedQuantity);
-                    requirementChangeRequest.setRequirement(requirement);
+                    //Add CONTROL_POLICY_QUANTITY_OVERRIDE events to fdp request
+                    createRequirementChangeRequest(oldQuantity, requirement, requirementChangeRequestList);
                 });
             } else {
                 //round to nearest multiple of case size
                 requirements.forEach(requirement -> {
                     addToSnapshot(requirement, PolicyType.CASE_SIZE, caseSize);
                     double roundedQuantity = Math.round(requirement.getQuantity() / caseSize) * caseSize;
-                    //Add CONTROL_POLICY_QUANTITY_OVERRIDE events to fdp request
-                    requirementChangeMaps.add(payloadCreationHelper.createChangeMap(OverrideKey.QUANTITY.toString(), String.valueOf(requirement.getQuantity()), String.valueOf(roundedQuantity),FdpRequirementEventType.CONTROL_POLICY_QUANTITY_OVERRIDE.toString(), "MaxCoverage, CaseSize policies applied", "system"));
+                    double oldQuantity = requirement.getQuantity();
                     requirement.setQuantity(roundedQuantity);
-                    requirementChangeRequest.setRequirement(requirement);
+                    //Add CONTROL_POLICY_QUANTITY_OVERRIDE events to fdp request
+                    createRequirementChangeRequest(oldQuantity, requirement, requirementChangeRequestList);
                 });
             }
+        }
+    }
+
+    private void createRequirementChangeRequest(double oldQuantity, Requirement requirement, List<RequirementChangeRequest> requirementChangeRequestList) {
+        PayloadCreationHelper payloadCreationHelper = new PayloadCreationHelper();
+        RequirementChangeRequest requirementChangeRequest = new RequirementChangeRequest();
+        List<RequirementChangeMap> requirementChangeMaps = Lists.newArrayList();
+        if(!Constants.ERROR_STATE.toString().equals(requirement.getState())) {
+            requirementChangeMaps.add(payloadCreationHelper.createChangeMap(OverrideKey.QUANTITY.toString(), String.valueOf(oldQuantity), String.valueOf(requirement.getQuantity()), FdpRequirementEventType.CONTROL_POLICY_QUANTITY_OVERRIDE.toString(), "MaxCoverage, CaseSize policies applied", "system"));
+            requirementChangeRequest.setRequirement(requirement);
             requirementChangeRequest.setRequirementChangeMaps(requirementChangeMaps);
             requirementChangeRequestList.add(requirementChangeRequest);
         }

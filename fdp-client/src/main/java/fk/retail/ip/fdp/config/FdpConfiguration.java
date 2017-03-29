@@ -10,4 +10,7 @@ public class FdpConfiguration {
     int schemaVersion;
     String url;
     String queueName;
+    String org;
+    String company;
+    String namespace;
 }
