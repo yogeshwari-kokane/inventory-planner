@@ -1,6 +1,7 @@
 package fk.retail.ip.requirement.internal.command;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import fk.retail.ip.fdp.config.FdpConfiguration;
@@ -33,17 +34,6 @@ public class FdpRequirementIngestorHelperTest {
 
     @Inject
     FdpIngestor fdpRequirementIngestorHelper;
-
-    @Inject
-    FdpConfiguration fdpConfiguration;
-
-    @Test
-    public void FdpConfigurationTest() {
-        int schemaVersion = fdpConfiguration.getSchemaVersion();
-        System.out.println(schemaVersion);
-        String url = fdpConfiguration.getUrl();
-        System.out.println(url);
-    }
 
     @Test
     public void PayloadCreationTest() throws IOException {
@@ -128,6 +118,7 @@ public class FdpRequirementIngestorHelperTest {
         fdpRequests.add(requirementChangeRequest2);
 
         BatchFdpEventEntityPayload fdpPayload = fdpRequirementIngestorHelper.pushToFdp(fdpRequests);
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         String result = mapper.writeValueAsString(fdpPayload);
         System.out.println("result:"+result);
 

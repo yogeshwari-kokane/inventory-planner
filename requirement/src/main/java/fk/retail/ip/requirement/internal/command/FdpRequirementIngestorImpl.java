@@ -1,11 +1,17 @@
 package fk.retail.ip.requirement.internal.command;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.inject.Inject;
 import fk.retail.ip.fdp.internal.command.FdpClientIngestor;
 import fk.retail.ip.fdp.model.*;
 import fk.retail.ip.requirement.model.*;
 import fk.retail.ip.requirement.internal.entities.Requirement;
+import org.joda.time.DateTime;
 
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 /**
@@ -25,7 +31,7 @@ public class FdpRequirementIngestorImpl implements FdpIngestor<List<RequirementC
     }
 
     @Override
-    public BatchFdpEventEntityPayload pushToFdp(List<RequirementChangeRequest> requirementChangeRequests){
+    public BatchFdpEventEntityPayload pushToFdp(List<RequirementChangeRequest> requirementChangeRequests) {
         BatchFdpEventEntityPayload<FdpRequirementEntityData,FdpRequirementEventData> batchFdpRequirementEventEntityPayload = new BatchFdpEventEntityPayload();
         requirementChangeRequests.forEach(req -> {
             String requirementId= getRequirementId(req.getRequirement());
@@ -37,11 +43,21 @@ public class FdpRequirementIngestorImpl implements FdpIngestor<List<RequirementC
         });
 
         //TODO: remove return (used only for testing payload creation)
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        String result = null;
+        try {
+            result = mapper.writeValueAsString(batchFdpRequirementEventEntityPayload);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        System.out.println("result:"+result);
         return batchFdpRequirementEventEntityPayload;
     }
 
     private String getRequirementId(Requirement requirement) {
-        String requirementId = requirement.getFsn()+requirement.getWarehouse()+(requirement.getCreatedAt().toString());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        String requirementId = requirement.getFsn()+"_"+requirement.getWarehouse()+"_"+(sdf.format(requirement.getCreatedAt()).toString());
         return requirementId;
     }
 

@@ -2,6 +2,7 @@ package fk.retail.ip.fdp.internal.command;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.flipkart.restbus.client.entity.Message;
 import com.google.inject.Inject;
 import fk.retail.ip.fdp.config.FdpConfiguration;
@@ -28,6 +29,7 @@ public class FdpClientIngestor {
     public void pushToFdp(FdpPayload fdpPayload) {
         Message message = getMessageInstance();
         try {
+            mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
             message.setPayload(mapper.writeValueAsString(fdpPayload));
             restbusMessageSender.send(message);
         } catch (JsonProcessingException e) {
