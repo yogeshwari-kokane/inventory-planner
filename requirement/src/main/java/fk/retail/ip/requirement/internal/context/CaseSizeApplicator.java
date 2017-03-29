@@ -19,8 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CaseSizeApplicator extends PolicyApplicator {
 
-    public CaseSizeApplicator(ObjectMapper objectMapper) {
-        super(objectMapper);
+    public CaseSizeApplicator(ObjectMapper objectMapper, PayloadCreationHelper payloadCreationHelper) {
+        super(objectMapper, payloadCreationHelper);
     }
 
     @Override

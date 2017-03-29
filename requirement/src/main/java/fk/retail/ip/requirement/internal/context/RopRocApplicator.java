@@ -21,8 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RopRocApplicator extends PolicyApplicator {
 
-    public RopRocApplicator(ObjectMapper objectMapper) {
-        super(objectMapper);
+    public RopRocApplicator(ObjectMapper objectMapper, PayloadCreationHelper payloadCreationHelper) {
+        super(objectMapper, payloadCreationHelper);
     }
 
     @Override

@@ -19,8 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MaxCoverageApplicator extends PolicyApplicator {
 
-    public MaxCoverageApplicator(ObjectMapper objectMapper) {
-        super(objectMapper);
+    public MaxCoverageApplicator(ObjectMapper objectMapper, PayloadCreationHelper payloadCreationHelper) {
+        super(objectMapper, payloadCreationHelper);
     }
 
     @Override

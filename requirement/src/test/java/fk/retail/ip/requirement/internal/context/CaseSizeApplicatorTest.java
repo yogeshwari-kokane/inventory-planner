@@ -6,6 +6,7 @@ import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import fk.retail.ip.requirement.config.TestModule;
 import fk.retail.ip.requirement.internal.Constants;
+import fk.retail.ip.requirement.internal.command.PayloadCreationHelper;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.entities.RequirementSnapshot;
 import fk.retail.ip.requirement.internal.enums.PolicyType;
@@ -33,6 +34,8 @@ public class CaseSizeApplicatorTest {
 
     @Inject
     ObjectMapper objectMapper;
+    @Inject
+    PayloadCreationHelper payloadCreationHelper;
     @Mock
     ForecastContext forecastContext;
     @Mock
@@ -48,7 +51,7 @@ public class CaseSizeApplicatorTest {
         List<Double> forecast = Lists.newArrayList(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0);
         Mockito.when(forecastContext.getForecast(Matchers.anyString())).thenReturn(forecast);
         Mockito.when(onHandQuantityContext.getTotalQuantity(Matchers.anyString())).thenReturn(0.0);
-        caseSizeApplicator = new CaseSizeApplicator(objectMapper);
+        caseSizeApplicator = new CaseSizeApplicator(objectMapper,payloadCreationHelper);
     }
 
     @Test

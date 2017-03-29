@@ -35,18 +35,17 @@ public abstract class UploadCommand {
 
     private final RequirementRepository requirementRepository;
     private final FdpIngestor fdpIngestor;
+    private final PayloadCreationHelper payloadCreationHelper;
 
-    public UploadCommand(RequirementRepository requirementRepository, FdpIngestor fdpIngestor) {
+    public UploadCommand(RequirementRepository requirementRepository, FdpIngestor fdpIngestor, PayloadCreationHelper payloadCreationHelper) {
         this.requirementRepository = requirementRepository;
         this.fdpIngestor = fdpIngestor;
+        this.payloadCreationHelper = payloadCreationHelper;
     }
 
     public List<UploadOverrideFailureLineItem> execute(
             List<RequirementDownloadLineItem> requirementDownloadLineItems, List<Requirement> requirements
     ) {
-
-        //TODO:inject
-        PayloadCreationHelper payloadCreationHelper = new PayloadCreationHelper();
 
         Map<Long, Requirement> requirementMap = requirements.stream().
                 collect(Collectors.toMap(Requirement::getId, Function.identity()));

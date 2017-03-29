@@ -68,6 +68,7 @@ public class CalculateRequirementCommand {
     private final ProductInfoRepository productInfoRepository;
     private final WarehouseSupplierSlaRepository warehouseSupplierSlaRepository;
     private final SslClient sslClient;
+    private final PayloadCreationHelper payloadCreationHelper;
     //TODO: remove
     private final ProjectionRepository projectionRepository;
     private final ObjectMapper objectMapper;
@@ -81,10 +82,10 @@ public class CalculateRequirementCommand {
     private OnHandQuantityContext onHandQuantityContext;
 
     //TODO:inject
-    private PayloadCreationHelper payloadCreationHelper = new PayloadCreationHelper();
+    //private PayloadCreationHelper payloadCreationHelper = new PayloadCreationHelper();
 
     @Inject
-    public CalculateRequirementCommand(WarehouseRepository warehouseRepository, GroupFsnRepository groupFsnRepository, PolicyRepository policyRepository, ForecastRepository forecastRepository, WarehouseInventoryRepository warehouseInventoryRepository, IwtRequestItemRepository iwtRequestItemRepository, OpenRequirementAndPurchaseOrderRepository openRequirementAndPurchaseOrderRepository, RequirementRepository requirementRepository, ProductInfoRepository productInfoRepository, WarehouseSupplierSlaRepository warehouseSupplierSlaRepository, SslClient sslClient, ProjectionRepository projectionRepository, ObjectMapper objectMapper, FdpIngestor fdpIngestor) {
+    public CalculateRequirementCommand(WarehouseRepository warehouseRepository, GroupFsnRepository groupFsnRepository, PolicyRepository policyRepository, ForecastRepository forecastRepository, WarehouseInventoryRepository warehouseInventoryRepository, IwtRequestItemRepository iwtRequestItemRepository, OpenRequirementAndPurchaseOrderRepository openRequirementAndPurchaseOrderRepository, RequirementRepository requirementRepository, ProductInfoRepository productInfoRepository, WarehouseSupplierSlaRepository warehouseSupplierSlaRepository, SslClient sslClient, ProjectionRepository projectionRepository, ObjectMapper objectMapper, FdpIngestor fdpIngestor, PayloadCreationHelper payloadCreationHelper) {
         this.warehouseRepository = warehouseRepository;
         this.groupFsnRepository = groupFsnRepository;
         this.policyRepository = policyRepository;
@@ -99,6 +100,7 @@ public class CalculateRequirementCommand {
         this.projectionRepository = projectionRepository;
         this.objectMapper = objectMapper;
         this.fdpIngestor = fdpIngestor;
+        this.payloadCreationHelper = payloadCreationHelper;
     }
 
     public CalculateRequirementCommand withFsns(Set<String> fsns) {
@@ -377,7 +379,7 @@ public class CalculateRequirementCommand {
     }
 
     private PolicyContext getPolicyContext(Set<String> fsns, MultiKeyMap<String, Boolean> fsnGroupPolicyMap) {
-        PolicyContext policyContext = new PolicyContext(objectMapper, warehouseCodeMap);
+        PolicyContext policyContext = new PolicyContext(objectMapper, warehouseCodeMap, payloadCreationHelper);
         //add group level policies to context
         Set<Long> groupIds = fsns.stream().map(fsn -> fsnToGroupMap.get(fsn).getId()).collect(Collectors.toSet());
         List<Policy> groupPolicies = policyRepository.fetchByGroup(groupIds);
