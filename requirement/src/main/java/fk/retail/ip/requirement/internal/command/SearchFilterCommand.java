@@ -54,7 +54,7 @@ public class SearchFilterCommand {
     }
 
     private void getFsnsIntersection(List<String> fsns, List<String> otherFsns) {
-        if (!otherFsns.isEmpty()) {
+        if (otherFsns != null && !otherFsns.isEmpty()) {
                 fsns.retainAll(otherFsns);
         }
     }
