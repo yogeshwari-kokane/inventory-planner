@@ -178,12 +178,13 @@ public class RequirementService {
         requirements = requirementRepository.findByProjectionIds(batchProjectionIds);
         log.info("Search Request for {} number of requirements", requirements.size());
         Map<String, List<RequirementSearchLineItem>> fsnToSearchItemsMap =  searchCommandProvider.get().execute(requirements);
+        log.info("Search Requirement request for {} number of FSNs " + fsnToSearchItemsMap.keySet());
         SearchResponse.GroupedResponse groupedResponse = new SearchResponse.GroupedResponse(projectionIds.size(), PAGE_SIZE);
         for (String fsn : fsnToSearchItemsMap.keySet()) {
             SearchResponse searchResponse = new SearchResponse(fsnToSearchItemsMap.get(fsn));
             groupedResponse.getProjections().add(searchResponse);
         }
-        log.info("Search Requirement Response " + groupedResponse);
+        log.info("Got Search Requirement Response");
         return groupedResponse;
     }
 
