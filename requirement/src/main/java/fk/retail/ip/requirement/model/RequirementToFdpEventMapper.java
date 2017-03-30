@@ -7,6 +7,8 @@ import fk.retail.ip.fdp.model.FdpRequirementEventData;
 import fk.retail.ip.fdp.model.FdpEventPayload;
 import java.util.List;
 import java.util.Date;
+import java.util.UUID;
+
 /**
  * Created by yogeshwari.k on 17/03/17.
  */
@@ -24,13 +26,17 @@ public class RequirementToFdpEventMapper implements FdpEventMapper<FdpRequiremen
         List<FdpEventPayload<FdpRequirementEventData>> fdpRequirementEventPayloadList = Lists.newArrayList();
         requirementChangeMaps.forEach(changeMap -> {
             FdpEventPayload fdpRequirementEventPayload =new FdpEventPayload();
-            fdpRequirementEventPayload.setEventId((new Date().getTime() / 1000L) % Integer.MAX_VALUE);
+            fdpRequirementEventPayload.setEventId(getEventId(requirementId.toString()));
             fdpRequirementEventPayload.setSchemaVersion(fdpConfiguration.getSchemaVersion());
             fdpRequirementEventPayload.setEventTime(new Date());
             fdpRequirementEventPayload.setData(getRequirementEventData(requirementId.toString(),changeMap));
             fdpRequirementEventPayloadList.add(fdpRequirementEventPayload);
         });
         return fdpRequirementEventPayloadList;
+    }
+
+    private String getEventId(String requirementId) {
+        return requirementId+UUID.randomUUID();
     }
 
     private FdpRequirementEventData getRequirementEventData(String requirementId, RequirementChangeMap requirementChangeMap){

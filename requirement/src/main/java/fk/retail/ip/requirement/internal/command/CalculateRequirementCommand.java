@@ -292,9 +292,7 @@ public class CalculateRequirementCommand {
 
     private String getPolicyIds(MultiKeyMap<String,Boolean> fsnGroupPolicyMap,String fsn, String warehouse, String groupName) {
         List<String> policyIdList = Lists.newArrayList();
-        List<String> whLevelPolicies = Lists.newArrayList(PolicyType.ROP.toString(), PolicyType.ROC.toString());
-        List<String> panIndiaLevelPolicies = Lists.newArrayList(PolicyType.MAX_COVERAGE.toString(), PolicyType.CASE_SIZE.toString());
-        whLevelPolicies.forEach(policy -> {
+        PolicyType.getOrderPolicies().forEach(policy -> {
             Boolean groupPolicy = fsnGroupPolicyMap.get(fsn,policy);
             String policyId=null;
             if(groupPolicy!=null){
@@ -305,7 +303,7 @@ public class CalculateRequirementCommand {
                 policyIdList.add(policyId);
             }
         });
-        panIndiaLevelPolicies.forEach(policy -> {
+        PolicyType.getControlPolicies().forEach(policy -> {
             Boolean groupPolicy = fsnGroupPolicyMap.get(fsn,policy);
             String policyId=null;
             if(groupPolicy!=null){

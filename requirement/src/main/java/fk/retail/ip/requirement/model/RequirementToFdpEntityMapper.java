@@ -7,6 +7,7 @@ import fk.retail.ip.fdp.model.FdpEntityPayload;
 import fk.retail.ip.fdp.model.FdpRequirementEntityData;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import org.joda.time.DateTime;
@@ -66,7 +67,11 @@ public class RequirementToFdpEntityMapper implements FdpEntityMapper<FdpRequirem
         if (policyIds==null)
             return Lists.newArrayList();
         String[] policyIdArray = policyIds.split(",");
-        List<String> policyIdList = Arrays.asList(policyIds);
+        //List<String> policyIdList = Arrays.asList(policyIds);
+        List<String> policyIdList = Lists.newArrayList();
+        for (String s : policyIdArray) {
+            policyIdList.add(s);
+        }
         return  policyIdList;
     }
 }

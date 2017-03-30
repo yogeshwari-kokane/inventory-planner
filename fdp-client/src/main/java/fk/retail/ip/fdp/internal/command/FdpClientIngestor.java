@@ -31,18 +31,19 @@ public class FdpClientIngestor {
         try {
             mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
             message.setPayload(mapper.writeValueAsString(fdpPayload));
-            restbusMessageSender.send(message);
+            //restbusMessageSender.send(message);
         } catch (JsonProcessingException e) {
             log.error("Unable to serialize request object ", e);
         }
     }
 
     private Message getMessageInstance() {
+        String url = fdpConfiguration.getUrl()+fdpConfiguration.getCompany()+fdpConfiguration.getOrg()+fdpConfiguration.getNamespace();
         Message message = new Message();
         message.setExchangeName(fdpConfiguration.getQueueName());
         message.setExchangeType("queue");
         message.setHttpMethod("POST");
-        message.setHttpUri(fdpConfiguration.getUrl());
+        message.setHttpUri(url);
         message.setAppId("fk-ip-inventory-planner");
         return message;
     }

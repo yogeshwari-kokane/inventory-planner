@@ -8,9 +8,7 @@ import fk.retail.ip.fdp.internal.command.FdpClientIngestor;
 import fk.retail.ip.fdp.model.*;
 import fk.retail.ip.requirement.model.*;
 import fk.retail.ip.requirement.internal.entities.Requirement;
-import org.joda.time.DateTime;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
@@ -21,26 +19,27 @@ public class FdpRequirementIngestorImpl implements FdpIngestor<List<RequirementC
 
     private final FdpEntityMapper requirementToFdpEntityMapper;
     private final FdpEventMapper requirementToFdpEventMapper;
-
-    FdpClientIngestor fdpClientIngestor;
+    private final FdpClientIngestor fdpClientIngestor;
 
     @Inject
-    FdpRequirementIngestorImpl(FdpEntityMapper requirementToFdpEntityMapper, FdpEventMapper requirementToFdpEventMapper) {
+    FdpRequirementIngestorImpl(FdpEntityMapper requirementToFdpEntityMapper, FdpEventMapper requirementToFdpEventMapper, FdpClientIngestor fdpClientIngestor) {
         this.requirementToFdpEntityMapper = requirementToFdpEntityMapper;
         this.requirementToFdpEventMapper = requirementToFdpEventMapper;
+        this.fdpClientIngestor = fdpClientIngestor;
     }
 
     @Override
-    public BatchFdpEventEntityPayload pushToFdp(List<RequirementChangeRequest> requirementChangeRequests) {
-        BatchFdpEventEntityPayload<FdpRequirementEntityData,FdpRequirementEventData> batchFdpRequirementEventEntityPayload = new BatchFdpEventEntityPayload();
+    public BatchFdpRequirementEventEntityPayload pushToFdp(List<RequirementChangeRequest> requirementChangeRequests) {
+        BatchFdpRequirementEventEntityPayload batchFdpRequirementEventEntityPayload = new BatchFdpRequirementEventEntityPayload();
         requirementChangeRequests.forEach(req -> {
             String requirementId= getRequirementId(req.getRequirement());
             FdpEntityPayload<FdpRequirementEntityData> fdpRequirementEntityPayload = requirementToFdpEntityMapper.convertToEntityPayload(requirementId,req.getRequirement());
             List<FdpEventPayload<FdpRequirementEventData>> fdpRequirementEventPayload = requirementToFdpEventMapper.convertToEventPayload(requirementId,req.getRequirementChangeMaps());
-            batchFdpRequirementEventEntityPayload.getEntities().add(fdpRequirementEntityPayload);
-            batchFdpRequirementEventEntityPayload.getEvents().addAll(fdpRequirementEventPayload);
-            //fdpClientIngestor.pushToFdp(batchFdpRequirementEventEntityPayload);
+            batchFdpRequirementEventEntityPayload.getRequirementEntity().add(fdpRequirementEntityPayload);
+            batchFdpRequirementEventEntityPayload.getRequirementEvent().addAll(fdpRequirementEventPayload);
         });
+
+        fdpClientIngestor.pushToFdp(batchFdpRequirementEventEntityPayload);
 
         //TODO: remove return (used only for testing payload creation)
         ObjectMapper mapper = new ObjectMapper();
