@@ -3,6 +3,7 @@ package fk.retail.ip.requirement.internal.repository;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
+import fk.retail.ip.requirement.internal.Constants;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.entities.RequirementSnapshot;
 import fk.sp.common.extensions.jpa.Page;
@@ -11,8 +12,12 @@ import fk.sp.common.extensions.jpa.SimpleJpaGenericRepository;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
+
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -82,10 +87,11 @@ public class JPARequirementRepository extends SimpleJpaGenericRepository<Require
     }
 
     private TypedQuery<Requirement> getCriteriaQuery(List<Long> projectionIds, String requirementState, List<String> fsns) {
-         EntityManager entityManager = getEntityManager();
+        EntityManager entityManager = getEntityManager();
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Requirement> criteriaQuery = criteriaBuilder.createQuery(Requirement.class);
         Root<Requirement> requirementRoot = criteriaQuery.from(Requirement.class);
+        requirementRoot.fetch("requirementSnapshot");
         CriteriaQuery<Requirement> select = criteriaQuery.select(requirementRoot);
         List<Predicate> predicates = Lists.newArrayList();
         Predicate predicate = criteriaBuilder.equal(requirementRoot.get("current"), 1);
@@ -96,6 +102,7 @@ public class JPARequirementRepository extends SimpleJpaGenericRepository<Require
             predicate = criteriaBuilder.isTrue(requirementRoot.get("projectionId").in(projectionIds));
             predicates.add(predicate);
         }
+
         predicate = criteriaBuilder.isTrue(requirementRoot.get("fsn").in(fsns));
         predicates.add(predicate);
         select.where(criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()])));
@@ -111,14 +118,32 @@ public class JPARequirementRepository extends SimpleJpaGenericRepository<Require
         return fetchRequirements("findRequirementByProjectionIds", params);
     }
 
-    //TODO: legacy code
+//
+//   // TODO: legacy code
+//    @Override
+//    public void updateProjections(List<Requirement> requirements, Map<Long, String> groupToTargetState) {
+//        EntityManager entityManager = getEntityManager();
+//        Query q = entityManager.createNativeQuery("Update projections set current_state=:state where id = :id");
+//        requirements.stream().forEach(requirement -> {
+//            q.setParameter("state", groupToTargetState.get(requirement.getId()));
+//            q.setParameter("id", requirement.getProjectionId());
+//            q.executeUpdate();
+//        });
+//    }
+
+
     @Override
-    public int updateProjection(Collection<Long> projectionIds, String toState) {
-        return getEntityManager()
-                .createNativeQuery("UPDATE projections SET current_state=:state WHERE id IN (:ids)")
-                .setParameter("ids", projectionIds)
-                .setParameter("state", toState)
-                .executeUpdate();
+    public void updateProjections(List<Requirement> requirements, Map<Long, String> groupToTargetState) {
+        EntityManager entityManager = getEntityManager();
+        String defaultState = groupToTargetState.get(Constants.DEFAULT_TRANSITION_GROUP);
+        String query = "UPDATE projections set current_state =  CASE ";
+        for (Map.Entry<Long, String> entry : groupToTargetState.entrySet()) {
+            query += " WHEN group_id = " + entry.getKey() + " THEN " + "\"" + entry.getValue() + "\"";
+        }
+        query +=" ELSE " + "\"" + defaultState + "\"" + " END";
+
+        Query q = entityManager.createNativeQuery(query);
+        q.executeUpdate();
     }
 
     private List<Requirement> fetchRequirements(String query, Map<String, Object> params) {
@@ -149,5 +174,6 @@ public class JPARequirementRepository extends SimpleJpaGenericRepository<Require
 
         return pageRequest;
     }
+
 
 }
