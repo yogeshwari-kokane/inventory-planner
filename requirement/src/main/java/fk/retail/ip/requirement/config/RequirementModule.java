@@ -15,6 +15,7 @@ import fk.retail.ip.requirement.internal.repository.JPALastAppSupplierRepository
 import fk.retail.ip.requirement.internal.repository.JPAOpenRequirementAndPurchaseOrderRepository;
 import fk.retail.ip.requirement.internal.repository.JPAPolicyRepository;
 import fk.retail.ip.requirement.internal.repository.JPAProductInfoRepository;
+import fk.retail.ip.requirement.internal.repository.JPARequirementApprovalTransitionRepository;
 import fk.retail.ip.requirement.internal.repository.JPARequirementRepository;
 import fk.retail.ip.requirement.internal.repository.JPAWarehouseInventoryRepository;
 import fk.retail.ip.requirement.internal.repository.JPAWarehouseRepository;
@@ -28,6 +29,7 @@ import fk.retail.ip.requirement.internal.repository.ProcPurchaseOrderRepositoryI
 import fk.retail.ip.requirement.internal.repository.ProductInfoRepository;
 import fk.retail.ip.requirement.internal.repository.ProjectionRepository;
 import fk.retail.ip.requirement.internal.repository.ProjectionRepositoryImpl;
+import fk.retail.ip.requirement.internal.repository.RequirementApprovalTransitionRepository;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.internal.repository.WarehouseInventoryRepository;
 import fk.retail.ip.requirement.internal.repository.WarehouseRepository;
@@ -62,6 +64,7 @@ public class RequirementModule extends AbstractModule {
         bind(ForecastRepository.class).to(JPAForecastRepository.class);
         bind(ProcPurchaseOrderRepository.class).to(ProcPurchaseOrderRepositoryImpl.class);
         bind(WarehouseSupplierSlaRepository.class).to(WarehouseSupplierSlaRepositoryImpl.class);
+        bind(RequirementApprovalTransitionRepository.class).to(JPARequirementApprovalTransitionRepository.class);
         bind(FdpEntityMapper.class).to(RequirementToFdpEntityMapper.class);
         bind(FdpIngestor.class).to(FdpRequirementIngestorImpl.class);
         bind(FdpEventMapper.class).to(RequirementToFdpEventMapper.class);
