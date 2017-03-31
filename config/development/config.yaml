@@ -70,12 +70,17 @@ sslClientConfiguration:
   viewPath: "/supplier_selection"
 
 fdpConfiguration:
-  url: "sampleUrl"
-  schemaVersion: "1"
+  url: http://10.47.2.122:28223/ingestion/objects
   queueName: "sampleQueue"
   org: "/retail"
   company: "/fki"
   namespace: "/ip"
+
+fdpRequirementEntityConfiguration:
+  schemaVersion: "1.0"
+
+fdpRequirementEventConfiguration:
+  schemaVersion: "1.0"
 
 clientConfiguration:
   timeout: 80000ms

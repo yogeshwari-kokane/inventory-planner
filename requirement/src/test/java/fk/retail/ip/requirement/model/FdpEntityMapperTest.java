@@ -3,6 +3,8 @@ package fk.retail.ip.requirement.model;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import fk.retail.ip.fdp.config.FdpConfiguration;
+import fk.retail.ip.fdp.config.FdpRequirementEntityConfiguration;
+import fk.retail.ip.fdp.config.FdpRequirementEventConfiguration;
 import fk.retail.ip.fdp.model.FdpEntityPayload;
 import fk.retail.ip.fdp.model.FdpRequirementEntityData;
 import fk.retail.ip.requirement.config.TestDbModule;
@@ -29,7 +31,7 @@ public class FdpEntityMapperTest {
     FdpEntityMapper fdpEntityMapper;
 
     @Inject
-    FdpConfiguration fdpConfiguration;
+    FdpRequirementEntityConfiguration fdpRequirementEntityConfiguration;
 
     @Test
     public void convertToEntityPayloadTest() {
@@ -37,7 +39,7 @@ public class FdpEntityMapperTest {
         String requirementId= getRequirementId(requirement);
         FdpEntityPayload<FdpRequirementEntityData> fdpEntityPayload = fdpEntityMapper.convertToEntityPayload(requirementId,requirement);
         Assert.assertEquals(requirementId,fdpEntityPayload.getEntityId());
-        Assert.assertEquals(fdpConfiguration.getSchemaVersion(),fdpEntityPayload.getSchemaVersion());
+        Assert.assertEquals(fdpRequirementEntityConfiguration.getSchemaVersion(),fdpEntityPayload.getSchemaVersion());
         Assert.assertEquals(requirement.getUpdatedAt(),fdpEntityPayload.getUpdatedAt());
     }
 

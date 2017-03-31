@@ -1,5 +1,7 @@
 package fk.retail.ip.manager.config;
 
+import fk.retail.ip.fdp.config.FdpRequirementEntityConfiguration;
+import fk.retail.ip.fdp.config.FdpRequirementEventConfiguration;
 import fk.retail.ip.ssl.config.SslClientConfiguration;
 import fk.retail.ip.zulu.config.ZuluConfiguration;
 import fk.retail.ip.fdp.config.FdpConfiguration;
@@ -31,6 +33,12 @@ public class ManagerConfiguration extends Configuration implements HasDataSource
 
     @NotNull
     private FdpConfiguration fdpConfiguration;
+
+    @NotNull
+    private FdpRequirementEntityConfiguration fdpRequirementEntityConfiguration;
+
+    @NotNull
+    private FdpRequirementEventConfiguration fdpRequirementEventConfiguration;
 
     @Valid
     @NotNull

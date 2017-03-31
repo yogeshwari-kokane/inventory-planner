@@ -1,9 +1,6 @@
 package fk.retail.ip.fdp.model;
 
 import java.util.Date;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-import io.dropwizard.jackson.JsonSnakeCase;
 import lombok.Data;
 
 /**

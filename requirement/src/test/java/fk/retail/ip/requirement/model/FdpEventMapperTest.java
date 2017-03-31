@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.nimbusds.jose.Payload;
 import fk.retail.ip.fdp.config.FdpConfiguration;
+import fk.retail.ip.fdp.config.FdpRequirementEventConfiguration;
 import fk.retail.ip.fdp.model.FdpEntityPayload;
 import fk.retail.ip.fdp.model.FdpEventPayload;
 import fk.retail.ip.fdp.model.FdpRequirementEntityData;
@@ -32,7 +33,7 @@ public class FdpEventMapperTest {
     FdpEventMapper fdpEventMapper;
 
     @Inject
-    FdpConfiguration fdpConfiguration;
+    FdpRequirementEventConfiguration fdpRequirementEventConfiguration;
 
     @Test
     public void convertToEventPayloadTest() {
@@ -40,7 +41,7 @@ public class FdpEventMapperTest {
         String requirementId= getRequirementId(requirement);
         List<RequirementChangeMap> requirementChangeMapList = getRequirementChangeMapList(requirement);
         List<FdpEventPayload<FdpRequirementEventData>> fdpEventPayload = fdpEventMapper.convertToEventPayload(requirementId,requirementChangeMapList);
-        Assert.assertEquals(fdpConfiguration.getSchemaVersion(),fdpEventPayload.get(0).getSchemaVersion());
+        Assert.assertEquals(fdpRequirementEventConfiguration.getSchemaVersion(),fdpEventPayload.get(0).getSchemaVersion());
         Assert.assertEquals(requirementId,fdpEventPayload.get(0).getData().getRequirementId());
     }
 
