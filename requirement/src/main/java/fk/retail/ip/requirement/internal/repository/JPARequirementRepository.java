@@ -4,22 +4,21 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import fk.retail.ip.requirement.internal.entities.Requirement;
-import fk.retail.ip.requirement.internal.entities.RequirementSnapshot;
 import fk.sp.common.extensions.jpa.Page;
 import fk.sp.common.extensions.jpa.PageRequest;
 import fk.sp.common.extensions.jpa.SimpleJpaGenericRepository;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
+
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by nidhigupta.m on 26/01/17.
@@ -86,6 +85,7 @@ public class JPARequirementRepository extends SimpleJpaGenericRepository<Require
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Requirement> criteriaQuery = criteriaBuilder.createQuery(Requirement.class);
         Root<Requirement> requirementRoot = criteriaQuery.from(Requirement.class);
+        requirementRoot.fetch("requirementSnapshot");
         CriteriaQuery<Requirement> select = criteriaQuery.select(requirementRoot);
         List<Predicate> predicates = Lists.newArrayList();
         Predicate predicate = criteriaBuilder.equal(requirementRoot.get("current"), 1);
@@ -96,8 +96,11 @@ public class JPARequirementRepository extends SimpleJpaGenericRepository<Require
             predicate = criteriaBuilder.isTrue(requirementRoot.get("projectionId").in(projectionIds));
             predicates.add(predicate);
         }
-        predicate = criteriaBuilder.isTrue(requirementRoot.get("fsn").in(fsns));
-        predicates.add(predicate);
+        if (fsns != null && !fsns.isEmpty()) {
+            predicate = criteriaBuilder.isTrue(requirementRoot.get("fsn").in(fsns));
+            predicates.add(predicate);
+        }
+
         select.where(criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()])));
         TypedQuery<Requirement> query = entityManager.createQuery(select);
         return query;
@@ -148,6 +151,13 @@ public class JPARequirementRepository extends SimpleJpaGenericRepository<Require
                 .build();
 
         return pageRequest;
+    }
+
+    public List<Long> findProjectionIds(List<String> fsns, String state) {
+        TypedQuery<Long> query = getEntityManager().createNamedQuery("Requirement.getProjectionIds",Long.class);
+        query.setParameter("fsns", fsns);
+        query.setParameter("state", state);
+        return query.getResultList();
     }
 
 }
