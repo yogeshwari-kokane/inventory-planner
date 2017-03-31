@@ -10,10 +10,9 @@ import lombok.Data;
  * Created by yogeshwari.k on 17/03/17.
  */
 @Data
-@JsonSnakeCase
 public class FdpEntityPayload<T> {
     Object entityId;
     Date updatedAt;
-    int schemaVersion;
+    String schemaVersion;
     T data;
 }

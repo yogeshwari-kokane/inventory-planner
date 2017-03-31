@@ -86,10 +86,10 @@ zuluConfiguration:
 
 fdpConfiguration:
   url: "sampleUrl"
-  schemaVersion: 1
+  schemaVersion: "1"
   queueName: "sampleQueue"
   org: "/retail"
-  company: "/flipkart"
+  company: "/fki"
   namespace: "/ip"
 
 sslClientConfiguration:

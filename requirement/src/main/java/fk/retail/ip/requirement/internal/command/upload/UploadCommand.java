@@ -99,8 +99,8 @@ public abstract class UploadCommand {
                                     eventType = FdpRequirementEventType.IPC_QUANTITY_OVERRIDE.toString();
                                 else if(RequirementApprovalState.CDO_REVIEW.toString().equals(requirement.getState()))
                                     eventType = FdpRequirementEventType.CDO_QUANTITY_OVERRIDE.toString();
-                                requirementChangeMaps.add(payloadCreationHelper.createChangeMap(OverrideKey.QUANTITY.toString(), String.valueOf(requirement.getQuantity()), overriddenValues.get(OverrideKey.QUANTITY.toString()).toString(), eventType, overriddenValues.get(OverrideKey.OVERRIDE_COMMENT.toString()).toString(),"dummy_user"));
-                                //what if it came from bizfin??
+                                if(eventType!=null)
+                                    requirementChangeMaps.add(payloadCreationHelper.createChangeMap(OverrideKey.QUANTITY.toString(), String.valueOf(requirement.getQuantity()), overriddenValues.get(OverrideKey.QUANTITY.toString()).toString(), eventType, overriddenValues.get(OverrideKey.OVERRIDE_COMMENT.toString()).toString(),"dummy_user"));
 
                                 requirement.setQuantity
                                         ((Integer) overriddenValues.get(OverrideKey.QUANTITY.toString()));

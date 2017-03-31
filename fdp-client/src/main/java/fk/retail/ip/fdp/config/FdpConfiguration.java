@@ -7,7 +7,7 @@ import lombok.Data;
  */
 @Data
 public class FdpConfiguration {
-    int schemaVersion;
+    String schemaVersion;
     String url;
     String queueName;
     String org;
