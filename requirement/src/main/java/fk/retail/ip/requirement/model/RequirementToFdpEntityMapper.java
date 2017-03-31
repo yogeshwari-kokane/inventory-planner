@@ -38,7 +38,9 @@ public class RequirementToFdpEntityMapper implements FdpEntityMapper<FdpRequirem
     private FdpRequirementEntityData getRequirementEntityData(String requirementId, Requirement requirement) {
         FdpRequirementEntityData fdpRequirementEntityData = new FdpRequirementEntityData();
         String partyId = "FKI";
-        DateTime requiredBydate = DateTime.now().plusDays(requirement.getSla());
+        DateTime requiredBydate = DateTime.now();
+        if(requirement.getSla()!=null)
+            requiredBydate.plusDays(requirement.getSla());
         fdpRequirementEntityData.setRequirementId(requirementId);
         fdpRequirementEntityData.setPartyId(partyId);
         fdpRequirementEntityData.setFsn(requirement.getFsn());

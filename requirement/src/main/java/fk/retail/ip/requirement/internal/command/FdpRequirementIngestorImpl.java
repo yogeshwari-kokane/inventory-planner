@@ -2,7 +2,6 @@ package fk.retail.ip.requirement.internal.command;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.inject.Inject;
 import fk.retail.ip.fdp.internal.command.FdpClientIngestor;
 import fk.retail.ip.fdp.model.*;
@@ -43,7 +42,7 @@ public class FdpRequirementIngestorImpl implements FdpIngestor<List<RequirementC
 
         //TODO: remove return (used only for testing payload creation)
         ObjectMapper mapper = new ObjectMapper();
-        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS"));
         String result = null;
         try {
             result = mapper.writeValueAsString(batchFdpRequirementEventEntityPayload);
@@ -55,7 +54,7 @@ public class FdpRequirementIngestorImpl implements FdpIngestor<List<RequirementC
     }
 
     private String getRequirementId(Requirement requirement) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
         String requirementId = requirement.getFsn()+"_"+requirement.getWarehouse()+"_"+(sdf.format(requirement.getCreatedAt()).toString());
         return requirementId;
     }
