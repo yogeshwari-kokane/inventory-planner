@@ -88,6 +88,21 @@
         </query>
     </named-query>
 
+    <named-query name="Requirement.getProjectionIds">
+        <query>
+            <![CDATA[
+            SELECT DISTINCT(r.projectionId)
+            FROM Requirement r
+            WHERE
+                r.state = :state AND
+                r.fsn in :fsns AND
+                r.current = true AND
+                r.enabled = true
+                ORDER BY r.projectionId
+                ]]>
+        </query>
+    </named-query>
+
     <named-query name="findCurrentRequirementsByState">
         <query>
             <![CDATA[
@@ -268,6 +283,30 @@
             FROM GroupFsn gf
             WHERE
                 gf.fsn IN :fsns
+                ]]>
+        </query>
+    </named-query>
+
+    <named-query name="GroupFsn.getFsnsForGroup">
+        <query>
+            <![CDATA[
+            SELECT fsn
+            FROM GroupFsn gf
+            WHERE
+                gf.group.name = :groupName
+                ]]>
+        </query>
+    </named-query>
+
+
+    <named-query name="GroupFsn.getDistinctFsns">
+        <query>
+            <![CDATA[
+            SELECT fsn
+            FROM GroupFsn gf
+            WHERE
+                gf.group.enabled = true
+            ORDER BY gf.id
                 ]]>
         </query>
     </named-query>
