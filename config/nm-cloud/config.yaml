@@ -100,8 +100,22 @@ zuluConfiguration:
   clientId: "retail.rp"
   maxBatchSize: 30
 
+fdpConfiguration:
+  url: http://10.47.2.122:28223/ingestion/objects
+  queueName: "sampleQueue"
+  org: "/retail"
+  company: "/fki"
+  namespace: "/ip"
+
+fdpRequirementEntityConfiguration:
+  schemaVersion: "1.0"
+
+fdpRequirementEventConfiguration:
+  schemaVersion: "1.0"
+
 sslClientConfiguration:
   url: http://10.85.52.106
   viewPath: "/supplier_selection"
+
 
 
