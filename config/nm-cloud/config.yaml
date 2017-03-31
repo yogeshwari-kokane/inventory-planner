@@ -102,7 +102,7 @@ zuluConfiguration:
 
 fdpConfiguration:
   url: http://10.47.2.122:28223/ingestion/objects
-  queueName: "sampleQueue"
+  queueName: "fdp_requirement_ingestion"
   org: "/retail"
   company: "/fki"
   namespace: "/ip"

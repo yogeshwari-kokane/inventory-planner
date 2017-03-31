@@ -10,6 +10,8 @@ import fk.retail.ip.fdp.model.*;
 import fk.sp.common.restbus.sender.RestbusMessageSender;
 import lombok.extern.slf4j.Slf4j;
 
+import java.text.SimpleDateFormat;
+
 /**
  * Created by yogeshwari.k on 17/03/17.
  */
@@ -28,10 +30,10 @@ public class FdpClientIngestor {
 
     public void pushToFdp(FdpPayload fdpPayload) {
         Message message = getMessageInstance();
+        mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS"));
         try {
-            mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
             message.setPayload(mapper.writeValueAsString(fdpPayload));
-            //restbusMessageSender.send(message);
+            restbusMessageSender.send(message);
         } catch (JsonProcessingException e) {
             log.error("Unable to serialize request object ", e);
         }
