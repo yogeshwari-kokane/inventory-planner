@@ -37,7 +37,6 @@ logging:
   appenders:
   - type: console
     threshold: INFO
-
 server:
   applicationConnectors:
   - type: http
@@ -60,7 +59,6 @@ server:
     - type: console
       threshold: INFO
 
-
 zuluConfiguration:
   url: http://10.47.1.8:31200
   viewPath: "/views"
@@ -81,6 +79,8 @@ clientConfiguration:
   gzipEnabled: false
   gzipEnabledForRequests: false
   chunkedEncodingEnabled: false
+
+
 sslClientConfiguration:
   url: http://10.85.52.106
   viewPath: "/supplier_selection"
