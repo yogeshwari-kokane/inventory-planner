@@ -73,7 +73,7 @@ fdpConfiguration:
   namespace: "/ip"
   requirementEntitySchemaVersion: "1.0"
   requirementEventSchemaVersion: "1.0"
-
+  
 clientConfiguration:
   timeout: 80000ms
   connectionTimeout: 50000ms
