@@ -65,6 +65,19 @@ zuluConfiguration:
   clientId: "retail.rp"
   maxBatchSize: 30
 
+fdpConfiguration:
+  url: http://10.47.2.122:28223/ingestion/objects
+  queueName: "fdp_requirement_ingestion"
+  org: "/retail"
+  company: "/fki"
+  namespace: "/ip"
+
+fdpRequirementEntityConfiguration:
+  schemaVersion: "1.0"
+
+fdpRequirementEventConfiguration:
+  schemaVersion: "1.0"
+
 clientConfiguration:
   timeout: 80000ms
   connectionTimeout: 50000ms
