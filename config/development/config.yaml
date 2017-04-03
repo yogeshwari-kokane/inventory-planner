@@ -71,13 +71,9 @@ fdpConfiguration:
   org: "/retail"
   company: "/fki"
   namespace: "/ip"
-
-fdpRequirementEntityConfiguration:
-  schemaVersion: "1.0"
-
-fdpRequirementEventConfiguration:
-  schemaVersion: "1.0"
-
+  requirementEntitySchemaVersion: "1.0"
+  requirementEventSchemaVersion: "1.0"
+  
 clientConfiguration:
   timeout: 80000ms
   connectionTimeout: 50000ms

@@ -107,12 +107,8 @@ fdpConfiguration:
   org: "/retail"
   company: "/fki"
   namespace: "/ip"
-
-fdpRequirementEntityConfiguration:
-  schemaVersion: "1.0"
-
-fdpRequirementEventConfiguration:
-  schemaVersion: "1.0"
+  requirementEntitySchemaVersion: "1.0"
+  requirementEventSchemaVersion: "1.0"
 
 sslClientConfiguration:
   url: http://10.85.52.106
