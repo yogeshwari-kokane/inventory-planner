@@ -7,6 +7,6 @@ import fk.retail.ip.fdp.model.BatchFdpRequirementEventEntityPayload;
  */
 public interface FdpIngestor<T> {
 
-    BatchFdpRequirementEventEntityPayload pushToFdp(T requests);
+    void pushToFdp(T requests);
 
 }

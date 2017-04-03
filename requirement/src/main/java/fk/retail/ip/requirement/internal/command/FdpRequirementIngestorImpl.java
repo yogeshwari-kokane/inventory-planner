@@ -29,7 +29,7 @@ public class FdpRequirementIngestorImpl implements FdpIngestor<List<RequirementC
     }
 
     @Override
-    public BatchFdpRequirementEventEntityPayload pushToFdp(List<RequirementChangeRequest> requirementChangeRequests) {
+    public void pushToFdp(List<RequirementChangeRequest> requirementChangeRequests) {
         BatchFdpRequirementEventEntityPayload batchFdpRequirementEventEntityPayload = new BatchFdpRequirementEventEntityPayload();
         requirementChangeRequests.forEach(req -> {
             String requirementId= getRequirementId(req.getRequirement());
@@ -40,19 +40,6 @@ public class FdpRequirementIngestorImpl implements FdpIngestor<List<RequirementC
         });
 
         fdpClientIngestor.pushToFdp(batchFdpRequirementEventEntityPayload);
-
-        //TODO: remove return (used only for testing payload creation)
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS"));
-        mapper.setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES);
-        String result = null;
-        try {
-            result = mapper.writeValueAsString(batchFdpRequirementEventEntityPayload);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        System.out.println("result:"+result);
-        return batchFdpRequirementEventEntityPayload;
     }
 
     private String getRequirementId(Requirement requirement) {

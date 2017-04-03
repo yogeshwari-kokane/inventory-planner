@@ -65,11 +65,13 @@ public class ApprovalService<E extends AbstractEntity> {
         private RequirementRepository requirementRepository;
         private RequirementApprovalTransitionRepository requirementApprovalStateTransitionRepository;
         private FdpIngestor fdpIngestor;
+        private PayloadCreationHelper payloadCreationHelper;
 
-        public CopyOnStateChangeAction(RequirementRepository requirementRepository, RequirementApprovalTransitionRepository requirementApprovalStateTransitionRepository, FdpIngestor fdpIngestor) {
+        public CopyOnStateChangeAction(RequirementRepository requirementRepository, RequirementApprovalTransitionRepository requirementApprovalStateTransitionRepository, FdpIngestor fdpIngestor, PayloadCreationHelper payloadCreationHelper) {
             this.requirementRepository = requirementRepository;
             this.requirementApprovalStateTransitionRepository = requirementApprovalStateTransitionRepository;
             this.fdpIngestor = fdpIngestor;
+            this.payloadCreationHelper = payloadCreationHelper;
         }
 
 
@@ -80,8 +82,6 @@ public class ApprovalService<E extends AbstractEntity> {
             Map<Long, String> requirementToTargetStateMap = getRequirementToTargetStateMap(groupToTargetState, requirements);
             Set<String> fsns = requirements.stream().map(Requirement::getFsn).collect(Collectors.toSet());
             List<Requirement> allEnabledRequirements = requirementRepository.find(fsns, true);
-            //TODO:inject
-            PayloadCreationHelper payloadCreationHelper = new PayloadCreationHelper();
             List<RequirementChangeRequest> requirementChangeRequestList = Lists.newArrayList();
             requirements.stream().forEach((requirement) -> {
                 String toState = requirementToTargetStateMap.get(requirement.getId());
