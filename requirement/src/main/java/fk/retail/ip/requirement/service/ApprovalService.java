@@ -121,7 +121,7 @@ public class ApprovalService<E extends AbstractEntity> {
                         requirementRepository.persist(newEntity);
                         requirement.setCurrent(false);
                         requirementChangeRequest.setRequirement(newEntity);
-                    }
+                    } requirementRepository.flushAndClear();
                 } else {
                     //Add CANCEL events to fdp request
                     requirementChangeMaps.add(payloadCreationHelper.createChangeMap(OverrideKey.STATE.toString(), fromState, toState, FdpRequirementEventType.CANCEL.toString(), "Moved to previous state", userId));
