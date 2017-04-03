@@ -1,5 +1,6 @@
 package fk.retail.ip.fdp.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import java.util.List;
 import com.google.common.collect.Lists;
@@ -8,6 +9,8 @@ import com.google.common.collect.Lists;
  */
 @Data
 public class BatchFdpRequirementEventEntityPayload implements FdpPayload {
-    List<FdpEntityPayload<FdpRequirementEntityData>> PurchaseRequirementEntity = Lists.newArrayList();
-    List<FdpEventPayload<FdpRequirementEventData>> PurchaseRequirementEvent = Lists.newArrayList();
+    @JsonProperty("PurchaseRequirementEntity")
+    List<FdpEntityPayload<FdpRequirementEntityData>> purchaseRequirementEntity = Lists.newArrayList();
+    @JsonProperty("PurchaseRequirementEvent")
+    List<FdpEventPayload<FdpRequirementEventData>> purchaseRequirementEvent = Lists.newArrayList();
 }

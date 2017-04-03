@@ -50,7 +50,7 @@ public class RequirementToFdpEntityMapper implements FdpEntityMapper<FdpRequirem
         fdpRequirementEntityData.setCurrency(requirement.getCurrency());
         fdpRequirementEntityData.setRequiredByDate(requiredBydate.toDate());
         fdpRequirementEntityData.setInventoryQty(requirement.getRequirementSnapshot().getInventoryQty());
-        fdpRequirementEntityData.setPendingPOQty(requirement.getRequirementSnapshot().getPendingPoQty());
+        fdpRequirementEntityData.setPendingPoQty(requirement.getRequirementSnapshot().getPendingPoQty());
         fdpRequirementEntityData.setOpenReqQty(requirement.getRequirementSnapshot().getOpenReqQty());
         fdpRequirementEntityData.setIwitIntransitQty(requirement.getRequirementSnapshot().getIwitIntransitQty());
         fdpRequirementEntityData.setState(requirement.getState());

@@ -53,7 +53,8 @@ public class ManagerApplication extends Application<ManagerConfiguration> {
                 .addModule(new RestbusSenderModule())
                 .addModule(new JpaWithSpringModule(
                         Sets.newHashSet(
-                                "fk.retail.ip"
+                                "fk.retail.ip",
+                                "com.restbus.client.plugin.hibernate.entity"
                         ), jpaProperties))
                 .enableAutoConfig(
                         "fk.sp.common.extensions.exception",
