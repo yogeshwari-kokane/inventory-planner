@@ -2,6 +2,7 @@ package fk.retail.ip.requirement.internal.command;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.google.inject.Inject;
 import fk.retail.ip.fdp.internal.command.FdpClientIngestor;
 import fk.retail.ip.fdp.model.*;
@@ -41,15 +42,16 @@ public class FdpRequirementIngestorImpl implements FdpIngestor<List<RequirementC
         fdpClientIngestor.pushToFdp(batchFdpRequirementEventEntityPayload);
 
         //TODO: remove return (used only for testing payload creation)
-        /*ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = new ObjectMapper();
         mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS"));
+        mapper.setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES);
         String result = null;
         try {
             result = mapper.writeValueAsString(batchFdpRequirementEventEntityPayload);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        System.out.println("result:"+result);*/
+        System.out.println("result:"+result);
         return batchFdpRequirementEventEntityPayload;
     }
 
