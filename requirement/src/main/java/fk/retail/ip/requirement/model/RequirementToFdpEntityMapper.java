@@ -3,7 +3,6 @@ package fk.retail.ip.requirement.model;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import fk.retail.ip.fdp.config.FdpConfiguration;
-import fk.retail.ip.fdp.config.FdpRequirementEntityConfiguration;
 import fk.retail.ip.fdp.model.FdpEntityPayload;
 import fk.retail.ip.fdp.model.FdpRequirementEntityData;
 import fk.retail.ip.requirement.internal.entities.Requirement;
@@ -15,11 +14,11 @@ import java.util.List;
  */
 public class RequirementToFdpEntityMapper implements FdpEntityMapper<FdpRequirementEntityData,Requirement> {
 
-    private final FdpRequirementEntityConfiguration fdpRequirementEntityConfiguration;
+    private final FdpConfiguration fdpConfiguration;
 
     @Inject
-    public RequirementToFdpEntityMapper(FdpRequirementEntityConfiguration fdpRequirementEntityConfiguration){
-        this.fdpRequirementEntityConfiguration = fdpRequirementEntityConfiguration;
+    public RequirementToFdpEntityMapper(FdpConfiguration fdpConfiguration){
+        this.fdpConfiguration = fdpConfiguration;
     }
 
     @Override
@@ -27,7 +26,7 @@ public class RequirementToFdpEntityMapper implements FdpEntityMapper<FdpRequirem
         FdpEntityPayload<FdpRequirementEntityData> fdpRequirementEntityPayload= new FdpEntityPayload();
         fdpRequirementEntityPayload.setEntityId(requirementId);
         fdpRequirementEntityPayload.setData(getRequirementEntityData(requirementId.toString(),requirement));
-        fdpRequirementEntityPayload.setSchemaVersion(fdpRequirementEntityConfiguration.getSchemaVersion());
+        fdpRequirementEntityPayload.setSchemaVersion(fdpConfiguration.getRequirementEntitySchemaVersion());
         fdpRequirementEntityPayload.setUpdatedAt(requirement.getUpdatedAt());
         return fdpRequirementEntityPayload;
     }
@@ -50,7 +49,7 @@ public class RequirementToFdpEntityMapper implements FdpEntityMapper<FdpRequirem
         fdpRequirementEntityData.setCurrency(requirement.getCurrency());
         fdpRequirementEntityData.setRequiredByDate(requiredBydate.toDate());
         fdpRequirementEntityData.setInventoryQty(requirement.getRequirementSnapshot().getInventoryQty());
-        fdpRequirementEntityData.setPendingPOQty(requirement.getRequirementSnapshot().getPendingPoQty());
+        fdpRequirementEntityData.setPendingPoQty(requirement.getRequirementSnapshot().getPendingPoQty());
         fdpRequirementEntityData.setOpenReqQty(requirement.getRequirementSnapshot().getOpenReqQty());
         fdpRequirementEntityData.setIwitIntransitQty(requirement.getRequirementSnapshot().getIwitIntransitQty());
         fdpRequirementEntityData.setState(requirement.getState());

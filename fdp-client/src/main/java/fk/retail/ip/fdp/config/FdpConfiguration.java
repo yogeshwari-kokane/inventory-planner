@@ -12,4 +12,6 @@ public class FdpConfiguration {
     String org;
     String company;
     String namespace;
+    String requirementEntitySchemaVersion;
+    String requirementEventSchemaVersion;
 }

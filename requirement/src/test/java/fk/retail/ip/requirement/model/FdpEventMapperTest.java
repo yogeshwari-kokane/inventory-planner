@@ -2,17 +2,12 @@ package fk.retail.ip.requirement.model;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
-import com.nimbusds.jose.Payload;
 import fk.retail.ip.fdp.config.FdpConfiguration;
-import fk.retail.ip.fdp.config.FdpRequirementEventConfiguration;
-import fk.retail.ip.fdp.model.FdpEntityPayload;
 import fk.retail.ip.fdp.model.FdpEventPayload;
-import fk.retail.ip.fdp.model.FdpRequirementEntityData;
 import fk.retail.ip.fdp.model.FdpRequirementEventData;
 import fk.retail.ip.requirement.config.TestDbModule;
 import fk.retail.ip.requirement.internal.command.PayloadCreationHelper;
 import fk.retail.ip.requirement.internal.entities.Requirement;
-import fk.retail.ip.requirement.internal.entities.RequirementSnapshot;
 import fk.retail.ip.requirement.internal.enums.FdpRequirementEventType;
 import org.jukito.JukitoRunner;
 import org.jukito.UseModules;
@@ -33,7 +28,7 @@ public class FdpEventMapperTest {
     FdpEventMapper fdpEventMapper;
 
     @Inject
-    FdpRequirementEventConfiguration fdpRequirementEventConfiguration;
+    FdpConfiguration fdpConfiguration;
 
     @Test
     public void convertToEventPayloadTest() {
@@ -41,7 +36,7 @@ public class FdpEventMapperTest {
         String requirementId= getRequirementId(requirement);
         List<RequirementChangeMap> requirementChangeMapList = getRequirementChangeMapList(requirement);
         List<FdpEventPayload<FdpRequirementEventData>> fdpEventPayload = fdpEventMapper.convertToEventPayload(requirementId,requirementChangeMapList);
-        Assert.assertEquals(fdpRequirementEventConfiguration.getSchemaVersion(),fdpEventPayload.get(0).getSchemaVersion());
+        Assert.assertEquals(fdpConfiguration.getRequirementEventSchemaVersion(),fdpEventPayload.get(0).getSchemaVersion());
         Assert.assertEquals(requirementId,fdpEventPayload.get(0).getData().getRequirementId());
     }
 
