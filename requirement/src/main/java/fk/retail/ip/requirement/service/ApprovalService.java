@@ -84,10 +84,12 @@ public class ApprovalService<E extends AbstractEntity> {
 
         private RequirementRepository repository;
         private FdpIngestor fdpIngestor;
+        private PayloadCreationHelper payloadCreationHelper;
 
-        public CopyOnStateChangeAction(RequirementRepository requirementRepository, FdpIngestor fdpIngestor) {
+        public CopyOnStateChangeAction(RequirementRepository requirementRepository, FdpIngestor fdpIngestor, PayloadCreationHelper payloadCreationHelper) {
             this.repository = requirementRepository;
             this.fdpIngestor = fdpIngestor;
+            this.payloadCreationHelper = payloadCreationHelper;
         }
 
         @Override
@@ -96,8 +98,6 @@ public class ApprovalService<E extends AbstractEntity> {
             List<Requirement> toEntities = repository.findEnabledRequirementsByStateFsn(toState, fsnToRequirements.keySet());
             Table<String, String, Requirement> cdoStateEntityMap = getCDOEntityMap(toState,  fsnToRequirements.keySet());
             boolean isIPCReviewState = RequirementApprovalState.IPC_REVIEW.toString().equals(toState);
-            //TODO:inject
-            PayloadCreationHelper payloadCreationHelper = new PayloadCreationHelper();
             List<RequirementChangeRequest> requirementChangeRequestList = Lists.newArrayList();
             fsnToRequirements.keySet().stream().forEach((fsn) -> {
                 fsnToRequirements.get(fsn).stream().forEach((entity) -> {

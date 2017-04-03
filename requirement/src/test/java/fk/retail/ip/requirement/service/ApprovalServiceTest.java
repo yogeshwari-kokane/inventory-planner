@@ -3,6 +3,7 @@ package fk.retail.ip.requirement.service;
 import com.google.inject.Inject;
 import fk.retail.ip.requirement.config.TestDbModule;
 import fk.retail.ip.requirement.internal.command.FdpIngestor;
+import fk.retail.ip.requirement.internal.command.PayloadCreationHelper;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
@@ -34,6 +35,9 @@ public class ApprovalServiceTest extends TransactionalJpaRepositoryTest {
 
     @Inject
     private FdpIngestor fdpIngestor;
+
+    @Inject
+    private PayloadCreationHelper payloadCreationHelper;
 
     @Inject
     private Provider<EntityManager> entityManagerProvider;
@@ -87,7 +91,7 @@ public class ApprovalServiceTest extends TransactionalJpaRepositoryTest {
         Requirement cdoRequirement = createRequirement(RequirementApprovalState.CDO_REVIEW.toString());
         ApprovalService service = new ApprovalService("/requirement-state-actions.json");
         Function<Requirement, String> getter = Requirement::getState;
-        service.changeState(Arrays.asList(requirement), "userId", action, getter, new ApprovalService.CopyOnStateChangeAction(requirementRepository, fdpIngestor));
+        service.changeState(Arrays.asList(requirement), "userId", action, getter, new ApprovalService.CopyOnStateChangeAction(requirementRepository, fdpIngestor, payloadCreationHelper));
 
         List<Requirement> results = requirementRepository.findEnabledRequirementsByStateFsn(toState, Arrays.asList(requirement.getFsn()));
         Requirement actual = results.get(0);
@@ -111,7 +115,7 @@ public class ApprovalServiceTest extends TransactionalJpaRepositoryTest {
         Requirement requirement = createRequirement(fromState);
         ApprovalService service = new ApprovalService("/requirement-state-actions.json");
         Function<Requirement, String> getter = Requirement::getState;
-        service.changeState(Arrays.asList(requirement), "userId", action, getter, new ApprovalService.CopyOnStateChangeAction(requirementRepository, fdpIngestor));
+        service.changeState(Arrays.asList(requirement), "userId", action, getter, new ApprovalService.CopyOnStateChangeAction(requirementRepository, fdpIngestor, payloadCreationHelper));
 
         List<Requirement> results = requirementRepository.findEnabledRequirementsByStateFsn(toState, Arrays.asList(requirement.getFsn()));
         Requirement actual = results.get(0);
