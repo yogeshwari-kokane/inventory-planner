@@ -139,7 +139,7 @@ public class ApprovalService<E extends AbstractEntity> {
                         toStateEntity.ifPresent(e -> { // this will always be present
                             e.setCurrent(true);
                             entity.setCurrent(false);
-                            requirementChangeRequest.setRequirement(toStateEntity.orElse(null));
+                            requirementChangeRequest.setRequirement(toStateEntity.get());
                         });
                     }
 
