@@ -53,7 +53,6 @@ public class FdpEntityMapperTest {
         requirementSnapshot1.setPendingPoQty(10);
         requirementSnapshot1.setOpenReqQty(10);
         requirementSnapshot1.setIwitIntransitQty(10);
-        requirementSnapshot1.setPolicyIds(policyIds);
 
         Requirement requirement1 = new Requirement();
         requirement1.setFsn("fsn1");

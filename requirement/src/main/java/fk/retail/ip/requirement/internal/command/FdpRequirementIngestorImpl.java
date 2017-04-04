@@ -42,7 +42,7 @@ public class FdpRequirementIngestorImpl implements FdpIngestor<List<RequirementC
     }
 
     private String getRequirementId(Requirement requirement) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String requirementId = requirement.getFsn()+"_"+requirement.getWarehouse()+"_"+(sdf.format(requirement.getCreatedAt()).toString());
         return requirementId;
     }

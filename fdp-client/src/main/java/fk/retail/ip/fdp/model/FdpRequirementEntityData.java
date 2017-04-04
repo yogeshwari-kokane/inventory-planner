@@ -34,5 +34,5 @@ public class FdpRequirementEntityData {
     Boolean enabled;
     Date createdAt;
     Date updatedAt;
-    List<String> policyIds;
+    List<PolicyValueMap> policies;
 }

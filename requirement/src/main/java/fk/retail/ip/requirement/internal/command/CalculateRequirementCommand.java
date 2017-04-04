@@ -108,13 +108,13 @@ public class CalculateRequirementCommand {
         return this;
     }
 
-    private Set<String> initContexts(MultiKeyMap<String, Boolean> fsnGroupPolicyMap) {
+    private Set<String> initContexts() {
         this.warehouseCodeMap = getWarehouseCodeMap();
         this.fsnToGroupMap = getFsnToGroupMap(fsns);
         Set<String> validFsns = fsnToGroupMap.keySet();
         this.forecastContext = getForecastContext(validFsns);
         validFsns = forecastContext.getFsns();
-        this.policyContext = getPolicyContext(validFsns,fsnGroupPolicyMap);
+        this.policyContext = getPolicyContext(validFsns);
         this.onHandQuantityContext = getOnHandQuantityContext(validFsns);
         return validFsns;
     }
@@ -132,9 +132,7 @@ public class CalculateRequirementCommand {
         List<Projection> existingProjections = projectionRepository.find(fsns, true);
         existingProjections.forEach(projection -> projection.setEnabled(0));
 
-        MultiKeyMap<String, Boolean> fsnGroupPolicyMap = new MultiKeyMap();
-
-        Set<String> validFsns = initContexts(fsnGroupPolicyMap);
+        Set<String> validFsns = initContexts();
 
 
         //create requirement entities
@@ -143,7 +141,7 @@ public class CalculateRequirementCommand {
         for (String fsn : validFsns) {
             Set<String> warehouses = forecastContext.getWarehouses(fsn);
             for (String warehouse : warehouses) {
-                Requirement requirement = getRequirement(fsn, warehouse, fsnToGroupMap.get(fsn),fsnGroupPolicyMap);
+                Requirement requirement = getRequirement(fsn, warehouse, fsnToGroupMap.get(fsn));
                 if (fsnToRequirementMap.containsKey(fsn) && fsnToRequirementMap.get(fsn) != null) {
                     fsnToRequirementMap.get(fsn).add(requirement);
                 } else {
@@ -290,34 +288,6 @@ public class CalculateRequirementCommand {
         }
     }
 
-    private String getPolicyIds(MultiKeyMap<String,Boolean> fsnGroupPolicyMap,String fsn, String warehouse, String groupName) {
-        List<String> policyIdList = Lists.newArrayList();
-        PolicyType.getOrderPolicies().forEach(policy -> {
-            Boolean groupPolicy = fsnGroupPolicyMap.get(fsn,policy);
-            String policyId=null;
-            if(groupPolicy!=null){
-                if(groupPolicy==true)
-                    policyId = groupName+"_all_"+warehouse+"_"+policy;
-                else
-                    policyId = groupName+"_"+fsn+"_"+warehouse+"_"+policy;
-                policyIdList.add(policyId);
-            }
-        });
-        PolicyType.getControlPolicies().forEach(policy -> {
-            Boolean groupPolicy = fsnGroupPolicyMap.get(fsn,policy);
-            String policyId=null;
-            if(groupPolicy!=null){
-                if(groupPolicy==true)
-                    policyId = groupName+"_all_all_"+"_"+policy;
-                else
-                    policyId = groupName+"_"+fsn+"_all_"+policy;
-                policyIdList.add(policyId);
-            }
-        });
-        String policyIds = String.join(",", policyIdList);
-        return policyIds;
-    }
-
     public List<SupplierSelectionRequest> createSupplierSelectionRequest(List<Requirement> requirements) {
         List<SupplierSelectionRequest> requests = Lists.newArrayList();
         requirements.forEach(req -> {
@@ -346,7 +316,7 @@ public class CalculateRequirementCommand {
         return groupFsns.stream().collect(Collectors.toMap(GroupFsn::getFsn, GroupFsn::getGroup));
     }
 
-    private Requirement getRequirement(String fsn, String warehouse, Group group, MultiKeyMap<String,Boolean> fsnGroupPolicyMap) {
+    private Requirement getRequirement(String fsn, String warehouse, Group group) {
         Requirement requirement = new Requirement();
         requirement.setFsn(fsn);
         requirement.setWarehouse(warehouse);
@@ -364,7 +334,6 @@ public class CalculateRequirementCommand {
         requirementSnapshot.setIwitIntransitQty((int) onHandQuantityContext.getIwtQuantity(fsn, warehouse));
         requirementSnapshot.setInventoryQty((int) onHandQuantityContext.getInventoryQuantity(fsn, warehouse));
         requirementSnapshot.setQoh((int) onHandQuantityContext.getOnHandInventoryQuantity(fsn, warehouse));
-        requirementSnapshot.setPolicyIds(getPolicyIds(fsnGroupPolicyMap,fsn,warehouse,group.getName()));
         requirement.setRequirementSnapshot(requirementSnapshot);
         return requirement;
     }
@@ -376,7 +345,7 @@ public class CalculateRequirementCommand {
         return forecastContext;
     }
 
-    private PolicyContext getPolicyContext(Set<String> fsns, MultiKeyMap<String, Boolean> fsnGroupPolicyMap) {
+    private PolicyContext getPolicyContext(Set<String> fsns) {
         PolicyContext policyContext = new PolicyContext(objectMapper, warehouseCodeMap, payloadCreationHelper);
         //add group level policies to context
         Set<Long> groupIds = fsns.stream().map(fsn -> fsnToGroupMap.get(fsn).getId()).collect(Collectors.toSet());
@@ -400,18 +369,6 @@ public class CalculateRequirementCommand {
         //override with fsn level policies
         List<Policy> policies = policyRepository.fetchByFsns(fsns);
         policies.forEach(policy -> policyContext.addPolicy(policy.getFsn(), policy.getPolicyType(), policy.getValue()));
-
-        //Create fsnGroupPolicyMap
-        //add fsn level policies
-        policies.forEach(policy -> {
-            fsnGroupPolicyMap.put(policy.getFsn(), policy.getPolicyType(), false);
-        });
-
-        //add group level policies if fsn level policy not present
-        groupPolicies.forEach(policy -> {
-            if(fsnGroupPolicyMap.get(policy.getFsn(), policy.getPolicyType())==null)
-                fsnGroupPolicyMap.put(policy.getFsn(),policy.getPolicyType(),true);
-        });
 
         return policyContext;
     }

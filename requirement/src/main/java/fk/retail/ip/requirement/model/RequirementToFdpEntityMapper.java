@@ -5,8 +5,13 @@ import com.google.inject.Inject;
 import fk.retail.ip.fdp.config.FdpConfiguration;
 import fk.retail.ip.fdp.model.FdpEntityPayload;
 import fk.retail.ip.fdp.model.FdpRequirementEntityData;
+import fk.retail.ip.fdp.model.PolicyValueMap;
 import fk.retail.ip.requirement.internal.entities.Requirement;
+import fk.retail.ip.requirement.internal.entities.RequirementSnapshot;
 import org.joda.time.DateTime;
+import org.json.JSONObject;
+
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -57,19 +62,23 @@ public class RequirementToFdpEntityMapper implements FdpEntityMapper<FdpRequirem
         fdpRequirementEntityData.setEnabled(requirement.isEnabled());
         fdpRequirementEntityData.setCreatedAt(requirement.getCreatedAt());
         fdpRequirementEntityData.setUpdatedAt(requirement.getUpdatedAt());
-        fdpRequirementEntityData.setPolicyIds(getPolicyIds(requirement.getRequirementSnapshot().getPolicyIds()));
+        fdpRequirementEntityData.setPolicies(getPolicyIds(requirement.getRequirementSnapshot()));
         return fdpRequirementEntityData;
     }
 
-    private List<String> getPolicyIds(String policyIds) {
-        if (policyIds==null)
-            return Lists.newArrayList();
-        String[] policyIdArray = policyIds.split(",");
-        //List<String> policyIdList = Arrays.asList(policyIds);
-        List<String> policyIdList = Lists.newArrayList();
-        for (String s : policyIdArray) {
-            policyIdList.add(s);
+    private List<PolicyValueMap> getPolicyIds(RequirementSnapshot requirementSnapshot) {
+        List<PolicyValueMap> policies = Lists.newArrayList();
+        String[] policyArray = requirementSnapshot.getPolicy().split(",");
+        for (String s : policyArray) {
+            JSONObject jsonObj = new JSONObject(s);
+            Iterator<String> keys = jsonObj.keys();
+            String policyType=keys.next();
+            String value = jsonObj.optString(policyType);
+            PolicyValueMap policyValueMap = new PolicyValueMap();
+            policyValueMap.setPolicyType(policyType);
+            policyValueMap.setValue(Double.parseDouble(value));
+            policies.add(policyValueMap);
         }
-        return  policyIdList;
+        return  policies;
     }
 }
