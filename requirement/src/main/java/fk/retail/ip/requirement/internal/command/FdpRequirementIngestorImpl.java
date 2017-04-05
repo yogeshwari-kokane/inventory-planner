@@ -38,7 +38,8 @@ public class FdpRequirementIngestorImpl implements FdpIngestor<List<RequirementC
             batchFdpRequirementEventEntityPayload.getPurchaseRequirementEvent().addAll(fdpRequirementEventPayload);
         });
 
-        fdpClientIngestor.pushToFdp(batchFdpRequirementEventEntityPayload);
+        if(!batchFdpRequirementEventEntityPayload.getPurchaseRequirementEntity().isEmpty())
+            fdpClientIngestor.pushToFdp(batchFdpRequirementEventEntityPayload);
     }
 
     private String getRequirementId(Requirement requirement) {
