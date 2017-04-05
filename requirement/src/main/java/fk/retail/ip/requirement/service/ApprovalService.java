@@ -116,10 +116,11 @@ public class ApprovalService<E extends AbstractEntity> {
                             toStateEntity.get().setApp(entity.getApp());
                             toStateEntity.get().setSla(entity.getSla());
                             toStateEntity.get().setPreviousStateId(entity.getId());
-                            toStateEntity.get().setCreatedBy(userId);
+                            toStateEntity.get().setUpdatedBy(userId);
                             toStateEntity.get().setCurrent(true);
                             entity.setCurrent(false);
                             requirementChangeRequest.setRequirement(toStateEntity.get());
+                            entity.setUpdatedBy(userId);
                         } else {
                             Requirement newEntity = new Requirement(entity);
                             if(isIPCReviewState) {
@@ -129,9 +130,11 @@ public class ApprovalService<E extends AbstractEntity> {
                             newEntity.setCreatedBy(userId);
                             newEntity.setPreviousStateId(entity.getId());
                             newEntity.setCurrent(true);
+                            newEntity.setUpdatedBy(userId);
                             repository.persist(newEntity);
                             entity.setCurrent(false);
                             requirementChangeRequest.setRequirement(newEntity);
+                            entity.setUpdatedBy(userId);
                         }
                     } else {
                         //Add CANCEL events to fdp request
@@ -140,6 +143,8 @@ public class ApprovalService<E extends AbstractEntity> {
                             e.setCurrent(true);
                             entity.setCurrent(false);
                             requirementChangeRequest.setRequirement(toStateEntity.get());
+                            entity.setUpdatedBy(userId);
+                            e.setUpdatedBy(userId);
                         });
                     }
 
@@ -173,6 +178,5 @@ public class ApprovalService<E extends AbstractEntity> {
 
             return toStateRequirementMap ;
         }
-
     }
 }

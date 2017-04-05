@@ -68,16 +68,18 @@ public class RequirementToFdpEntityMapper implements FdpEntityMapper<FdpRequirem
 
     private List<PolicyValueMap> getPolicyIds(RequirementSnapshot requirementSnapshot) {
         List<PolicyValueMap> policies = Lists.newArrayList();
-        String[] policyArray = requirementSnapshot.getPolicy().split(",");
-        for (String s : policyArray) {
-            JSONObject jsonObj = new JSONObject(s);
-            Iterator<String> keys = jsonObj.keys();
-            String policyType=keys.next();
-            String value = jsonObj.optString(policyType);
-            PolicyValueMap policyValueMap = new PolicyValueMap();
-            policyValueMap.setPolicyType(policyType);
-            policyValueMap.setValue(Double.parseDouble(value));
-            policies.add(policyValueMap);
+        if(requirementSnapshot.getPolicy()!=null) {
+            String[] policyArray = requirementSnapshot.getPolicy().split(",");
+            for (String s : policyArray) {
+                JSONObject jsonObj = new JSONObject(s);
+                Iterator<String> keys = jsonObj.keys();
+                String policyType = keys.next();
+                String value = jsonObj.optString(policyType);
+                PolicyValueMap policyValueMap = new PolicyValueMap();
+                policyValueMap.setPolicyType(policyType);
+                policyValueMap.setValue(Double.parseDouble(value));
+                policies.add(policyValueMap);
+            }
         }
         return  policies;
     }
