@@ -99,9 +99,10 @@ public class ApprovalService<E extends AbstractEntity> {
                             toStateEntity.get().setApp(entity.getApp());
                             toStateEntity.get().setSla(entity.getSla());
                             toStateEntity.get().setPreviousStateId(entity.getId());
-                            toStateEntity.get().setCreatedBy(userId);
+                            toStateEntity.get().setUpdatedBy(userId);
                             toStateEntity.get().setCurrent(true);
                             entity.setCurrent(false);
+                            entity.setUpdatedBy(userId);
                         } else {
                             Requirement newEntity = new Requirement(entity);
                             if(isIPCReviewState) {
@@ -111,13 +112,17 @@ public class ApprovalService<E extends AbstractEntity> {
                             newEntity.setCreatedBy(userId);
                             newEntity.setPreviousStateId(entity.getId());
                             newEntity.setCurrent(true);
+                            newEntity.setUpdatedBy(userId);
                             repository.persist(newEntity);
                             entity.setCurrent(false);
+                            entity.setUpdatedBy(userId);
                         }
                     } else {
                         toStateEntity.ifPresent(e -> { // this will always be present
                             e.setCurrent(true);
                             entity.setCurrent(false);
+                            entity.setUpdatedBy(userId);
+                            e.setUpdatedBy(userId);
                         });
                     }
                 });

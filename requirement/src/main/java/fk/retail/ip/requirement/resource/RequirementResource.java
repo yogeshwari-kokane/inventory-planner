@@ -66,12 +66,16 @@ public class RequirementResource {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response uploadProjectionOverride(
             @FormDataParam("datafile") InputStream inputStream,
-            @FormDataParam("state") String state
+            @FormDataParam("state") String state,
+            @HeaderParam("X-Proxy-User") String userId
     ) {
 
         log.info("Upload Requirement request received for " + state + " state");
         try {
-            UploadResponse uploadResponse = requirementService.uploadRequirement(inputStream, state);
+            if (userId == null) {
+                userId = "dummyUser";
+            }
+            UploadResponse uploadResponse = requirementService.uploadRequirement(inputStream, state, userId);
             log.info("Successfully updated " + uploadResponse.getSuccessfulRowCount() + " records");
             return Response.ok(uploadResponse).build();
         } catch (IOException ioException) {
@@ -89,8 +93,11 @@ public class RequirementResource {
     @Timed(name="changeStateTimer")
     @Metered(name="changeStateMeter")
     @ExceptionMetered(name="changeStateExceptionMeter")
-    public String changeState(RequirementApprovalRequest request) throws JSONException {
-        return requirementService.changeState(request);
+    public String changeState(RequirementApprovalRequest request, @HeaderParam("X-Proxy-User") String userId) throws JSONException {
+        if (userId == null) {
+            userId = "dummyUser";
+        }
+        return requirementService.changeState(request, userId);
     }
 
     @POST

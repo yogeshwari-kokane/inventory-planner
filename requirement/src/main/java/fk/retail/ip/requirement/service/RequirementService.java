@@ -69,7 +69,8 @@ public class RequirementService {
 
     public UploadResponse uploadRequirement(
             InputStream inputStream,
-            String requirementState
+            String requirementState,
+            String userId
     ) throws IOException, InvalidFormatException {
 
         SpreadSheetReader spreadSheetReader = new SpreadSheetReader();
@@ -104,7 +105,7 @@ public class RequirementService {
             } else {
                 RequirementState state = requirementStateFactory.getRequirementState(requirementState);
                 try {
-                    List<UploadOverrideFailureLineItem> uploadLineItems = state.upload(requirements, requirementDownloadLineItems);
+                    List<UploadOverrideFailureLineItem> uploadLineItems = state.upload(requirements, requirementDownloadLineItems, userId);
                     int successfulRowCount = requirementDownloadLineItems.size() - uploadLineItems.size();
                     UploadResponse uploadResponse = new UploadResponse();
                     uploadResponse.setUploadOverrideFailureLineItems(uploadLineItems);
@@ -135,7 +136,7 @@ public class RequirementService {
 
     }
 
-    public String changeState(RequirementApprovalRequest request) throws JSONException {
+    public String changeState(RequirementApprovalRequest request, String userId) throws JSONException {
         String action = request.getFilters().get("projection_action").toString();
         Function<Requirement, String> getter = Requirement::getState;
         List<Requirement> requirements;
@@ -146,7 +147,7 @@ public class RequirementService {
         requirements = requirementRepository.findRequirements(ids, state, fsns);
         log.info("Change state Request for {} number of requirements", requirements.size());
         requirements.stream().forEach(e -> projectionIds.add(e.getProjectionId()));
-        approvalService.changeState(requirements, "dummyUser", action, getter, new ApprovalService.CopyOnStateChangeAction(requirementRepository));
+        approvalService.changeState(requirements, userId, action, getter, new ApprovalService.CopyOnStateChangeAction(requirementRepository));
         log.info("State changed for {} number of requirements", requirements.size());
         requirementRepository.updateProjection(projectionIds, approvalService.getTargetState(action));
         log.info("Projections table updated for Requirements");
