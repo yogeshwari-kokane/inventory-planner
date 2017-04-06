@@ -2,7 +2,6 @@ package fk.retail.ip.fdp.internal.command;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.flipkart.restbus.client.entity.Message;
 import com.google.inject.Inject;
 import fk.retail.ip.fdp.config.FdpConfiguration;
@@ -10,8 +9,6 @@ import fk.retail.ip.fdp.internal.Constants;
 import fk.retail.ip.fdp.model.*;
 import fk.sp.common.restbus.sender.RestbusMessageSender;
 import lombok.extern.slf4j.Slf4j;
-
-import java.text.SimpleDateFormat;
 
 /**
  * Created by yogeshwari.k on 17/03/17.
@@ -31,7 +28,6 @@ public class FdpClientIngestor {
 
     public void pushToFdp(FdpPayload fdpPayload) {
         Message message = getMessageInstance();
-        mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS"));
         try {
             message.setPayload(mapper.writeValueAsString(fdpPayload));
             restbusMessageSender.send(message);

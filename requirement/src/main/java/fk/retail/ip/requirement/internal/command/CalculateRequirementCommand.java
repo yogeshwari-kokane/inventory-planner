@@ -202,6 +202,14 @@ public class CalculateRequirementCommand {
         requirementRepository.persist(allRequirements);
 
         //Add PROJECTION_CREATED events to fdp request
+        addProjectionCreatedRequest(allRequirements, requirementChangeRequestList);
+
+        //Push PROJECTION_CREATED, SUPPLIER_ASSIGNED and APP_ASSIGNED events to fdp
+        fdpRequirementIngestor.pushToFdp(requirementChangeRequestList);
+    }
+
+    private void addProjectionCreatedRequest(List<Requirement> allRequirements, List<RequirementChangeRequest> requirementChangeRequestList) {
+
         allRequirements.forEach(requirement -> {
             if(!requirement.getState().equals(Constants.ERROR_STATE)) {
                 RequirementChangeRequest requirementChangeRequest = new RequirementChangeRequest();
@@ -212,9 +220,6 @@ public class CalculateRequirementCommand {
                 requirementChangeRequestList.add(requirementChangeRequest);
             }
         });
-
-        //Push PROJECTION_CREATED, SUPPLIER_ASSIGNED and APP_ASSIGNED events to fdp
-        fdpRequirementIngestor.pushToFdp(requirementChangeRequestList);
     }
 
     private Requirement getErredRequirement(String fsn, String errorMessage) {
