@@ -132,8 +132,6 @@ public abstract class UploadCommand {
                                         (overriddenValues.get(OverrideKey.OVERRIDE_COMMENT.toString()).toString());
                             }
 
-                            requirement.setUpdatedBy(userId);
-
                             if(!requirementChangeMaps.isEmpty()) {
                                 requirementChangeRequest.setRequirement(requirement);
                                 requirementChangeRequest.setRequirementChangeMaps(requirementChangeMaps);
