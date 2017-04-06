@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.flipkart.restbus.client.entity.Message;
 import com.google.inject.Inject;
 import fk.retail.ip.fdp.config.FdpConfiguration;
+import fk.retail.ip.fdp.internal.Constants;
 import fk.retail.ip.fdp.model.*;
 import fk.sp.common.restbus.sender.RestbusMessageSender;
 import lombok.extern.slf4j.Slf4j;
@@ -46,7 +47,7 @@ public class FdpClientIngestor {
         message.setExchangeType("queue");
         message.setHttpMethod("POST");
         message.setHttpUri(url);
-        message.setAppId("fk-ip-inventory-planner");
+        message.setAppId(Constants.APP_ID.toString());
         return message;
     }
 }

@@ -75,7 +75,7 @@ fdpConfiguration:
   org: "/retail"
   company: "/fki"
   namespace: "/ip"
-  requirementEntitySchemaVersion: "1.0"
+  requirementEntitySchemaVersion: "2.0"
   requirementEventSchemaVersion: "1.0"
 
 clientConfiguration:

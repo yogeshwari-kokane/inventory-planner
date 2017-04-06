@@ -2,8 +2,7 @@ package fk.retail.ip.requirement.internal.command.upload;
 
 import com.google.common.collect.Lists;
 import fk.retail.ip.requirement.config.TestModule;
-import fk.retail.ip.requirement.internal.command.FdpIngestor;
-import fk.retail.ip.requirement.internal.command.PayloadCreationHelper;
+import fk.retail.ip.requirement.internal.command.FdpRequirementIngestorImpl;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.entities.RequirementSnapshot;
 import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
@@ -36,10 +35,7 @@ public class BizFinReviewUploadCommandTest {
     BizFinReviewUploadCommand bizFinReviewUploadCommand;
 
     @Mock
-    FdpIngestor fdpIngestor;
-
-    @Mock
-    PayloadCreationHelper payloadCreationHelper;
+    FdpRequirementIngestorImpl fdpRequirementIngestor;
 
     @Before
     public void init() {

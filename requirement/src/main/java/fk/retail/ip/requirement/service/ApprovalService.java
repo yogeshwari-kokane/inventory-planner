@@ -6,6 +6,7 @@ import com.google.common.collect.Table;
 import com.google.common.io.CharStreams;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import fk.retail.ip.requirement.internal.command.FdpRequirementIngestorImpl;
 import fk.retail.ip.requirement.internal.command.PayloadCreationHelper;
 import fk.retail.ip.requirement.internal.entities.AbstractEntity;
 import fk.retail.ip.requirement.internal.entities.Requirement;
@@ -13,7 +14,7 @@ import fk.retail.ip.requirement.internal.enums.FdpRequirementEventType;
 import fk.retail.ip.requirement.internal.enums.OverrideKey;
 import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
-import fk.retail.ip.requirement.internal.command.FdpIngestor;
+
 import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Map;
@@ -83,13 +84,11 @@ public class ApprovalService<E extends AbstractEntity> {
     public static class CopyOnStateChangeAction implements StageChangeAction<Requirement> {
 
         private RequirementRepository repository;
-        private FdpIngestor fdpIngestor;
-        private PayloadCreationHelper payloadCreationHelper;
+        private FdpRequirementIngestorImpl fdpRequirementIngestor;
 
-        public CopyOnStateChangeAction(RequirementRepository requirementRepository, FdpIngestor fdpIngestor, PayloadCreationHelper payloadCreationHelper) {
+        public CopyOnStateChangeAction(RequirementRepository requirementRepository, FdpRequirementIngestorImpl fdpRequirementIngestor) {
             this.repository = requirementRepository;
-            this.fdpIngestor = fdpIngestor;
-            this.payloadCreationHelper = payloadCreationHelper;
+            this.fdpRequirementIngestor = fdpRequirementIngestor;
         }
 
         @Override
@@ -106,7 +105,7 @@ public class ApprovalService<E extends AbstractEntity> {
                     List<RequirementChangeMap> requirementChangeMaps = Lists.newArrayList();
                     if (forward) {
                         //Add APPROVE events to fdp request
-                        requirementChangeMaps.add(payloadCreationHelper.createChangeMap(OverrideKey.STATE.toString(), fromState, toState, FdpRequirementEventType.APPROVE.toString(), "Moved to next state", userId));
+                        requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.STATE.toString(), fromState, toState, FdpRequirementEventType.APPROVE.toString(), "Moved to next state", userId));
                         if (toStateEntity.isPresent()) {
                             toStateEntity.get().setQuantity(entity.getQuantity());
                             if(isIPCReviewState) {
@@ -138,7 +137,7 @@ public class ApprovalService<E extends AbstractEntity> {
                         }
                     } else {
                         //Add CANCEL events to fdp request
-                        requirementChangeMaps.add(payloadCreationHelper.createChangeMap(OverrideKey.STATE.toString(), fromState, toState, FdpRequirementEventType.CANCEL.toString(), "Moved to previous state", userId));
+                        requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.STATE.toString(), fromState, toState, FdpRequirementEventType.CANCEL.toString(), "Moved to previous state", userId));
                         toStateEntity.ifPresent(e -> { // this will always be present
                             e.setCurrent(true);
                             entity.setCurrent(false);
@@ -153,7 +152,7 @@ public class ApprovalService<E extends AbstractEntity> {
                 });
             });
             //Push APPROVE and CANCEL events to fdp
-            fdpIngestor.pushToFdp(requirementChangeRequestList);
+            fdpRequirementIngestor.pushToFdp(requirementChangeRequestList);
         }
 
         private Table<String,String,Requirement> getCDOEntityMap(String toState, Set<String> fsns) {

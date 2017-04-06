@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Table;
-import fk.retail.ip.requirement.internal.command.PayloadCreationHelper;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.enums.PolicyType;
 import java.util.List;
@@ -19,17 +18,15 @@ import lombok.extern.slf4j.Slf4j;
 public class PolicyContext {
 
     private final ObjectMapper objectMapper;
-    private final PayloadCreationHelper payloadCreationHelper;
     private final Map<String, String> warehouseCodeMap;
     private final List<PolicyApplicator> orderedPolicyApplicators;
     private Table<String, PolicyType, String> fsnPolicyTypeDataTable = HashBasedTable.create();
 
-    public PolicyContext(ObjectMapper objectMapper, Map<String, String> warehouseCodeMap, PayloadCreationHelper payloadCreationHelper) {
+    public PolicyContext(ObjectMapper objectMapper, Map<String, String> warehouseCodeMap) {
         this.objectMapper = objectMapper;
         this.warehouseCodeMap = warehouseCodeMap;
-        this.payloadCreationHelper = payloadCreationHelper;
         //DO NOT CHANGE THE ORDERING UNLESS YOU KNOW WHAT YOU ARE DOING
-        orderedPolicyApplicators = Lists.newArrayList(new RopRocApplicator(objectMapper, payloadCreationHelper), new MaxCoverageApplicator(objectMapper, payloadCreationHelper), new CaseSizeApplicator(objectMapper, payloadCreationHelper));
+        orderedPolicyApplicators = Lists.newArrayList(new RopRocApplicator(objectMapper), new MaxCoverageApplicator(objectMapper), new CaseSizeApplicator(objectMapper));
     }
 
     public Set<String> getFsns() {

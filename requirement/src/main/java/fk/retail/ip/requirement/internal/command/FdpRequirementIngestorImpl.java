@@ -14,20 +14,19 @@ import java.util.List;
 /**
  * Created by yogeshwari.k on 22/03/17.
  */
-public class FdpRequirementIngestorImpl implements FdpIngestor<List<RequirementChangeRequest>> {
+public class FdpRequirementIngestorImpl {
 
-    private final FdpEntityMapper requirementToFdpEntityMapper;
-    private final FdpEventMapper requirementToFdpEventMapper;
     private final FdpClientIngestor fdpClientIngestor;
+    private final RequirementToFdpEntityMapper requirementToFdpEntityMapper;
+    private final RequirementToFdpEventMapper requirementToFdpEventMapper;
 
     @Inject
-    FdpRequirementIngestorImpl(FdpEntityMapper requirementToFdpEntityMapper, FdpEventMapper requirementToFdpEventMapper, FdpClientIngestor fdpClientIngestor) {
+    FdpRequirementIngestorImpl(FdpClientIngestor fdpClientIngestor, RequirementToFdpEntityMapper requirementToFdpEntityMapper, RequirementToFdpEventMapper requirementToFdpEventMapper) {
+        this.fdpClientIngestor = fdpClientIngestor;
         this.requirementToFdpEntityMapper = requirementToFdpEntityMapper;
         this.requirementToFdpEventMapper = requirementToFdpEventMapper;
-        this.fdpClientIngestor = fdpClientIngestor;
     }
 
-    @Override
     public void pushToFdp(List<RequirementChangeRequest> requirementChangeRequests) {
         BatchFdpRequirementEventEntityPayload batchFdpRequirementEventEntityPayload = new BatchFdpRequirementEventEntityPayload();
         requirementChangeRequests.forEach(req -> {

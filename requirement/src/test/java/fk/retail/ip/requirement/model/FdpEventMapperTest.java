@@ -25,7 +25,7 @@ import java.util.List;
 @UseModules(TestDbModule.class)
 public class FdpEventMapperTest {
     @Inject
-    FdpEventMapper fdpEventMapper;
+    RequirementToFdpEventMapper fdpEventMapper;
 
     @Inject
     FdpConfiguration fdpConfiguration;
@@ -56,9 +56,8 @@ public class FdpEventMapperTest {
     }
 
     private List<RequirementChangeMap> getRequirementChangeMapList(Requirement requirement) {
-        PayloadCreationHelper payloadCreationHelper = new PayloadCreationHelper();
         List<RequirementChangeMap> requirementChangeMapList = Lists.newArrayList();
-        requirementChangeMapList.add(payloadCreationHelper.createChangeMap("Sla", requirement.getSla().toString(),"20", FdpRequirementEventType.CDO_SLA_OVERRIDE.toString(), "SLA overridden by CDO", "system"));
+        requirementChangeMapList.add(PayloadCreationHelper.createChangeMap("Sla", requirement.getSla().toString(),"20", FdpRequirementEventType.CDO_SLA_OVERRIDE.toString(), "SLA overridden by CDO", "system"));
         return requirementChangeMapList;
     }
 

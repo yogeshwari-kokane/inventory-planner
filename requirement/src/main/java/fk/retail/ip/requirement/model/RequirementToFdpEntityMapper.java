@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * Created by yogeshwari.k on 16/03/17.
  */
-public class RequirementToFdpEntityMapper implements FdpEntityMapper<FdpRequirementEntityData,Requirement> {
+public class RequirementToFdpEntityMapper {
 
     private final FdpConfiguration fdpConfiguration;
 
@@ -26,7 +26,6 @@ public class RequirementToFdpEntityMapper implements FdpEntityMapper<FdpRequirem
         this.fdpConfiguration = fdpConfiguration;
     }
 
-    @Override
     public FdpEntityPayload<FdpRequirementEntityData> convertToEntityPayload(Object requirementId, Requirement requirement) {
         FdpEntityPayload<FdpRequirementEntityData> fdpRequirementEntityPayload= new FdpEntityPayload();
         fdpRequirementEntityPayload.setEntityId(requirementId);

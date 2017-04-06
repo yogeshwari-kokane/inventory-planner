@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import fk.retail.ip.requirement.internal.Constants;
-import fk.retail.ip.requirement.internal.command.PayloadCreationHelper;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.enums.PolicyType;
 import java.io.IOException;
@@ -19,11 +18,9 @@ import lombok.extern.slf4j.Slf4j;
 public abstract class PolicyApplicator {
 
     protected final ObjectMapper objectMapper;
-    protected final PayloadCreationHelper payloadCreationHelper;
 
-    public PolicyApplicator(ObjectMapper objectMapper, PayloadCreationHelper payloadCreationHelper) {
+    public PolicyApplicator(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
-        this.payloadCreationHelper = payloadCreationHelper;
     }
 
     protected double convertDaysToQuantity(Double days, List<Double> forecast) {

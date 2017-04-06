@@ -7,7 +7,7 @@ import fk.retail.ip.requirement.model.RequirementChangeMap;
  */
 public class PayloadCreationHelper {
 
-    public RequirementChangeMap createChangeMap(String attribute, String oldValue, String newValue, String eventType, String reason, String user){
+    public static RequirementChangeMap createChangeMap(String attribute, String oldValue, String newValue, String eventType, String reason, String user){
         RequirementChangeMap requirementChangeMap = new RequirementChangeMap();
         requirementChangeMap.setAttribute(attribute);
         requirementChangeMap.setOldValue(oldValue);

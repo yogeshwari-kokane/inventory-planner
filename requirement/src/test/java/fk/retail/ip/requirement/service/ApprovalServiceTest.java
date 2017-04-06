@@ -2,8 +2,7 @@ package fk.retail.ip.requirement.service;
 
 import com.google.inject.Inject;
 import fk.retail.ip.requirement.config.TestDbModule;
-import fk.retail.ip.requirement.internal.command.FdpIngestor;
-import fk.retail.ip.requirement.internal.command.PayloadCreationHelper;
+import fk.retail.ip.requirement.internal.command.FdpRequirementIngestorImpl;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.entities.RequirementSnapshot;
 import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
@@ -23,8 +22,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 
 /**
  * @author Pragalathan M<pragalathan.m@flipkart.com>
@@ -37,16 +34,10 @@ public class ApprovalServiceTest extends TransactionalJpaRepositoryTest {
     private RequirementRepository requirementRepository;
 
     @Inject
-    private FdpIngestor fdpIngestor;
-
-    @Inject
-    private PayloadCreationHelper payloadCreationHelper;
+    private FdpRequirementIngestorImpl fdpRequirementIngestor;
 
     @Inject
     private Provider<EntityManager> entityManagerProvider;
-
-    @InjectMocks
-    ApprovalService approvalService;
 
     @Test
     public void testProposedStateForwardFlow() {
@@ -97,7 +88,7 @@ public class ApprovalServiceTest extends TransactionalJpaRepositoryTest {
         Requirement cdoRequirement = createRequirement(RequirementApprovalState.CDO_REVIEW.toString());
         ApprovalService service = new ApprovalService("/requirement-state-actions.json");
         Function<Requirement, String> getter = Requirement::getState;
-        service.changeState(Arrays.asList(requirement), "userId", action, getter, new ApprovalService.CopyOnStateChangeAction(requirementRepository, fdpIngestor, payloadCreationHelper));
+        service.changeState(Arrays.asList(requirement), "userId", action, getter, new ApprovalService.CopyOnStateChangeAction(requirementRepository, fdpRequirementIngestor));
 
         List<Requirement> results = requirementRepository.findEnabledRequirementsByStateFsn(toState, Arrays.asList(requirement.getFsn()));
         Requirement actual = results.get(0);
@@ -121,7 +112,7 @@ public class ApprovalServiceTest extends TransactionalJpaRepositoryTest {
         Requirement requirement = createRequirement(fromState);
         ApprovalService service = new ApprovalService("/requirement-state-actions.json");
         Function<Requirement, String> getter = Requirement::getState;
-        service.changeState(Arrays.asList(requirement), "userId", action, getter, new ApprovalService.CopyOnStateChangeAction(requirementRepository, fdpIngestor, payloadCreationHelper));
+        service.changeState(Arrays.asList(requirement), "userId", action, getter, new ApprovalService.CopyOnStateChangeAction(requirementRepository, fdpRequirementIngestor));
 
         List<Requirement> results = requirementRepository.findEnabledRequirementsByStateFsn(toState, Arrays.asList(requirement.getFsn()));
         Requirement actual = results.get(0);

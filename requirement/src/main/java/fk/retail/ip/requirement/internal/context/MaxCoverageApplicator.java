@@ -19,8 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MaxCoverageApplicator extends PolicyApplicator {
 
-    public MaxCoverageApplicator(ObjectMapper objectMapper, PayloadCreationHelper payloadCreationHelper) {
-        super(objectMapper, payloadCreationHelper);
+    public MaxCoverageApplicator(ObjectMapper objectMapper) {
+        super(objectMapper);
     }
 
     @Override
@@ -36,6 +36,13 @@ public class MaxCoverageApplicator extends PolicyApplicator {
                     addToSnapshot(requirement, PolicyType.MAX_COVERAGE, maxCoverageDays);
                     double reducedQuantity = requirement.getQuantity() * reductionRatio;
                     reducedQuantity = reducedQuantity > 0 ? reducedQuantity : 0;
+                    //Add CONTROL_POLICY_QUANTITY_OVERRIDE events to fdp request
+                    RequirementChangeRequest requirementChangeRequest = new RequirementChangeRequest();
+                    List<RequirementChangeMap> requirementChangeMaps = Lists.newArrayList();
+                    requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.QUANTITY.toString(), String.valueOf(requirement.getQuantity()), String.valueOf(reducedQuantity),FdpRequirementEventType.CONTROL_POLICY_QUANTITY_OVERRIDE.toString(), "MaxCoverage policy applied", "system"));
+                    requirementChangeRequest.setRequirement(requirement);
+                    requirementChangeRequest.setRequirementChangeMaps(requirementChangeMaps);
+                    requirementChangeRequestList.add(requirementChangeRequest);
                     requirement.setQuantity(reducedQuantity);
                 });
             }

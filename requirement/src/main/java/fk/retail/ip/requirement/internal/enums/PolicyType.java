@@ -30,13 +30,4 @@ public enum PolicyType {
         return UNKNOWN;
     }
 
-    public static List<String> getOrderPolicies() {
-        List<String> orderPolicies = Lists.newArrayList(ROP.toString(), ROC.toString());
-        return orderPolicies;
-    }
-
-    public static List<String> getControlPolicies() {
-        List<String> controlPolicies = Lists.newArrayList(MAX_COVERAGE.toString(), CASE_SIZE.toString());
-        return controlPolicies;
-    }
  }

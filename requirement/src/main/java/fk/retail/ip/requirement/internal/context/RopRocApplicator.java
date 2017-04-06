@@ -21,13 +21,12 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RopRocApplicator extends PolicyApplicator {
 
-    public RopRocApplicator(ObjectMapper objectMapper, PayloadCreationHelper payloadCreationHelper) {
-        super(objectMapper, payloadCreationHelper);
+    public RopRocApplicator(ObjectMapper objectMapper) {
+        super(objectMapper);
     }
 
     @Override
     public void applyPolicies(String fsn, List<Requirement> requirements, Map<PolicyType, String> policyTypeMap, ForecastContext forecastContext, OnHandQuantityContext onHandQuantityContext, List<RequirementChangeRequest> requirementChangeRequestList) {
-        PayloadCreationHelper payloadCreationHelper = new PayloadCreationHelper();
         Map<String, Double> warehouseToRopMap = parseRopRoc(policyTypeMap.get(PolicyType.ROP));
         Map<String, Double> warehouseToRocMap = parseRopRoc(policyTypeMap.get(PolicyType.ROC));
         requirements.stream().filter(requirement -> !Constants.ERROR_STATE.equals(requirement.getState())).forEach(requirement -> {
@@ -56,7 +55,7 @@ public class RopRocApplicator extends PolicyApplicator {
                 //Add ORDER_POLICY_QUANTITY events to fdp request
                 RequirementChangeRequest requirementChangeRequest = new RequirementChangeRequest();
                 List<RequirementChangeMap> requirementChangeMaps = Lists.newArrayList();
-                requirementChangeMaps.add(payloadCreationHelper.createChangeMap(OverrideKey.QUANTITY.toString(), null, String.valueOf(requirement.getQuantity()), FdpRequirementEventType.ORDER_POLICY_QUANTITY.toString(), "ROP ROC policies applied", "system"));
+                requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.QUANTITY.toString(), null, String.valueOf(requirement.getQuantity()), FdpRequirementEventType.ORDER_POLICY_QUANTITY.toString(), "ROP ROC policies applied", "system"));
                 requirementChangeRequest.setRequirement(requirement);
                 requirementChangeRequest.setRequirementChangeMaps(requirementChangeMaps);
                 requirementChangeRequestList.add(requirementChangeRequest);

@@ -12,7 +12,7 @@ import java.util.UUID;
 /**
  * Created by yogeshwari.k on 17/03/17.
  */
-public class RequirementToFdpEventMapper implements FdpEventMapper<FdpRequirementEventData,List<RequirementChangeMap>> {
+public class RequirementToFdpEventMapper {
 
     private final FdpConfiguration fdpConfiguration;
 
@@ -21,7 +21,6 @@ public class RequirementToFdpEventMapper implements FdpEventMapper<FdpRequiremen
         this.fdpConfiguration = fdpConfiguration;
     }
 
-    @Override
     public List<FdpEventPayload<FdpRequirementEventData>> convertToEventPayload(Object requirementId, List<RequirementChangeMap> requirementChangeMaps) {
         List<FdpEventPayload<FdpRequirementEventData>> fdpRequirementEventPayloadList = Lists.newArrayList();
         requirementChangeMaps.forEach(changeMap -> {

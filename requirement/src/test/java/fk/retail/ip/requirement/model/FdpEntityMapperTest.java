@@ -24,7 +24,7 @@ import java.util.List;
 @UseModules(TestDbModule.class)
 public class FdpEntityMapperTest {
     @Inject
-    FdpEntityMapper fdpEntityMapper;
+    RequirementToFdpEntityMapper fdpEntityMapper;
 
     @Inject
     FdpConfiguration fdpConfiguration;
