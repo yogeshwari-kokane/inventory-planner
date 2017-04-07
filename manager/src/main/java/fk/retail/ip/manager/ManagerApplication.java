@@ -8,6 +8,7 @@ import com.hubspot.dropwizard.guice.GuiceBundle;
 import fk.retail.ip.manager.config.ManagerConfiguration;
 import fk.retail.ip.manager.config.ManagerModule;
 import fk.retail.ip.requirement.config.RequirementModule;
+import fk.retail.ip.ssl.config.SslClientModule;
 import fk.retail.ip.zulu.config.ZuluModule;
 import fk.sp.common.extensions.RequestContextFilter;
 import fk.sp.common.extensions.config.CustomEnumModule;
@@ -39,12 +40,17 @@ public class ManagerApplication extends Application<ManagerConfiguration> {
         Properties jpaProperties = new Properties();
         jpaProperties.put(JpaWithSpringModule.HIBERNATE_EJB_NAMING_STRATEGY,
                 "fk.retail.ip.manager.config.AnnotationRespectfulNamingStrategy");
+        jpaProperties.put("hibernate.jdbc.batch_size",30);
+        jpaProperties.put("hibernate.order_inserts", "true");
+        jpaProperties.put("hibernate.order_updates", "true");
+        jpaProperties.put("hibernate.jdbc.batch_versioned_data", "true");
         this.guiceBundle = GuiceBundle.<ManagerConfiguration>newBuilder()
                 .setConfigClass(ManagerConfiguration.class)
                 .addModule(new ManagerModule())
                 .addModule(new JerseyClientModule())
                 .addModule(new RequirementModule())
                 .addModule(new ZuluModule())
+                .addModule(new SslClientModule())
                 .addModule(new JpaWithSpringModule(
                         Sets.newHashSet(
                                 "fk.retail.ip"
