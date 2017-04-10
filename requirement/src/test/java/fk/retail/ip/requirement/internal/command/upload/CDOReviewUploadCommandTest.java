@@ -47,8 +47,7 @@ public class CDOReviewUploadCommandTest {
         List<RequirementDownloadLineItem> requirementDownloadLineItems =
                 TestHelper.getCdoReviewRequirementDownloadLineItem();
         List<Requirement> requirements = getRequirements();
-        List<UploadOverrideFailureLineItem> uploadOverrideFailureLineItems = CDOReviewUploadCommand.
-                execute(requirementDownloadLineItems ,requirements,"");
+        List<UploadOverrideFailureLineItem> uploadOverrideFailureLineItems = CDOReviewUploadCommand.execute(requirementDownloadLineItems ,requirements, "");
 
         Map<Long, Requirement> requirementMap = requirements.stream().collect
                 (Collectors.toMap(Requirement::getId, Function.identity()));

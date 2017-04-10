@@ -128,6 +128,7 @@ public class ApprovalService<E extends AbstractEntity> {
                         e.setCurrent(true);
                         requirement.setCurrent(false);
                         requirementChangeRequest.setRequirement(toStateEntity.get());
+                        e.setCreatedBy(userId);
                     });
                 }
                 requirementChangeRequest.setRequirementChangeMaps(requirementChangeMaps);

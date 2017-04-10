@@ -139,6 +139,8 @@ public abstract class UploadCommand {
                                 requirementChangeRequestList.add(requirementChangeRequest);
                             }
 
+                            requirement.setUpdatedBy(userId);
+
                         } else {
                             uploadOverrideFailureLineItem.setFailureReason
                                     (Constants.REQUIREMENT_NOT_FOUND_FOR_GIVEN_REQUIREMENT_ID);

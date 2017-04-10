@@ -46,8 +46,7 @@ public class ProposedUploadCommandTest {
         List<RequirementDownloadLineItem> requirementDownloadLineItems =
                 TestHelper.getProposedRequirementDownloadLineItem();
         List<Requirement> requirements = getRequirements();
-        List<UploadOverrideFailureLineItem> uploadOverrideFailureLineItems = uploadProposedCommand.
-                execute(requirementDownloadLineItems, requirements,"");
+        List<UploadOverrideFailureLineItem> uploadOverrideFailureLineItems = uploadProposedCommand.execute(requirementDownloadLineItems, requirements, "");
 
         Map<Long, Requirement> requirementMap = requirements.stream().collect
                 (Collectors.toMap(Requirement::getId, Function.identity()));
