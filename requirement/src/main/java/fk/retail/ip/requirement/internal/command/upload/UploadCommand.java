@@ -33,7 +33,9 @@ public abstract class UploadCommand {
     }
 
     public List<UploadOverrideFailureLineItem> execute(
-            List<RequirementDownloadLineItem> requirementDownloadLineItems, List<Requirement> requirements
+            List<RequirementDownloadLineItem> requirementDownloadLineItems,
+            List<Requirement> requirements,
+            String userId
     ) {
 
         Map<Long, Requirement> requirementMap = requirements.stream().
@@ -100,6 +102,8 @@ public abstract class UploadCommand {
                                 requirement.setOverrideComment
                                         (overriddenValues.get(OverrideKey.OVERRIDE_COMMENT.toString()).toString());
                             }
+
+                            requirement.setUpdatedBy(userId);
 
                         } else {
                             uploadOverrideFailureLineItem.setFailureReason

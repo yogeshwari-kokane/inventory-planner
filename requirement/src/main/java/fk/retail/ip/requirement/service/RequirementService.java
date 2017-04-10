@@ -77,7 +77,8 @@ public class RequirementService {
 
     public UploadResponse uploadRequirement(
             InputStream inputStream,
-            String requirementState
+            String requirementState,
+            String userId
     ) throws IOException, InvalidFormatException {
 
         SpreadSheetReader spreadSheetReader = new SpreadSheetReader();
@@ -112,7 +113,7 @@ public class RequirementService {
             } else {
                 RequirementState state = requirementStateFactory.getRequirementState(requirementState);
                 try {
-                    List<UploadOverrideFailureLineItem> uploadLineItems = state.upload(requirements, requirementDownloadLineItems);
+                    List<UploadOverrideFailureLineItem> uploadLineItems = state.upload(requirements, requirementDownloadLineItems, userId);
                     int successfulRowCount = requirementDownloadLineItems.size() - uploadLineItems.size();
                     UploadResponse uploadResponse = new UploadResponse();
                     uploadResponse.setUploadOverrideFailureLineItems(uploadLineItems);
@@ -143,7 +144,7 @@ public class RequirementService {
 
     }
 
-    public String changeState(RequirementApprovalRequest request) throws JSONException {
+    public String changeState(RequirementApprovalRequest request, String userId) throws JSONException {
         log.info("Approval request received for " + request);
         RequirementApprovalAction action = RequirementApprovalAction.valueOf(request.getFilters().get("projection_action").toString());
         boolean forward = action.isForward();

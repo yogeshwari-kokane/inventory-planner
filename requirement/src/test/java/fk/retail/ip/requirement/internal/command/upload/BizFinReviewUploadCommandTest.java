@@ -42,7 +42,8 @@ public class BizFinReviewUploadCommandTest {
     public void uploadTest() throws IOException {
         List<RequirementDownloadLineItem> requirementDownloadLineItems = TestHelper.getBizfinReviewDownloadLineItem();
         List<Requirement> requirements = getRequirements();
-        List<UploadOverrideFailureLineItem> uploadOverrideFailureLineItems = bizFinReviewUploadCommand.execute(requirementDownloadLineItems, requirements);
+        List<UploadOverrideFailureLineItem> uploadOverrideFailureLineItems =
+                bizFinReviewUploadCommand.execute(requirementDownloadLineItems, requirements, "");
 
         Map<Long, Requirement> requirementMap = requirements.stream().collect
                 (Collectors.toMap(Requirement::getId, Function.identity()));

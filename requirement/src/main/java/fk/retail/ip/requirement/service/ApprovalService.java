@@ -106,6 +106,7 @@ public class ApprovalService<E extends AbstractEntity> {
                     toStateEntity.ifPresent(e -> { // this will always be present
                         e.setCurrent(true);
                         requirement.setCurrent(false);
+                        e.setCreatedBy(userId);
                     });
                 }
             });
