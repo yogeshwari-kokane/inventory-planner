@@ -90,6 +90,7 @@ public class ApprovalService<E extends AbstractEntity> {
                 List<RequirementChangeMap> requirementChangeMaps = Lists.newArrayList();
                 if (forward) {
                     //Add APPROVE events to fdp request
+                    log.info("Adding APPROVE events to fdp request");
                     requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.STATE.toString(), fromState, toState, FdpRequirementEventType.APPROVE.toString(), "Moved to next state", userId));
                     if (toStateEntity.isPresent()) {
                         toStateEntity.get().setQuantity(requirement.getQuantity());
@@ -121,6 +122,7 @@ public class ApprovalService<E extends AbstractEntity> {
                     }
                 } else {
                     //Add CANCEL events to fdp request
+                    log.info("Adding CANCEL events to fdp request");
                     requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.STATE.toString(), fromState, toState, FdpRequirementEventType.CANCEL.toString(), "Moved to previous state", userId));
                     toStateEntity.ifPresent(e -> { // this will always be present
                         e.setCurrent(true);
@@ -134,6 +136,7 @@ public class ApprovalService<E extends AbstractEntity> {
             log.info("Updating Projections tables for Requirements");
             requirementRepository.updateProjections(requirements, groupToTargetState);
             //Push APPROVE and CANCEL events to fdp
+            log.info("Pushing APPROVE and CANCEL events to fdp");
             fdpRequirementIngestor.pushToFdp(requirementChangeRequestList);
         }
 

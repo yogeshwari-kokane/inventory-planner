@@ -1,12 +1,11 @@
 package fk.retail.ip.requirement.internal.command;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import fk.retail.ip.fdp.internal.command.FdpClientIngestor;
 import fk.retail.ip.fdp.model.*;
 import fk.retail.ip.requirement.model.*;
 import fk.retail.ip.requirement.internal.entities.Requirement;
+import lombok.extern.slf4j.Slf4j;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -14,6 +13,7 @@ import java.util.List;
 /**
  * Created by yogeshwari.k on 22/03/17.
  */
+@Slf4j
 public class FdpRequirementIngestorImpl {
 
     private final FdpClientIngestor fdpClientIngestor;
@@ -37,6 +37,8 @@ public class FdpRequirementIngestorImpl {
             batchFdpRequirementEventEntityPayload.getPurchaseRequirementEvent().addAll(fdpRequirementEventPayload);
         });
 
+        log.info("Pushing {} number of requirement entities to fdp", batchFdpRequirementEventEntityPayload.getPurchaseRequirementEntity().size());
+        log.info("Pushing {} number of requirement events to fdp", batchFdpRequirementEventEntityPayload.getPurchaseRequirementEvent().size());
         if(!batchFdpRequirementEventEntityPayload.getPurchaseRequirementEntity().isEmpty())
             fdpClientIngestor.pushToFdp(batchFdpRequirementEventEntityPayload);
     }

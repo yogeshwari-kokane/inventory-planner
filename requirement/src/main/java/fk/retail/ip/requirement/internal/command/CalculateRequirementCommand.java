@@ -202,9 +202,11 @@ public class CalculateRequirementCommand {
         requirementRepository.persist(allRequirements);
 
         //Add PROJECTION_CREATED events to fdp request
+        log.info("Adding PROJECTION_CREATED events to fdp request");
         addProjectionCreatedRequest(allRequirements, requirementChangeRequestList);
 
         //Push PROJECTION_CREATED, SUPPLIER_ASSIGNED and APP_ASSIGNED events to fdp
+        log.info("Pushing PROJECTION_CREATED, SUPPLIER_ASSIGNED and APP_ASSIGNED events to fdp");
         fdpRequirementIngestor.pushToFdp(requirementChangeRequestList);
     }
 
@@ -261,6 +263,7 @@ public class CalculateRequirementCommand {
                 requirement.setInternational(!supplier.isLocal());
                 requirement.setSslId(supplierResponse.getEntityId());
                 //Add SUPPLIER_ASSIGNED and APP_ASSIGNED events to fdp request
+                log.info("Adding SUPPLIER_ASSIGNED and APP_ASSIGNED events to fdp request");
                 requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.SUPPLIER.toString(), null, supplier.getSourceId(), FdpRequirementEventType.SUPPLIER_ASSIGNED.toString(), "Supplier assigned", "system"));
                 requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.APP.toString(), null, String.valueOf(supplier.getApp()), FdpRequirementEventType.APP_ASSIGNED.toString(), "App assigned", "system"));
                 requirementChangeRequest.setRequirement(requirement);
