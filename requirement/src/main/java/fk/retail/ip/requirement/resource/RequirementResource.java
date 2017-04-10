@@ -94,6 +94,13 @@ public class RequirementResource {
     }
 
     @POST
+    @Path("/push_to_proc")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String pushToProc(RequirementApprovalRequest request) throws JSONException {
+        return requirementService.pushToProc(request);
+    }
+
+    @POST
     @Path("/search")
     @Produces(MediaType.APPLICATION_JSON)
     public SearchResponse.GroupedResponse search(RequirementSearchRequest request) throws JSONException {

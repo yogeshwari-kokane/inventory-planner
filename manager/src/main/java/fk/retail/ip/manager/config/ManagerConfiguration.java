@@ -1,5 +1,6 @@
 package fk.retail.ip.manager.config;
 
+import fk.retail.ip.requirement.config.RequirementConfiguration;
 import fk.retail.ip.ssl.config.SslClientConfiguration;
 import fk.retail.ip.zulu.config.ZuluConfiguration;
 import fk.sp.common.extensions.dropwizard.db.HasDataSourceFactory;
@@ -27,6 +28,9 @@ public class ManagerConfiguration extends Configuration implements HasDataSource
 
     @NotNull
     private SslClientConfiguration sslClientConfiguration;
+
+    @NotNull
+    private RequirementConfiguration requirementConfiguration;
 
     @Valid
     @NotNull

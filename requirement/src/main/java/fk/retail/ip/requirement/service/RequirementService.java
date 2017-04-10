@@ -1,13 +1,16 @@
 package fk.retail.ip.requirement.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.flipkart.restbus.client.entity.Message;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import fk.retail.ip.core.poi.SpreadSheetReader;
 import fk.retail.ip.requirement.internal.Constants;
 import fk.retail.ip.requirement.internal.command.CalculateRequirementCommand;
+import fk.retail.ip.requirement.internal.command.PushToProcCommand;
 import fk.retail.ip.requirement.internal.command.SearchCommand;
 import fk.retail.ip.requirement.internal.command.SearchFilterCommand;
 import fk.retail.ip.requirement.internal.entities.Requirement;
@@ -47,13 +50,14 @@ public class RequirementService {
     private final Provider<CalculateRequirementCommand> calculateRequirementCommandProvider;
     private final SearchFilterCommand searchFilterCommand;
     private final Provider<SearchCommand> searchCommandProvider;
+    private final PushToProcCommand pushToProcCommand;
     private final int PAGE_SIZE = 20;
 
     @Inject
     public RequirementService(RequirementRepository requirementRepository, RequirementStateFactory requirementStateFactory,
                               ApprovalService approvalService, Provider<CalculateRequirementCommand> calculateRequirementCommandProvider,
                               RequirementApprovalTransitionRepository requirementApprovalStateTransitionRepository,
-                              SearchFilterCommand searchFilterCommand, Provider<SearchCommand> searchCommandProvider) {
+                              SearchFilterCommand searchFilterCommand, Provider<SearchCommand> searchCommandProvider, PushToProcCommand pushToProcCommand) {
         this.requirementRepository = requirementRepository;
         this.requirementStateFactory = requirementStateFactory;
         this.approvalService = approvalService;
@@ -61,6 +65,7 @@ public class RequirementService {
         this.requirementApprovalStateTransitionRepository = requirementApprovalStateTransitionRepository;
         this.searchFilterCommand = searchFilterCommand;
         this.searchCommandProvider = searchCommandProvider;
+        this.pushToProcCommand = pushToProcCommand;
     }
 
     public StreamingOutput downloadRequirement(DownloadRequirementRequest downloadRequirementRequest) {
@@ -157,6 +162,17 @@ public class RequirementService {
         approvalService.changeState(requirements, state, "dummyUser", forward, getter, new ApprovalService.CopyOnStateChangeAction(requirementRepository, requirementApprovalStateTransitionRepository ));
         log.info("State changed for {} number of requirements", requirements.size());
         return "{\"msg\":\"Moved " + requirements.size() + " requirements to new state.\"}";
+    }
+
+    public String pushToProc(RequirementApprovalRequest request) throws JSONException {
+        log.info("Push to proc request received " + request);
+        List<Long> ids = (List<Long>) request.getFilters().get("id");
+        List<String> fsns = searchFilterCommand.getSearchFilterFsns(request.getFilters());
+        String state = (String) request.getFilters().get("state");
+        List<Requirement> requirements = requirementRepository.findRequirements(ids, state, fsns);
+        pushToProcCommand.pushToProc(requirements);
+        log.info("Moved {} number of requirements to Procurement", requirements.size());
+        return "{\"msg\":\"Moved " + " requirements to Procurement.\"}";
     }
 
     public SearchResponse.GroupedResponse search(RequirementSearchRequest request) throws JSONException {
