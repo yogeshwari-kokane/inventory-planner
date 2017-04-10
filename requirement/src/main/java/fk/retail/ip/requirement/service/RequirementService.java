@@ -7,9 +7,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import fk.retail.ip.core.poi.SpreadSheetReader;
 import fk.retail.ip.requirement.internal.Constants;
-import fk.retail.ip.requirement.internal.command.CalculateRequirementCommand;
-import fk.retail.ip.requirement.internal.command.SearchCommand;
-import fk.retail.ip.requirement.internal.command.SearchFilterCommand;
+import fk.retail.ip.requirement.internal.command.*;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.enums.OverrideStatus;
 import fk.retail.ip.requirement.internal.enums.RequirementApprovalAction;
@@ -48,12 +46,13 @@ public class RequirementService {
     private final SearchFilterCommand searchFilterCommand;
     private final Provider<SearchCommand> searchCommandProvider;
     private final int PAGE_SIZE = 20;
+    private final FdpRequirementIngestorImpl fdpRequirementIngestor;
 
     @Inject
     public RequirementService(RequirementRepository requirementRepository, RequirementStateFactory requirementStateFactory,
                               ApprovalService approvalService, Provider<CalculateRequirementCommand> calculateRequirementCommandProvider,
                               RequirementApprovalTransitionRepository requirementApprovalStateTransitionRepository,
-                              SearchFilterCommand searchFilterCommand, Provider<SearchCommand> searchCommandProvider) {
+                              SearchFilterCommand searchFilterCommand, Provider<SearchCommand> searchCommandProvider, FdpRequirementIngestorImpl fdpRequirementIngestor) {
         this.requirementRepository = requirementRepository;
         this.requirementStateFactory = requirementStateFactory;
         this.approvalService = approvalService;
@@ -61,6 +60,7 @@ public class RequirementService {
         this.requirementApprovalStateTransitionRepository = requirementApprovalStateTransitionRepository;
         this.searchFilterCommand = searchFilterCommand;
         this.searchCommandProvider = searchCommandProvider;
+        this.fdpRequirementIngestor = fdpRequirementIngestor;
     }
 
     public StreamingOutput downloadRequirement(DownloadRequirementRequest downloadRequirementRequest) {
@@ -155,7 +155,7 @@ public class RequirementService {
         List<String> fsns = searchFilterCommand.getSearchFilterFsns(request.getFilters());
         requirements = requirementRepository.findRequirements(ids, state, fsns);
         log.info("Change state Request for {} number of requirements", requirements.size());
-        approvalService.changeState(requirements, state, "dummyUser", forward, getter, new ApprovalService.CopyOnStateChangeAction(requirementRepository, requirementApprovalStateTransitionRepository ));
+        approvalService.changeState(requirements, state, "dummyUser", forward, getter, new ApprovalService.CopyOnStateChangeAction(requirementRepository, requirementApprovalStateTransitionRepository, fdpRequirementIngestor));
         log.info("State changed for {} number of requirements", requirements.size());
         return "{\"msg\":\"Moved " + requirements.size() + " requirements to new state.\"}";
     }
@@ -189,9 +189,6 @@ public class RequirementService {
         log.info("Got Search Response for Requirement");
         return groupedResponse;
     }
-
-
-
 
     public void calculateRequirement(CalculateRequirementRequest calculateRequirementRequest) {
         calculateRequirementCommandProvider.get().withFsns(calculateRequirementRequest.getFsns()).execute();
