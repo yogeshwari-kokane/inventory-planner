@@ -175,6 +175,15 @@ public class RequirementService {
         return "{\"msg\":\"Moved " + " requirements to Procurement.\"}";
     }
 
+    public String setPurchaseOrderId(Long reqId, CreatePushToProcResponse callback) {
+        log.info("Proc response received for requirement_id: " + reqId);
+        List<Long> reqIds = Lists.newArrayList();
+        reqIds.add(reqId);
+        List<Requirement> requirements = requirementRepository.findRequirementByIds(reqIds);
+        requirements.get(0).setPoId((Integer) callback.getProcResponse().get(0).get("id"));
+        return "{\"msg\":\"Set po_id for requirement_id: " + reqId + " \"}";
+    }
+
     public SearchResponse.GroupedResponse search(RequirementSearchRequest request) throws JSONException {
         log.info("Search Requirement request received " + request);
         Integer pageNo;
@@ -204,9 +213,6 @@ public class RequirementService {
         log.info("Got Search Response for Requirement");
         return groupedResponse;
     }
-
-
-
 
     public void calculateRequirement(CalculateRequirementRequest calculateRequirementRequest) {
         calculateRequirementCommandProvider.get().withFsns(calculateRequirementRequest.getFsns()).execute();

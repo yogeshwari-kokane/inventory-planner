@@ -101,6 +101,13 @@ public class RequirementResource {
     }
 
     @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/callback/{req_id}")
+    public String updateRequirements(@PathParam("req_id") Long reqId, CreatePushToProcResponse callback) {
+        return requirementService.setPurchaseOrderId(reqId, callback);
+    }
+
+    @POST
     @Path("/search")
     @Produces(MediaType.APPLICATION_JSON)
     public SearchResponse.GroupedResponse search(RequirementSearchRequest request) throws JSONException {

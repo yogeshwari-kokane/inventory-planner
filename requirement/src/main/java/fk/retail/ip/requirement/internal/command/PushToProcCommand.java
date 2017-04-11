@@ -8,6 +8,7 @@ import fk.retail.ip.requirement.config.RequirementConfiguration;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.model.CreatePushToProcRequest;
 import fk.retail.ip.requirement.model.PushToProcRequest;
+import fk.sp.common.restbus.sender.RestbusMessageSender;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
@@ -25,30 +26,30 @@ public class PushToProcCommand {
 
     private final ObjectMapper mapper;
     private final RequirementConfiguration requirementConfiguration;
+    private final RestbusMessageSender restbusMessageSender;
 
     @Inject
-    PushToProcCommand(ObjectMapper mapper, RequirementConfiguration requirementConfiguration) {
+    PushToProcCommand(ObjectMapper mapper, RequirementConfiguration requirementConfiguration, RestbusMessageSender restbusMessageSender) {
         this.mapper = mapper;
         this.requirementConfiguration = requirementConfiguration;
+        this.restbusMessageSender = restbusMessageSender;
     }
 
     private Map<Long, PushToProcRequest> getPushToProcRequest(List<Requirement> requirements) {
         return requirements.stream()
-                .collect(Collectors.toMap(requirement -> requirement.getId(), requirement -> {
-                    return PushToProcRequest.builder()
-                            .fsn(requirement.getFsn())
-                            .sku("SKU0000000000000")
-                            .quantity((int)requirement.getQuantity())
-                            .local(true)
-                            .supplierApp((float)requirement.getApp())
-                            .supplierMrp((float)requirement.getMrp())
-                            .sourceId(requirement.getSupplier())
-                            .requiredByDate(getRequiredByDate(requirement))
-                            .requirementType(requirement.getProcType())
-                            .currency(requirement.getCurrency())
-                            .warehouseId(requirement.getWarehouse())
-                            .build();
-                }));
+                .collect(Collectors.toMap(requirement -> requirement.getId(), requirement -> PushToProcRequest.builder()
+                        .fsn(requirement.getFsn())
+                        .sku("SKU0000000000000")
+                        .quantity((int)requirement.getQuantity())
+                        .local(true)
+                        .supplierApp((float)requirement.getApp())
+                        .supplierMrp((float)requirement.getMrp())
+                        .sourceId(requirement.getSupplier())
+                        .requiredByDate(getRequiredByDate(requirement))
+                        .requirementType(requirement.getProcType())
+                        .currency(requirement.getCurrency())
+                        .warehouseId(requirement.getWarehouse())
+                        .build()));
     }
 
     private Date getRequiredByDate(Requirement requirement) {
@@ -72,7 +73,7 @@ public class PushToProcCommand {
         message.setHttpUri(requirementConfiguration.getUrl());
         message.setReplyTo(requirementConfiguration.getRequirementQueueName());
         message.setReplyToHttpMethod("POST");
-        message.setAppId("fk-rp-populator");
+        message.setAppId("fk-ip-inventory-planner");
         return message;
     }
 
@@ -85,7 +86,7 @@ public class PushToProcCommand {
             try {
                 message.setPayload(mapper.writeValueAsString(pushToProcRequest));
                 message.setReplyToHttpUri(requirementConfiguration.getCallbackUrl() + id);
-                //restbusMessageSender.send(message);
+                restbusMessageSender.send(message);
             } catch (JsonProcessingException e) {
                 log.error("Unable to serialize request object ", e);
             }

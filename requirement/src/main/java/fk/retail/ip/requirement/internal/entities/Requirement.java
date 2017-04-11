@@ -88,6 +88,9 @@ public class Requirement extends AbstractEntity {
     //todo:cleanup
     private String mrpCurrency;
 
+    //TODO: add column in db
+    private Integer poId;
+
     public Requirement(Long id) {
         this.id = id;
     }
@@ -107,6 +110,7 @@ public class Requirement extends AbstractEntity {
         enabled = other.enabled;
         current = other.current;
         requirementSnapshot = other.requirementSnapshot;
+        poId = other.poId;
 
         //TODO: legacy code
         projectionId = other.projectionId;

@@ -15,6 +15,7 @@ import fk.sp.common.extensions.config.CustomEnumModule;
 import fk.sp.common.extensions.dropwizard.jersey.JerseyClientModule;
 import fk.sp.common.extensions.dropwizard.jersey.LoggingFilter;
 import fk.sp.common.extensions.guice.jpa.spring.JpaWithSpringModule;
+import fk.sp.common.restbus.sender.config.RestbusSenderModule;
 import flipkart.retail.server.admin.bundle.RotationManagementBundle;
 import flipkart.retail.server.admin.config.RotationManagementConfig;
 import io.dropwizard.Application;
@@ -51,9 +52,11 @@ public class ManagerApplication extends Application<ManagerConfiguration> {
                 .addModule(new RequirementModule())
                 .addModule(new ZuluModule())
                 .addModule(new SslClientModule())
+                .addModule(new RestbusSenderModule())
                 .addModule(new JpaWithSpringModule(
                         Sets.newHashSet(
-                                "fk.retail.ip"
+                                "fk.retail.ip",
+                                "com.restbus.client.plugin.hibernate.entity"
                         ), jpaProperties))
                 .enableAutoConfig(
                         "fk.sp.common.extensions.exception",
