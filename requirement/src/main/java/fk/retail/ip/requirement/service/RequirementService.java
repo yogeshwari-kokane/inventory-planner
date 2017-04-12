@@ -15,6 +15,8 @@ import fk.retail.ip.requirement.internal.command.SearchCommand;
 import fk.retail.ip.requirement.internal.command.SearchFilterCommand;
 import fk.retail.ip.requirement.internal.command.*;
 import fk.retail.ip.requirement.internal.entities.Requirement;
+import fk.retail.ip.requirement.internal.enums.FdpRequirementEventType;
+import fk.retail.ip.requirement.internal.enums.OverrideKey;
 import fk.retail.ip.requirement.internal.enums.OverrideStatus;
 import fk.retail.ip.requirement.internal.enums.RequirementApprovalAction;
 import fk.retail.ip.requirement.internal.factory.RequirementStateFactory;
@@ -168,23 +170,35 @@ public class RequirementService {
         return "{\"msg\":\"Moved " + requirements.size() + " requirements to new state.\"}";
     }
 
-    public String pushToProc(RequirementApprovalRequest request) throws JSONException {
+    public String pushToProc(RequirementApprovalRequest request, String userId) throws JSONException {
         log.info("Push to proc request received " + request);
         List<Long> ids = (List<Long>) request.getFilters().get("id");
         List<String> fsns = searchFilterCommand.getSearchFilterFsns(request.getFilters());
         String state = (String) request.getFilters().get("state");
         List<Requirement> requirements = requirementRepository.findRequirements(ids, state, fsns);
-        pushToProcCommand.pushToProc(requirements);
+        pushToProcCommand.pushToProc(requirements,userId);
         log.info("Moved {} number of requirements to Procurement", requirements.size());
         return "{\"msg\":\"Moved " + " requirements to Procurement.\"}";
     }
 
-    public String setPurchaseOrderId(Long reqId, CreatePushToProcResponse callback) {
+    public String setPurchaseOrderId(Long reqId, CreatePushToProcResponse callback, String userId) {
+        List<RequirementChangeRequest> requirementChangeRequestList = Lists.newArrayList();
+        RequirementChangeRequest requirementChangeRequest = new RequirementChangeRequest();
+        List<RequirementChangeMap> requirementChangeMaps = Lists.newArrayList();
         log.info("Proc response received for requirement_id: " + reqId);
         List<Long> reqIds = Lists.newArrayList();
         reqIds.add(reqId);
         List<Requirement> requirements = requirementRepository.findRequirementByIds(reqIds);
         requirements.get(0).setPoId((Integer) callback.getProcResponse().get(0).get("id"));
+        //Add PUSHED_TO_PROC events to fdp request
+        log.info("Adding PUSHED_TO_PROC events to fdp request");
+        requirementChangeRequest.setRequirement(requirements.get(0));
+        requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.PO_ID.toString(), null, requirements.get(0).getPoId().toString(), FdpRequirementEventType.PUSHED_TO_PROC.toString(), "Pushed to proc", userId));
+        requirementChangeRequest.setRequirementChangeMaps(requirementChangeMaps);
+        requirementChangeRequestList.add(requirementChangeRequest);
+        //Push PUSHED_TO_PROC events to fdp
+        log.info("Pushing PUSHED_TO_PROC events to fdp");
+        fdpRequirementIngestor.pushToFdp(requirementChangeRequestList);
         return "{\"msg\":\"Set po_id for requirement_id: " + reqId + " \"}";
     }
 
