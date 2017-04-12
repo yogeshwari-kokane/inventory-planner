@@ -91,6 +91,7 @@ public class Requirement extends AbstractEntity {
     private String mrpCurrency;
 
     //TODO: add column in db
+    @Column(name = "po_id")
     private Integer poId;
 
     public Requirement(Long id) {

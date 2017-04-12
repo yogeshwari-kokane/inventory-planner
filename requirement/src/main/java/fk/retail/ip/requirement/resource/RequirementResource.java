@@ -114,6 +114,9 @@ public class RequirementResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/callback/{req_id}")
     public String updateRequirements(@PathParam("req_id") Long reqId, CreatePushToProcResponse callback, @HeaderParam("X-Proxy-User") String userId) {
+        if (userId == null) {
+            userId = "dummyUser";
+        }
         return requirementService.setPurchaseOrderId(reqId, callback, userId);
     }
 

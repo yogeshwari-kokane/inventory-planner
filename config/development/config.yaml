@@ -68,7 +68,7 @@ zuluConfiguration:
 requirementConfiguration:
   url: http://stage-flo-proc-b2b.ch.flipkart.com
   viewPath: "/requirements"
-  callbackUrl: http://localhost:22000/requirements/callback/
+  callbackUrl: http://localhost:32000/v1/requirement/callback/
   requirementQueueName: retail_rp_internal_requirement
 
 

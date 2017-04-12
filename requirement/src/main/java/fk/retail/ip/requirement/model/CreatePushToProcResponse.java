@@ -1,6 +1,7 @@
 package fk.retail.ip.requirement.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,5 +17,6 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreatePushToProcResponse {
+    @JsonProperty("requirements")
     private List<Map<String,Object>> procResponse = Lists.newArrayList();
 }
