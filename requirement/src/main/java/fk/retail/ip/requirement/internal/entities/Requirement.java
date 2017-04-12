@@ -66,6 +66,8 @@ public class Requirement extends AbstractEntity {
 
     private String createdBy;
 
+    private String updatedBy;
+
     private Long sslId;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)

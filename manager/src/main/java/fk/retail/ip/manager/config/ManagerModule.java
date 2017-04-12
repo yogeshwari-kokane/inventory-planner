@@ -7,9 +7,12 @@ import com.google.inject.TypeLiteral;
 import com.google.inject.multibindings.Multibinder;
 import fk.retail.ip.requirement.config.RequirementConfiguration;
 import fk.retail.ip.ssl.config.SslClientConfiguration;
+import fk.retail.ip.fdp.config.FdpConfiguration;
 import fk.retail.ip.zulu.config.ZuluConfiguration;
 import fk.sp.common.extensions.dropwizard.db.HasDataSourceFactory;
 import io.dropwizard.client.JerseyClientConfiguration;
+
+import java.text.SimpleDateFormat;
 import java.util.logging.Logger;
 import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.client.ClientResponseFilter;
@@ -55,6 +58,11 @@ public class ManagerModule extends AbstractModule {
     }
 
     @Provides
+    public FdpConfiguration getFdpConfiguration(ManagerConfiguration managerConfiguration) {
+        return managerConfiguration.getFdpConfiguration();
+    }
+
+    @Provides
     public JerseyClientConfiguration getJerseyClientConfiguration(
             ManagerConfiguration managerConfiguration) {
         return managerConfiguration.getClientConfiguration();
@@ -62,6 +70,7 @@ public class ManagerModule extends AbstractModule {
 
     @Provides
     public ObjectMapper getObjectMapper() {
+        objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS"));
         return objectMapper;
     }
 }
