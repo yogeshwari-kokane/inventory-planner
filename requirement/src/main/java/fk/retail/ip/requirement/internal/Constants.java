@@ -52,5 +52,7 @@ public interface Constants {
     String SUPPLIER_OVERRIDE_COMMENT = "supplierOverrideComment";
     String STATUS = "status";
 
+    String APP_ID = "fk-ip-inventory-planner";
+
 }
 

@@ -70,7 +70,6 @@ public class ManagerModule extends AbstractModule {
 
     @Provides
     public ObjectMapper getObjectMapper() {
-        objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS"));
         return objectMapper;
     }
 }

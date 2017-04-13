@@ -9,20 +9,15 @@ import fk.retail.ip.requirement.config.RequirementConfiguration;
 import fk.retail.ip.requirement.internal.Constants;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.entities.RequirementApprovalTransition;
-import fk.retail.ip.requirement.internal.enums.FdpRequirementEventType;
-import fk.retail.ip.requirement.internal.enums.OverrideKey;
 import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
 import fk.retail.ip.requirement.internal.repository.RequirementApprovalTransitionRepository;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.model.CreatePushToProcRequest;
 import fk.retail.ip.requirement.model.PushToProcRequest;
-import fk.retail.ip.requirement.model.RequirementChangeMap;
-import fk.retail.ip.requirement.model.RequirementChangeRequest;
 import fk.sp.common.restbus.sender.RestbusMessageSender;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -87,7 +82,7 @@ public class PushToProcCommand {
         message.setHttpUri(requirementConfiguration.getUrl());
         message.setReplyTo(requirementConfiguration.getRequirementQueueName());
         message.setReplyToHttpMethod("POST");
-        message.setAppId("fk-ip-inventory-planner");
+        message.setAppId(Constants.APP_ID.toString());
         return message;
     }
 
