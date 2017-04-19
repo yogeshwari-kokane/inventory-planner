@@ -5,20 +5,26 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.restbus.client.entity.Message;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
-import fk.retail.ip.requirement.config.RequirementConfiguration;
+import fk.retail.ip.proc.config.ProcClientConfiguration;
+import fk.retail.ip.proc.internal.command.PushToProcClientCommand;
 import fk.retail.ip.requirement.internal.Constants;
 import fk.retail.ip.requirement.internal.entities.Requirement;
-import fk.retail.ip.requirement.internal.entities.RequirementApprovalTransition;
+import fk.retail.ip.requirement.internal.enums.FdpRequirementEventType;
+import fk.retail.ip.requirement.internal.enums.OverrideKey;
 import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
 import fk.retail.ip.requirement.internal.repository.RequirementApprovalTransitionRepository;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
-import fk.retail.ip.requirement.model.CreatePushToProcRequest;
-import fk.retail.ip.requirement.model.PushToProcRequest;
+import fk.retail.ip.proc.model.CreatePushToProcRequest;
+import fk.retail.ip.proc.model.PushToProcRequest;
+import fk.retail.ip.requirement.model.RequirementChangeMap;
+import fk.retail.ip.requirement.model.RequirementChangeRequest;
 import fk.sp.common.restbus.sender.RestbusMessageSender;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -29,19 +35,15 @@ import java.util.stream.Collectors;
 @Slf4j
 public class PushToProcCommand {
 
-    private final ObjectMapper mapper;
-    private final RequirementConfiguration requirementConfiguration;
-    private final RestbusMessageSender restbusMessageSender;
     private final RequirementRepository requirementRepository;
-    private final RequirementApprovalTransitionRepository requirementApprovalStateTransitionRepository;
+    private final PushToProcClientCommand pushToProcClientCommand;
+    private final FdpRequirementIngestorImpl fdpRequirementIngestor;
 
     @Inject
-    PushToProcCommand(ObjectMapper mapper, RequirementConfiguration requirementConfiguration, RestbusMessageSender restbusMessageSender, RequirementRepository requirementRepository, RequirementApprovalTransitionRepository requirementApprovalStateTransitionRepository) {
-        this.mapper = mapper;
-        this.requirementConfiguration = requirementConfiguration;
-        this.restbusMessageSender = restbusMessageSender;
+    PushToProcCommand(RequirementRepository requirementRepository, PushToProcClientCommand pushToProcClientCommand, FdpRequirementIngestorImpl fdpRequirementIngestor) {
         this.requirementRepository = requirementRepository;
-        this.requirementApprovalStateTransitionRepository = requirementApprovalStateTransitionRepository;
+        this.pushToProcClientCommand = pushToProcClientCommand;
+        this.fdpRequirementIngestor = fdpRequirementIngestor;
     }
 
     private Map<Long, PushToProcRequest> getPushToProcRequest(List<Requirement> requirements) {
@@ -74,57 +76,57 @@ public class PushToProcCommand {
         return adjustedDate.toDate();
     }
 
-    private Message getMessageInstance() {
-        Message message = new Message();
-        message.setExchangeName(requirementConfiguration.getRequirementQueueName());
-        message.setExchangeType("queue");
-        message.setHttpMethod("POST");
-        message.setHttpUri(requirementConfiguration.getUrl());
-        message.setReplyTo(requirementConfiguration.getRequirementQueueName());
-        message.setReplyToHttpMethod("POST");
-        message.setAppId(Constants.APP_ID.toString());
-        return message;
-    }
-
     private List<Requirement> createPushToProcRequirement(List<Requirement> requirements, String userId) {
-        Map<Long, String> groupToTargetState = getGroupToTargetStateMap(RequirementApprovalState.IPC_FINALISED.toString(), true);
+        List<RequirementChangeRequest> requirementChangeRequestList = Lists.newArrayList();
+        Map<Long, String> groupToTargetState = new HashMap<>();
+        groupToTargetState.put((long) 1,RequirementApprovalState.PUSHED_TO_PROC.toString());
         log.info("Constructed map for group to Target state " + groupToTargetState);
         List<Requirement> pushToProcRequirements = Lists.newArrayList();
         requirements.forEach(requirement -> {
             Requirement newEntity = new Requirement(requirement);
             requirement.setCurrent(false);
-            newEntity.setState(RequirementApprovalState.PUSHED_TO_PROC.toString());
             newEntity.setCreatedBy(userId);
             newEntity.setPreviousStateId(requirement.getId());
             newEntity.setCurrent(true);
+            String eventType = null;
+            String reason = null;
+            if(requirement.getQuantity()==0 || StringUtils.isEmpty(requirement.getSupplier()) || "-".equals(requirement.getSupplier())) {
+                newEntity.setState(Constants.ERROR_STATE.toString());
+                newEntity.setOverrideComment(Constants.PUSHED_TO_PROC_FAILED.toString());
+                eventType = FdpRequirementEventType.PUSH_TO_PROC_FAILED.toString();
+                reason = "push to proc failed";
+            }
+            else {
+                newEntity.setState(RequirementApprovalState.PUSHED_TO_PROC.toString());
+                pushToProcRequirements.add(newEntity);
+                eventType = FdpRequirementEventType.PUSHED_TO_PROC.toString();
+                reason = "pushed to proc";
+            }
             requirementRepository.persist(newEntity);
-            pushToProcRequirements.add(newEntity);
+            pushToFdp(requirementChangeRequestList, requirement, newEntity, reason, eventType, userId);
         });
         log.info("Updating Projections tables for Requirements");
         requirementRepository.updateProjections(requirements, groupToTargetState);
+        //Push PUSHED_TO_PROC, PUSH_TO_PROC_FAILED events to fdp
+        log.info("Pushing PUSHED_TO_PROC, PUSH_TO_PROC_FAILED events to fdp");
+        fdpRequirementIngestor.pushToFdp(requirementChangeRequestList);
         return pushToProcRequirements;
+    }
+
+    public void pushToFdp(List<RequirementChangeRequest> requirementChangeRequestList, Requirement requirement, Requirement newEntity, String reason, String eventType, String userId) {
+        //Add PUSHED_TO_PROC, PUSH_TO_PROC_FAILED events to fdp request
+        RequirementChangeRequest requirementChangeRequest = new RequirementChangeRequest();
+        List<RequirementChangeMap> requirementChangeMaps = Lists.newArrayList();
+        log.info("Adding PUSHED_TO_PROC, PUSH_TO_PROC_FAILED events to fdp request");
+        requirementChangeRequest.setRequirement(newEntity);
+        requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.STATE.toString(), requirement.getState(), newEntity.getState(), eventType, reason, userId));
+        requirementChangeRequest.setRequirementChangeMaps(requirementChangeMaps);
+        requirementChangeRequestList.add(requirementChangeRequest);
     }
 
     public void pushToProc(List<Requirement> requirements, String userId) {
         List<Requirement> pushToProcRequirements = createPushToProcRequirement(requirements,userId);
         Map<Long, PushToProcRequest> allRequirements = getPushToProcRequest(pushToProcRequirements);
-        allRequirements.forEach((id, requirement) -> {
-            Message message = getMessageInstance();
-            CreatePushToProcRequest pushToProcRequest = new CreatePushToProcRequest();
-            pushToProcRequest.getPushToProcRequestList().add(requirement);
-            try {
-                message.setPayload(mapper.writeValueAsString(pushToProcRequest));
-                message.setReplyToHttpUri(requirementConfiguration.getCallbackUrl() + id);
-                restbusMessageSender.send(message);
-            } catch (JsonProcessingException e) {
-                log.error("Unable to serialize request object ", e);
-            }
-        });
+        pushToProcClientCommand.pushToProc(allRequirements);
     }
-
-    private Map<Long, String> getGroupToTargetStateMap(String fromState, boolean forward) {
-        List<RequirementApprovalTransition> transitionList = requirementApprovalStateTransitionRepository.getApprovalTransition(fromState, forward);
-        return transitionList.stream().collect(Collectors.toMap(RequirementApprovalTransition::getGroupId, RequirementApprovalTransition::getToState));
-    }
-
 }

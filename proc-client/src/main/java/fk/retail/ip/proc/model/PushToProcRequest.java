@@ -1,4 +1,4 @@
-package fk.retail.ip.requirement.model;
+package fk.retail.ip.proc.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.dropwizard.jackson.JsonSnakeCase;

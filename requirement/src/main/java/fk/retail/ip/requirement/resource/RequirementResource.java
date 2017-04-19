@@ -103,21 +103,15 @@ public class RequirementResource {
     @POST
     @Path("/push_to_proc")
     @Produces(MediaType.APPLICATION_JSON)
-    public String pushToProc(RequirementApprovalRequest request, @HeaderParam("X-Proxy-User") String userId) throws JSONException {
-        if (userId == null) {
-            userId = "dummyUser";
-        }
+    public String pushToProc(RaisePORequest request, @HeaderParam("X-Proxy-User") String userId) throws JSONException {
         return requirementService.pushToProc(request, userId);
     }
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/callback/{req_id}")
-    public String updateRequirements(@PathParam("req_id") Long reqId, CreatePushToProcResponse callback, @HeaderParam("X-Proxy-User") String userId) {
-        if (userId == null) {
-            userId = "dummyUser";
-        }
-        return requirementService.setPurchaseOrderId(reqId, callback, userId);
+    public String updateRequirements(@PathParam("req_id") Long reqId, CreatePushToProcResponse callback) {
+        return requirementService.setPurchaseOrderId(reqId, callback);
     }
 
     @POST

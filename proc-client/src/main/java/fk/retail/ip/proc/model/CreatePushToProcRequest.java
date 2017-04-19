@@ -1,7 +1,8 @@
-package fk.retail.ip.requirement.model;
+package fk.retail.ip.proc.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.Lists;
+import fk.retail.ip.proc.model.PushToProcRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

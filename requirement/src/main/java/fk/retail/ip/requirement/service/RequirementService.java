@@ -32,6 +32,7 @@ import javax.ws.rs.core.StreamingOutput;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -170,7 +171,7 @@ public class RequirementService {
         return "{\"msg\":\"Moved " + requirements.size() + " requirements to new state.\"}";
     }
 
-    public String pushToProc(RequirementApprovalRequest request, String userId) throws JSONException {
+    public String pushToProc(RaisePORequest request, String userId) throws JSONException {
         log.info("Push to proc request received " + request);
         List<Long> ids = (List<Long>) request.getFilters().get("id");
         List<String> fsns = searchFilterCommand.getSearchFilterFsns(request.getFilters());
@@ -181,23 +182,22 @@ public class RequirementService {
         return "{\"msg\":\"Moved " + " requirements to Procurement.\"}";
     }
 
-    public String setPurchaseOrderId(Long reqId, CreatePushToProcResponse callback, String userId) {
+    public String setPurchaseOrderId(Long reqId, CreatePushToProcResponse callback) {
         List<RequirementChangeRequest> requirementChangeRequestList = Lists.newArrayList();
         RequirementChangeRequest requirementChangeRequest = new RequirementChangeRequest();
         List<RequirementChangeMap> requirementChangeMaps = Lists.newArrayList();
         log.info("Proc response received for requirement_id: " + reqId);
-        List<Long> reqIds = Lists.newArrayList();
-        reqIds.add(reqId);
-        List<Requirement> requirements = requirementRepository.findRequirementByIds(reqIds);
+        List<Requirement> requirements = requirementRepository.findRequirementByIds(Arrays.asList(reqId));
+        String userId = requirements.get(0).getCreatedBy();
         requirements.get(0).setPoId((Integer) callback.getProcResponse().get(0).get("id"));
-        //Add PUSHED_TO_PROC events to fdp request
-        log.info("Adding PUSHED_TO_PROC events to fdp request");
+        //Add PROC_CALLBACK_RECEIVED events to fdp request
+        log.info("Adding PROC_CALLBACK_RECEIVED events to fdp request");
         requirementChangeRequest.setRequirement(requirements.get(0));
-        requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.PO_ID.toString(), null, requirements.get(0).getPoId().toString(), FdpRequirementEventType.PUSHED_TO_PROC.toString(), "Pushed to proc", userId));
+        requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.PO_ID.toString(), null, requirements.get(0).getPoId().toString(), FdpRequirementEventType.PROC_CALLBACK_RECEIVED.toString(), "Proc callback received", userId));
         requirementChangeRequest.setRequirementChangeMaps(requirementChangeMaps);
         requirementChangeRequestList.add(requirementChangeRequest);
-        //Push PUSHED_TO_PROC events to fdp
-        log.info("Pushing PUSHED_TO_PROC events to fdp");
+        //Push PROC_CALLBACK_RECEIVED events to fdp
+        log.info("Pushing PROC_CALLBACK_RECEIVED events to fdp");
         fdpRequirementIngestor.pushToFdp(requirementChangeRequestList);
         return "{\"msg\":\"Set po_id for requirement_id: " + reqId + " \"}";
     }

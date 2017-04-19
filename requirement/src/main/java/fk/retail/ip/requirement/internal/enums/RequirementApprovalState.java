@@ -13,7 +13,7 @@ public enum RequirementApprovalState {
     BIZFIN_REVIEW("bd_approved"),
     IPC_REVIEW("bizfin_approved"),
     IPC_FINALISED("ipc_finalized"),
-    PUSHED_TO_PROC("pushed_to_proc");
+    PUSHED_TO_PROC("closed");
 
 
     private String state;

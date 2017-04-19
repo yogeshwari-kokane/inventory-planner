@@ -1,6 +1,6 @@
 package fk.retail.ip.manager.config;
 
-import fk.retail.ip.requirement.config.RequirementConfiguration;
+import fk.retail.ip.proc.config.ProcClientConfiguration;
 import fk.retail.ip.ssl.config.SslClientConfiguration;
 import fk.retail.ip.zulu.config.ZuluConfiguration;
 import fk.retail.ip.fdp.config.FdpConfiguration;
@@ -31,7 +31,7 @@ public class ManagerConfiguration extends Configuration implements HasDataSource
     private SslClientConfiguration sslClientConfiguration;
 
     @NotNull
-    private RequirementConfiguration requirementConfiguration;
+    private ProcClientConfiguration procClientConfiguration;
 
     @NotNull
     private FdpConfiguration fdpConfiguration;

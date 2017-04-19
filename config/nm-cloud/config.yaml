@@ -100,7 +100,7 @@ zuluConfiguration:
   clientId: "retail.rp"
   maxBatchSize: 30
 
-requirementConfiguration:
+procClientConfiguration:
   url: http://stage-flo-proc-b2b.ch.flipkart.com
   viewPath: "/requirements"
   callbackUrl: http://localhost:32000/v1/requirement/callback/
