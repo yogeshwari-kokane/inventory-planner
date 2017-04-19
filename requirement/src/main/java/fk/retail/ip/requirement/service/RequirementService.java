@@ -1,13 +1,12 @@
 package fk.retail.ip.requirement.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flipkart.restbus.client.entity.Message;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import fk.retail.ip.core.poi.SpreadSheetReader;
+import fk.retail.ip.proc.model.CreatePushToProcResponse;
 import fk.retail.ip.requirement.internal.Constants;
 import fk.retail.ip.requirement.internal.command.CalculateRequirementCommand;
 import fk.retail.ip.requirement.internal.command.PushToProcCommand;
@@ -177,23 +176,25 @@ public class RequirementService {
         List<String> fsns = searchFilterCommand.getSearchFilterFsns(request.getFilters());
         String state = (String) request.getFilters().get("state");
         List<Requirement> requirements = requirementRepository.findRequirements(ids, state, fsns);
-        pushToProcCommand.pushToProc(requirements,userId);
+        int pushedRequirements = pushToProcCommand.pushToProc(requirements,userId);
         log.info("Moved {} number of requirements to Procurement", requirements.size());
-        return "{\"msg\":\"Moved " + " requirements to Procurement.\"}";
+        return "{\"msg\":\"Moved " + pushedRequirements +" requirements to Procurement.\"}";
     }
 
     public String setPurchaseOrderId(Long reqId, CreatePushToProcResponse callback) {
+        log.info("Proc response received for requirement_id: " + reqId);
+        List<Requirement> requirementList = requirementRepository.findRequirementByIds(Arrays.asList(reqId));
+        Requirement requirement = requirementList.get(0);
+        Map<String,Object> response = callback.getProcResponse().get(0); //since we get only one requirement response from proc
+        requirement.setPoId((Integer) response.get("id"));
+        String userId = requirement.getCreatedBy();
+        //Add PROC_CALLBACK_RECEIVED events to fdp request
         List<RequirementChangeRequest> requirementChangeRequestList = Lists.newArrayList();
         RequirementChangeRequest requirementChangeRequest = new RequirementChangeRequest();
         List<RequirementChangeMap> requirementChangeMaps = Lists.newArrayList();
-        log.info("Proc response received for requirement_id: " + reqId);
-        List<Requirement> requirements = requirementRepository.findRequirementByIds(Arrays.asList(reqId));
-        String userId = requirements.get(0).getCreatedBy();
-        requirements.get(0).setPoId((Integer) callback.getProcResponse().get(0).get("id"));
-        //Add PROC_CALLBACK_RECEIVED events to fdp request
         log.info("Adding PROC_CALLBACK_RECEIVED events to fdp request");
-        requirementChangeRequest.setRequirement(requirements.get(0));
-        requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.PO_ID.toString(), null, requirements.get(0).getPoId().toString(), FdpRequirementEventType.PROC_CALLBACK_RECEIVED.toString(), "Proc callback received", userId));
+        requirementChangeRequest.setRequirement(requirement);
+        requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.PO_ID.toString(), null, requirement.getPoId().toString(), FdpRequirementEventType.PROC_CALLBACK_RECEIVED.toString(), "Proc callback received", userId));
         requirementChangeRequest.setRequirementChangeMaps(requirementChangeMaps);
         requirementChangeRequestList.add(requirementChangeRequest);
         //Push PROC_CALLBACK_RECEIVED events to fdp

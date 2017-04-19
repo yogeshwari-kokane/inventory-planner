@@ -47,7 +47,7 @@ public class ManagerModule extends AbstractModule {
     }
 
     @Provides
-    public ProcClientConfiguration getRequirementConfiguration(ManagerConfiguration managerConfiguration) {
+    public ProcClientConfiguration getProcClientConfiguration(ManagerConfiguration managerConfiguration) {
         return  managerConfiguration.getProcClientConfiguration();
     }
 

@@ -88,10 +88,10 @@ public class PushToProcCommand {
             newEntity.setCreatedBy(userId);
             newEntity.setPreviousStateId(requirement.getId());
             newEntity.setCurrent(true);
-            String eventType = null;
-            String reason = null;
-            if(requirement.getQuantity()==0 || StringUtils.isEmpty(requirement.getSupplier()) || "-".equals(requirement.getSupplier())) {
-                newEntity.setState(Constants.ERROR_STATE.toString());
+            String eventType;
+            String reason;
+            if(requirement.getQuantity()==0 || StringUtils.isBlank(requirement.getSupplier()) || "-".equals(requirement.getSupplier())) {
+                newEntity.setState(RequirementApprovalState.ERROR.toString());
                 newEntity.setOverrideComment(Constants.PUSHED_TO_PROC_FAILED.toString());
                 eventType = FdpRequirementEventType.PUSH_TO_PROC_FAILED.toString();
                 reason = "push to proc failed";
@@ -124,9 +124,10 @@ public class PushToProcCommand {
         requirementChangeRequestList.add(requirementChangeRequest);
     }
 
-    public void pushToProc(List<Requirement> requirements, String userId) {
+    public int pushToProc(List<Requirement> requirements, String userId) {
         List<Requirement> pushToProcRequirements = createPushToProcRequirement(requirements,userId);
         Map<Long, PushToProcRequest> allRequirements = getPushToProcRequest(pushToProcRequirements);
         pushToProcClientCommand.pushToProc(allRequirements);
+        return allRequirements.size();
     }
 }
