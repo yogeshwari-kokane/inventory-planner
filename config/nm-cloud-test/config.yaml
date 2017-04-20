@@ -6,7 +6,7 @@ dataSource:
   # the password
   password: caiP5yaa
   # the JDBC URL
-  url: jdbc:mysql://10.32.225.159/erp_inv_db_test
+  url: jdbc:mysql://10.32.225.159/erp_inv_db_test?rewriteBatchedStatements=true
   # any properties specific to your JDBC driver:
   properties:
     charSet: UTF-8
