@@ -8,6 +8,7 @@ import com.google.inject.Provider;
 import fk.retail.ip.core.poi.SpreadSheetReader;
 import fk.retail.ip.requirement.internal.Constants;
 import fk.retail.ip.requirement.internal.command.*;
+
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.enums.OverrideStatus;
 import fk.retail.ip.requirement.internal.enums.RequirementApprovalAction;
@@ -23,10 +24,8 @@ import org.json.JSONException;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -48,11 +47,13 @@ public class RequirementService {
     private final int PAGE_SIZE = 20;
     private final FdpRequirementIngestorImpl fdpRequirementIngestor;
 
+
     @Inject
     public RequirementService(RequirementRepository requirementRepository, RequirementStateFactory requirementStateFactory,
                               ApprovalService approvalService, Provider<CalculateRequirementCommand> calculateRequirementCommandProvider,
                               RequirementApprovalTransitionRepository requirementApprovalStateTransitionRepository,
                               SearchFilterCommand searchFilterCommand, Provider<SearchCommand> searchCommandProvider, FdpRequirementIngestorImpl fdpRequirementIngestor) {
+
         this.requirementRepository = requirementRepository;
         this.requirementStateFactory = requirementStateFactory;
         this.approvalService = approvalService;
@@ -61,6 +62,7 @@ public class RequirementService {
         this.searchFilterCommand = searchFilterCommand;
         this.searchCommandProvider = searchCommandProvider;
         this.fdpRequirementIngestor = fdpRequirementIngestor;
+
     }
 
     public StreamingOutput downloadRequirement(DownloadRequirementRequest downloadRequirementRequest) {
@@ -189,6 +191,7 @@ public class RequirementService {
         log.info("Got Search Response for Requirement");
         return groupedResponse;
     }
+
 
     public void calculateRequirement(CalculateRequirementRequest calculateRequirementRequest) {
         calculateRequirementCommandProvider.get().withFsns(calculateRequirementRequest.getFsns()).execute();
