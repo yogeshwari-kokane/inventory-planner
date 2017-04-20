@@ -74,6 +74,12 @@ fdpConfiguration:
   requirementEntitySchemaVersion: "3.0"
   requirementEventSchemaVersion: "2.0"
 
+procClientConfiguration:
+  url: http://stage-flo-proc-b2b.ch.flipkart.com
+  viewPath: "/requirements"
+  callbackUrl: http://localhost:32000/v1/requirement/callback/
+  requirementQueueName: retail_rp_internal_requirement
+
 clientConfiguration:
   timeout: 80000ms
   connectionTimeout: 50000ms
