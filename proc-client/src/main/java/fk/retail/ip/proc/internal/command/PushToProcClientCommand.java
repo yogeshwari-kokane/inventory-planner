@@ -51,7 +51,7 @@ public class PushToProcClientCommand {
         message.setExchangeName(procClientConfiguration.getRequirementQueueName());
         message.setExchangeType("queue");
         message.setHttpMethod("POST");
-        message.setHttpUri(procClientConfiguration.getUrl());
+        message.setHttpUri(procClientConfiguration.getUrl()+procClientConfiguration.getViewPath());
         message.setReplyTo(procClientConfiguration.getRequirementQueueName());
         message.setReplyToHttpMethod("POST");
         message.setAppId(Constants.APP_ID.toString());
