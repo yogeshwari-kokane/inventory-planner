@@ -104,7 +104,7 @@ public class RequirementService {
                             requirementIds.add(row.getRequirementId())
             );
 
-            requirements = requirementRepository.findRequirementByIds(requirementIds);
+            requirements = requirementRepository.findActiveRequirementForState(requirementIds, requirementState);
             log.info("number of requirements found for uploaded records : " + requirements.size());
 
             if (requirements.size() == 0) {
