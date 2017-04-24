@@ -33,15 +33,15 @@ rotationManagementConfig:
   persistantFilePath: "/var/run/fk-ip-inventory-planner/persistant_state.txt"
 
 logging:
-  level: DEBUG
+  level: INFO
   loggers:
-    "org.hibernate.ejb.HibernatePersistence": DEBUG
-    "org.hibernate.SQL": DEBUG
-    "org.hibernate.type": DEBUG
-    "com.flipkart.mmq.Dispatcher": DEBUG
+    "org.hibernate.ejb.HibernatePersistence": ERROR
+    "org.hibernate.SQL": ERROR
+    "org.hibernate.type": ERROR
+    "com.flipkart.mmq.Dispatcher": ERROR
   appenders:
   - type: file-size-rolled
-    threshold: DEBUG
+    threshold: ALL
     timeZone: Asia/Calcutta
     logFormat: "%-5p [%d{ISO8601}] [%X{reqId} %X{txnId}] %replace(%c: %m){'\n', '\n '}%n%replace(%ex){'(?m)^(.)',' $1'}%nopex"
     currentLogFilename: /var/log/flipkart/rp/fk-ip-inventory-planner/production.log
@@ -95,15 +95,6 @@ fdpConfiguration:
 sslClientConfiguration:
   url: http://10.85.52.106
   viewPath: "/supplier_selection"
-
-fdpConfiguration:
-  url: http://10.47.2.122:28223/ingestion/objects
-  queueName: "fdp_requirement_ingestion"
-  org: "/retail"
-  company: "/fki"
-  namespace: "/ip"
-  requirementEntitySchemaVersion: "3.0"
-  requirementEventSchemaVersion: "2.0"
 
 clientConfiguration:
   timeout: 80000ms
