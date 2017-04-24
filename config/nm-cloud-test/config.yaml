@@ -6,7 +6,7 @@ dataSource:
   # the password
   password: caiP5yaa
   # the JDBC URL
-  url: jdbc:mysql://10.32.225.159/erp_inv_db_test?rewriteBatchedStatements=true
+  url: jdbc:mysql://10.32.225.159/erp_inv_db_test
   # any properties specific to your JDBC driver:
   properties:
     charSet: UTF-8
@@ -33,15 +33,15 @@ rotationManagementConfig:
   persistantFilePath: "/var/run/fk-ip-inventory-planner/persistant_state.txt"
 
 logging:
-  level: DEBUG
+  level: INFO
   loggers:
-    "org.hibernate.ejb.HibernatePersistence": DEBUG
-    "org.hibernate.SQL": DEBUG
-    "org.hibernate.type": DEBUG
-    "com.flipkart.mmq.Dispatcher": DEBUG
+    "org.hibernate.ejb.HibernatePersistence": ERROR
+    "org.hibernate.SQL": ERROR
+    "org.hibernate.type": ERROR
+    "com.flipkart.mmq.Dispatcher": ERROR
   appenders:
   - type: file-size-rolled
-    threshold: DEBUG
+    threshold: ALL
     timeZone: Asia/Calcutta
     logFormat: "%-5p [%d{ISO8601}] [%X{reqId} %X{txnId}] %replace(%c: %m){'\n', '\n '}%n%replace(%ex){'(?m)^(.)',' $1'}%nopex"
     currentLogFilename: /var/log/flipkart/rp/fk-ip-inventory-planner/production.log
@@ -77,16 +77,11 @@ server:
       archivedFileCount: 2
       maxFileSize: 500MB
 
-
 zuluConfiguration:
   url: http://10.47.1.8:31200
   viewPath: "/views"
   clientId: "retail.rp"
   maxBatchSize: 30
-
-sslClientConfiguration:
-  url: http://10.85.52.106
-  viewPath: "/supplier_selection"
 
 fdpConfiguration:
   url: http://10.47.2.122:28223/ingestion/objects
@@ -96,6 +91,10 @@ fdpConfiguration:
   namespace: "/ip"
   requirementEntitySchemaVersion: "3.0"
   requirementEventSchemaVersion: "2.0"
+
+sslClientConfiguration:
+  url: http://10.85.52.106
+  viewPath: "/supplier_selection"
 
 clientConfiguration:
   timeout: 80000ms
