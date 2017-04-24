@@ -107,10 +107,5 @@ public class RequirementResource {
         return requirementService.search(request);
     }
 
-    @POST
-    @Path("/search")
-    @Produces(MediaType.APPLICATION_JSON)
-    public SearchResponse.GroupedResponse search(RequirementSearchRequest request) throws JSONException {
-        return requirementService.search(request);
-    }
+
 }
