@@ -90,13 +90,10 @@ public class RequirementSearchDataAggregator {
         );
     }
 
-    protected MultiKeyMap<String, Integer> fetchCdoQuantity(List<Requirement> requirements, String state) {
-        List<Requirement> cdoRequirements = Lists.newArrayList();
-        if(state.equals(RequirementApprovalState.BIZFIN_REVIEW.toString())) {
-            Map<String, List<Requirement>> fsnToRequirement = requirements.stream().collect(Collectors.groupingBy(Requirement::getFsn));
-            Set<String> cdoFsns = fsnToRequirement.keySet();
-            cdoRequirements = requirementRepository.findEnabledRequirementsByStateFsn(RequirementApprovalState.CDO_REVIEW.toString(),cdoFsns);
-        }
+    protected MultiKeyMap<String, Integer> fetchCdoQuantity(List<Requirement> requirements) {
+        Map<String, List<Requirement>> fsnToRequirement = requirements.stream().collect(Collectors.groupingBy(Requirement::getFsn));
+        Set<String> fsns = fsnToRequirement.keySet();
+        List<Requirement> cdoRequirements = requirementRepository.findEnabledRequirementsByStateFsn(RequirementApprovalState.CDO_REVIEW.toString(),fsns);
         MultiKeyMap<String, Integer> fsnWhQuantity = new MultiKeyMap();
         cdoRequirements.forEach(r -> {
             fsnWhQuantity.put(r.getFsn(), r.getWarehouse(), (int) r.getQuantity());
