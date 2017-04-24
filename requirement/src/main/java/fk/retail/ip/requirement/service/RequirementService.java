@@ -183,13 +183,7 @@ public class RequirementService {
         batchProjectionIds = projectionIds.subList(startIndex, endIndex);
         requirements = requirementRepository.findRequirements(batchProjectionIds, state, Lists.newArrayList());
         log.info("Search Request for {} number of requirements", requirements.size());
-        List<Requirement> cdoRequirements = Lists.newArrayList();
-        if(state.equals(RequirementApprovalState.BIZFIN_REVIEW.toString())) {
-            Map<String, List<Requirement>> fsnToRequirement = requirements.stream().collect(Collectors.groupingBy(Requirement::getFsn));
-            Set<String> cdoFsns = fsnToRequirement.keySet();
-            cdoRequirements = requirementRepository.findEnabledRequirementsByStateFsn(RequirementApprovalState.CDO_REVIEW.toString(),cdoFsns);
-        }
-        Map<String, List<RequirementSearchLineItem>> fsnToSearchItemsMap =  searchCommandProvider.get().execute(requirements, cdoRequirements);
+        Map<String, List<RequirementSearchLineItem>> fsnToSearchItemsMap =  searchCommandProvider.get().execute(requirements, state);
         log.info("Search Request for {} number of fsns", fsnToSearchItemsMap.size());
         SearchResponse.GroupedResponse groupedResponse = new SearchResponse.GroupedResponse(projectionIds.size(), PAGE_SIZE);
         for (String fsn : fsnToSearchItemsMap.keySet()) {
@@ -199,7 +193,6 @@ public class RequirementService {
         log.info("Got Search Response for Requirement");
         return groupedResponse;
     }
-
 
     public void calculateRequirement(CalculateRequirementRequest calculateRequirementRequest) {
         calculateRequirementCommandProvider.get().withFsns(calculateRequirementRequest.getFsns()).execute();

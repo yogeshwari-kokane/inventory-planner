@@ -1,8 +1,10 @@
 package fk.retail.ip.requirement.internal.command;
 
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import fk.retail.ip.requirement.internal.command.download.GenerateExcelCommand;
 import fk.retail.ip.requirement.internal.entities.Requirement;
+import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
 import fk.retail.ip.requirement.internal.repository.*;
 import fk.retail.ip.requirement.model.RequirementSearchLineItem;
 import fk.retail.ip.zulu.client.ZuluClient;
@@ -25,14 +27,11 @@ public class SearchCommand extends RequirementSearchDataAggregator {
         super(fsnBandRepository, weeklySaleRepository,lastAppSupplierRepository, productInfoRepository, zuluClient, requirementRepository, warehouseRepository);
     }
 
-    public Map<String, List<RequirementSearchLineItem>> execute(List<Requirement> requirements, List<Requirement> cdoRequirements) {
+    public Map<String, List<RequirementSearchLineItem>> execute(List<Requirement> requirements, String state) {
         log.info("Search Request for {} number of requirements", requirements.size());
         List<RequirementSearchLineItem> requirementSearchLineItems = requirements.stream().map(RequirementSearchLineItem::new).collect(toList());
-        if(!cdoRequirements.isEmpty()) {
-            MultiKeyMap<String, Integer> fsnWhQuantity = new MultiKeyMap();
-            cdoRequirements.forEach(r -> {
-                fsnWhQuantity.put(r.getFsn(), r.getWarehouse(), (int) r.getQuantity());
-            });
+        if(state.equals(RequirementApprovalState.BIZFIN_REVIEW.toString())) {
+            MultiKeyMap<String, Integer> fsnWhQuantity = fetchCdoQuantity(requirements, state);
             requirementSearchLineItems.forEach(reqItem
                     -> {
                 reqItem.setQty(fsnWhQuantity.get(reqItem.getFsn(),reqItem.getWarehouse()));
