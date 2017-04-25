@@ -8,7 +8,7 @@ import java.util.List;
 @Slf4j
 public enum PolicyType {
 
-    PLANNING_CYCLE("PlanningCycle"), ROP("Rop"), ROC("Roc"), MAX_COVERAGE("MaxCoverage"), CASE_SIZE("CaseSize"), UNKNOWN("Unknown");
+    PLANNING_CYCLE("PlanningCycle"), ROP("Rop"), ROC("Roc"), MAX_COVERAGE("MaxCoverage"), CASE_SIZE("CaseSize"), UNKNOWN("Unknown"), MIN("Min"), MAX("Max");
     String value;
 
     private PolicyType(String value) {
