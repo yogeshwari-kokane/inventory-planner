@@ -1,12 +1,16 @@
 package fk.retail.ip.requirement.internal.command.upload;
 
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import fk.retail.ip.requirement.internal.Constants;
+import fk.retail.ip.requirement.internal.command.CalculateRequirementCommand;
 import fk.retail.ip.requirement.internal.command.FdpRequirementIngestorImpl;
 import fk.retail.ip.requirement.internal.enums.OverrideKey;
 import fk.retail.ip.requirement.internal.enums.OverrideStatus;
+import fk.retail.ip.requirement.internal.repository.ProductInfoRepository;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
+import fk.retail.ip.ssl.client.SslClient;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import java.util.HashMap;
@@ -20,8 +24,8 @@ import java.util.Optional;
 public class ProposedUploadCommand extends UploadCommand {
 
     @Inject
-    public ProposedUploadCommand(RequirementRepository requirementRepository, FdpRequirementIngestorImpl fdpRequirementIngestor) {
-        super(requirementRepository, fdpRequirementIngestor);
+    public ProposedUploadCommand(RequirementRepository requirementRepository, FdpRequirementIngestorImpl fdpRequirementIngestor, Provider<CalculateRequirementCommand> calculateRequirementCommandProvider, SslClient sslClient, ProductInfoRepository productInfoRepository) {
+        super(requirementRepository, fdpRequirementIngestor, calculateRequirementCommandProvider, sslClient, productInfoRepository);
     }
 
     @Override

@@ -274,7 +274,7 @@ public class CalculateRequirementCommand {
     }
 
     //TODO: optimize this
-    private int getSla(String vertical, String warehouse, String supplier, int apiSla) {
+    public int getSla(String vertical, String warehouse, String supplier, int apiSla) {
         if (vertical == null || warehouse == null) {
             return apiSla;
         }

@@ -2,25 +2,30 @@ package fk.retail.ip.requirement.internal.command.upload;
 
 
 import com.google.common.collect.Lists;
+import com.google.inject.Provider;
 import fk.retail.ip.requirement.internal.Constants;
+import fk.retail.ip.requirement.internal.command.CalculateRequirementCommand;
 import fk.retail.ip.requirement.internal.command.FdpRequirementIngestorImpl;
 import fk.retail.ip.requirement.internal.command.PayloadCreationHelper;
+import fk.retail.ip.requirement.internal.entities.ProductInfo;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.enums.FdpRequirementEventType;
 import fk.retail.ip.requirement.internal.enums.OverrideKey;
 import fk.retail.ip.requirement.internal.enums.OverrideStatus;
 import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
+import fk.retail.ip.requirement.internal.repository.ProductInfoRepository;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.model.RequirementChangeMap;
 import fk.retail.ip.requirement.model.RequirementChangeRequest;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
 import fk.retail.ip.requirement.model.UploadOverrideFailureLineItem;
+import fk.retail.ip.ssl.client.SslClient;
+import fk.retail.ip.ssl.model.SupplierSelectionRequest;
+import fk.retail.ip.ssl.model.SupplierSelectionResponse;
+import fk.retail.ip.ssl.model.SupplierView;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -35,10 +40,16 @@ public abstract class UploadCommand {
 
     private final RequirementRepository requirementRepository;
     private final FdpRequirementIngestorImpl fdpRequirementIngestor;
+    private final Provider<CalculateRequirementCommand> calculateRequirementCommandProvider;
+    private final SslClient sslClient;
+    private final ProductInfoRepository productInfoRepository;
 
-    public UploadCommand(RequirementRepository requirementRepository, FdpRequirementIngestorImpl fdpRequirementIngestor) {
+    public UploadCommand(RequirementRepository requirementRepository, FdpRequirementIngestorImpl fdpRequirementIngestor, Provider<CalculateRequirementCommand> calculateRequirementCommandProvider, SslClient sslClient, ProductInfoRepository productInfoRepository) {
         this.requirementRepository = requirementRepository;
         this.fdpRequirementIngestor = fdpRequirementIngestor;
+        this.calculateRequirementCommandProvider = calculateRequirementCommandProvider;
+        this.sslClient = sslClient;
+        this.productInfoRepository = productInfoRepository;
     }
 
     public List<UploadOverrideFailureLineItem> execute(
@@ -49,6 +60,9 @@ public abstract class UploadCommand {
 
         Map<Long, Requirement> requirementMap = requirements.stream().
                 collect(Collectors.toMap(Requirement::getId, Function.identity()));
+        Set<String> fsns = requirements.stream().map(Requirement::getFsn).collect(Collectors.toSet());
+        List<ProductInfo> productInfos = productInfoRepository.getProductInfo(fsns);
+        Map<String, String> fsnToVerticalMap = productInfos.stream().collect(Collectors.toMap(ProductInfo::getFsn, ProductInfo::getVertical, (k1, k2) -> k1));
 
         ArrayList<UploadOverrideFailureLineItem> uploadOverrideFailureLineItems = new ArrayList<>();
         int rowCount = 0;
@@ -123,9 +137,19 @@ public abstract class UploadCommand {
                             }
 
                             if (overriddenValues.containsKey(OverrideKey.SUPPLIER.toString())) {
-                                requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.SUPPLIER.toString(), String.valueOf(requirement.getSupplier()),row.getCdoSupplierOverride(), FdpRequirementEventType.CDO_SUPPLIER_OVERRIDE.toString(), row.getCdoSupplierOverrideReason(), userId));
-                                requirement.setSupplier
+                                SupplierView supplierView = fetchOverriddenSupplier(requirement, overriddenValues.get(OverrideKey.SUPPLIER.toString()).toString());
+                                if (supplierView!=null) {
+                                    requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.SUPPLIER.toString(),
+                                            String.valueOf(requirement.getSupplier()),row.getCdoSupplierOverride(),
+                                            FdpRequirementEventType.CDO_SUPPLIER_OVERRIDE.toString(), row.getCdoSupplierOverrideReason(), userId));
+                                    int sla = calculateRequirementCommandProvider.get().getSla
+                                            (fsnToVerticalMap.get(requirement.getFsn()), requirement.getWarehouse(), supplierView.getSourceId(),
+                                                    supplierView.getSla());
+                                    requirement.setSla(sla);
+                                    requirement.setMrp(supplierView.getMrp());
+                                    requirement.setSupplier
                                         (overriddenValues.get(OverrideKey.SUPPLIER.toString()).toString());
+                                }
                             }
 
                             if (overriddenValues.containsKey(OverrideKey.OVERRIDE_COMMENT.toString())) {
@@ -196,6 +220,25 @@ public abstract class UploadCommand {
 
     protected boolean isEmptyString(String comment) {
         return comment == null || comment.trim().isEmpty() ? true : false;
+    }
+
+    private SupplierView fetchOverriddenSupplier(Requirement requirement, String supplierName) {
+        List<Requirement> requirements = Lists.newArrayList(requirement);
+        List<SupplierSelectionRequest> requests = calculateRequirementCommandProvider.get().createSupplierSelectionRequest(requirements);
+        List<SupplierSelectionResponse> responses = sslClient.getSupplierSelectionResponse(requests);
+        if (requests.size() != responses.size()) {
+            return null;
+        }
+        SupplierSelectionResponse supplierSelectionResponse = responses.get(0);
+        Optional<SupplierView> supplier =
+                supplierSelectionResponse.getSuppliers().stream().filter(s -> (s.getFullName().equals(supplierName) || s.getName().equals(supplierName))).findFirst();
+        if(supplier.isPresent())
+            return supplier.get();
+        Optional<SupplierView> otherSupplier =
+                supplierSelectionResponse.getOtherSuppliers().stream().filter(s -> (s.getFullName().equals(supplierName) || s.getName().equals(supplierName))).findFirst();
+        if(otherSupplier.isPresent())
+            return supplier.get();
+        return null;
     }
 
 }
