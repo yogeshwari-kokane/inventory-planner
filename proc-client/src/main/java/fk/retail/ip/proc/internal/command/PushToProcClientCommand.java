@@ -48,6 +48,7 @@ public class PushToProcClientCommand {
 
     private Message getMessageInstance() {
         Message message = new Message();
+        message.addCustomHeaders(Constants.XClientId.toString(), Constants.APP_ID.toString());
         message.setExchangeName(procClientConfiguration.getRequirementQueueName());
         message.setExchangeType("queue");
         message.setHttpMethod("POST");

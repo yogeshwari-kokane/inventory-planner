@@ -104,7 +104,7 @@ procClientConfiguration:
   url: http://10.85.52.17
   viewPath: "/requirements"
   callbackUrl: http://10.85.53.212:32000/v1/requirement/callback/
-  requirementQueueName: retail_rp_internal_requirement
+  requirementQueueName: proc_b2b_produciton
 
 fdpConfiguration:
   url: http://10.47.2.122:28223/ingestion/objects
