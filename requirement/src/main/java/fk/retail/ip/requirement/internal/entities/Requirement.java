@@ -3,9 +3,13 @@ package fk.retail.ip.requirement.internal.entities;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+
+
 
 /**
  * Created by nidhigupta.m on 26/01/17.
@@ -90,8 +94,6 @@ public class Requirement extends AbstractEntity {
     //todo:cleanup
     private String mrpCurrency;
 
-    //TODO: add column in db
-    @Column(name = "po_id")
     private Integer poId;
 
     public Requirement(Long id) {

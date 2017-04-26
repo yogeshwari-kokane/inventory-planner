@@ -1,24 +1,17 @@
 package fk.retail.ip.requirement.internal.command;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flipkart.restbus.client.entity.Message;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
-import fk.retail.ip.proc.config.ProcClientConfiguration;
-import fk.retail.ip.proc.internal.command.PushToProcClientCommand;
+import fk.retail.ip.proc.internal.command.PushToProcClient;
 import fk.retail.ip.requirement.internal.Constants;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.enums.FdpRequirementEventType;
 import fk.retail.ip.requirement.internal.enums.OverrideKey;
 import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
-import fk.retail.ip.requirement.internal.repository.RequirementApprovalTransitionRepository;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
-import fk.retail.ip.proc.model.CreatePushToProcRequest;
 import fk.retail.ip.proc.model.PushToProcRequest;
 import fk.retail.ip.requirement.model.RequirementChangeMap;
 import fk.retail.ip.requirement.model.RequirementChangeRequest;
-import fk.sp.common.restbus.sender.RestbusMessageSender;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
@@ -36,13 +29,13 @@ import java.util.stream.Collectors;
 public class PushToProcCommand {
 
     private final RequirementRepository requirementRepository;
-    private final PushToProcClientCommand pushToProcClientCommand;
+    private final PushToProcClient pushToProcClient;
     private final FdpRequirementIngestorImpl fdpRequirementIngestor;
 
     @Inject
-    PushToProcCommand(RequirementRepository requirementRepository, PushToProcClientCommand pushToProcClientCommand, FdpRequirementIngestorImpl fdpRequirementIngestor) {
+    PushToProcCommand(RequirementRepository requirementRepository, PushToProcClient pushToProcClient, FdpRequirementIngestorImpl fdpRequirementIngestor) {
         this.requirementRepository = requirementRepository;
-        this.pushToProcClientCommand = pushToProcClientCommand;
+        this.pushToProcClient = pushToProcClient;
         this.fdpRequirementIngestor = fdpRequirementIngestor;
     }
 
@@ -141,7 +134,7 @@ public class PushToProcCommand {
     public int pushToProc(List<Requirement> requirements, String userId) {
         List<Requirement> pushToProcRequirements = createPushToProcRequirement(requirements,userId);
         Map<Long, PushToProcRequest> allRequirements = getPushToProcRequest(pushToProcRequirements);
-        pushToProcClientCommand.pushToProc(allRequirements);
+        pushToProcClient.pushToProc(allRequirements);
         return allRequirements.size();
     }
 }

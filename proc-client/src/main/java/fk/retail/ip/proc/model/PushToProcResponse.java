@@ -1,24 +1,22 @@
 package fk.retail.ip.proc.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.Lists;
-import fk.retail.ip.proc.model.PushToProcRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.util.List;
+import java.util.Map;
 
 /**
- * Created by yogeshwari.k on 07/04/17.
+ * Created by yogeshwari.k on 10/04/17.
  */
-
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreatePushToProcRequest {
-
+public class PushToProcResponse {
     @JsonProperty("requirements")
-    List<PushToProcRequest> pushToProcRequestList = Lists.newArrayList();
-
+    private List<Map<String,Object>> procResponse = Lists.newArrayList();
 }

@@ -1,16 +1,12 @@
 package fk.retail.ip.requirement.internal.command;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import fk.retail.ip.proc.internal.command.PushToProcClientCommand;
-import fk.retail.ip.proc.model.PushToProcRequest;
+import fk.retail.ip.proc.internal.command.PushToProcClient;
 import fk.retail.ip.requirement.config.TestModule;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.entities.RequirementSnapshot;
-import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.internal.repository.TestHelper;
-import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
 import org.jukito.JukitoRunner;
 import org.jukito.UseModules;
 import org.junit.Assert;
@@ -20,9 +16,7 @@ import org.junit.runner.RunWith;
 import org.mockito.*;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by yogeshwari.k on 20/04/17.
@@ -38,7 +32,7 @@ public class PushToProcCommandTest {
     RequirementRepository requirementRepository;
 
     @Mock
-    PushToProcClientCommand pushToProcClientCommand;
+    PushToProcClient pushToProcClient;
 
     @Mock
     FdpRequirementIngestorImpl fdpRequirementIngestor;
