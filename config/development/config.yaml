@@ -78,7 +78,7 @@ procClientConfiguration:
   url: http://stage-flo-proc-b2b.ch.flipkart.com
   viewPath: "/requirements"
   callbackUrl: http://localhost:32000/v1/requirement/callback/
-  requirementQueueName: retail_rp_internal_requirement
+  requirementQueueName: proc_b2b_production
 
 clientConfiguration:
   timeout: 80000ms

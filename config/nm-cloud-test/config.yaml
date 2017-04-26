@@ -101,7 +101,7 @@ procClientConfiguration:
   url: http://10.85.52.17
   viewPath: "/requirements"
   callbackUrl: http://10.85.110.102:32000/v1/requirement/callback/
-  requirementQueueName: retail_rp_internal_requirement
+  requirementQueueName: proc_b2b_production
 
 clientConfiguration:
   timeout: 80000ms
