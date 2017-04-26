@@ -5,6 +5,7 @@ import com.google.inject.Provider;
 import fk.retail.ip.requirement.internal.Constants;
 import fk.retail.ip.requirement.internal.command.CalculateRequirementCommand;
 import fk.retail.ip.requirement.internal.command.FdpRequirementIngestorImpl;
+import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.enums.OverrideKey;
 import fk.retail.ip.requirement.internal.enums.OverrideStatus;
 import fk.retail.ip.requirement.internal.repository.ProductInfoRepository;
@@ -24,12 +25,12 @@ import java.util.Optional;
 public class BizFinReviewUploadCommand extends UploadCommand {
 
     @Inject
-    public BizFinReviewUploadCommand(RequirementRepository requirementRepository, FdpRequirementIngestorImpl fdpRequirementIngestor, Provider<CalculateRequirementCommand> calculateRequirementCommandProvider, SslClient sslClient, ProductInfoRepository productInfoRepository) {
-        super(requirementRepository, fdpRequirementIngestor, calculateRequirementCommandProvider, sslClient, productInfoRepository);
+    public BizFinReviewUploadCommand(RequirementRepository requirementRepository, FdpRequirementIngestorImpl fdpRequirementIngestor, ProductInfoRepository productInfoRepository) {
+        super(requirementRepository, fdpRequirementIngestor, productInfoRepository);
     }
 
     @Override
-    Map<String, Object> validateAndSetStateSpecificFields(RequirementDownloadLineItem requirementDownloadLineItem) {
+    Map<String, Object> validateAndSetStateSpecificFields(RequirementDownloadLineItem requirementDownloadLineItem, Requirement requirement, Map<String, String> fsnToVerticalMap) {
 
         String quantityOverrideComment = requirementDownloadLineItem.getBizFinComment();
         Integer currentQuantity = requirementDownloadLineItem.getQuantity();

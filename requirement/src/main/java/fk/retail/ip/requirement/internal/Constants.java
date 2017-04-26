@@ -34,6 +34,7 @@ public interface Constants {
     String SUGGESTED_QUANTITY_IS_NOT_GREATER_THAN_ZERO = "Suggested quantity shouldn't be negative";
     String APP_OVERRIDE_COMMENT_IS_MISSING = "Price override reason is missing";
     String SUPPLIER_OVERRIDE_COMMENT_IS_MISSING = "Supplier override reason is missing";
+    String SUPPLIER_NOT_FOUND = "Supplier not found";
     String SLA_QUANTITY_IS_NOT_GREATER_THAN_ZERO = "Suggested SLA should be greater than zero";
     String APP_QUANTITY_IS_NOT_GREATER_THAN_ZERO = "Suggested price should be greater than zero";
 
@@ -51,6 +52,8 @@ public interface Constants {
     String APP_OVERRIDE_COMMENT = "appOverrideComment";
     String SUPPLIER_OVERRIDE_COMMENT = "supplierOverrideComment";
     String STATUS = "status";
+
+    String DEFAULT_APP_OVERRIDE_COMMENT = "App overridden corresponding to supplier";
 
 }
 

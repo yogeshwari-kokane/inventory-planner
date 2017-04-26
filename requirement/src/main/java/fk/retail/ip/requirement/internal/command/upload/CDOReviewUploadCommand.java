@@ -1,20 +1,26 @@
 package fk.retail.ip.requirement.internal.command.upload;
 
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import fk.retail.ip.requirement.internal.Constants;
 import fk.retail.ip.requirement.internal.command.CalculateRequirementCommand;
 import fk.retail.ip.requirement.internal.command.FdpRequirementIngestorImpl;
+import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.enums.OverrideKey;
 import fk.retail.ip.requirement.internal.enums.OverrideStatus;
 import fk.retail.ip.requirement.internal.repository.ProductInfoRepository;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
 import fk.retail.ip.ssl.client.SslClient;
+import fk.retail.ip.ssl.model.SupplierSelectionRequest;
+import fk.retail.ip.ssl.model.SupplierSelectionResponse;
+import fk.retail.ip.ssl.model.SupplierView;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -25,13 +31,18 @@ import java.util.Optional;
 @Slf4j
 public class CDOReviewUploadCommand extends UploadCommand {
 
+    private final Provider<CalculateRequirementCommand> calculateRequirementCommandProvider;
+    private final SslClient sslClient;
+
     @Inject
     public CDOReviewUploadCommand(RequirementRepository requirementRepository, FdpRequirementIngestorImpl fdpRequirementIngestor, Provider<CalculateRequirementCommand> calculateRequirementCommandProvider, SslClient sslClient, ProductInfoRepository productInfoRepository) {
-        super(requirementRepository, fdpRequirementIngestor, calculateRequirementCommandProvider, sslClient, productInfoRepository);
+        super(requirementRepository, fdpRequirementIngestor, productInfoRepository);
+        this.calculateRequirementCommandProvider = calculateRequirementCommandProvider;
+        this.sslClient = sslClient;
     }
 
     @Override
-    Map<String, Object> validateAndSetStateSpecificFields(RequirementDownloadLineItem requirementDownloadLineItem) {
+    Map<String, Object> validateAndSetStateSpecificFields(RequirementDownloadLineItem requirementDownloadLineItem, Requirement requirement, Map<String, String> fsnToVerticalMap) {
         String supplierOverrideComment = requirementDownloadLineItem.getCdoSupplierOverrideReason();
         Integer bdProposedQuantity = requirementDownloadLineItem.getCdoQuantityOverride();
         Integer bdProposedSla = requirementDownloadLineItem.getNewSla();
@@ -46,6 +57,7 @@ public class CDOReviewUploadCommand extends UploadCommand {
         Map<String, Object> overriddenValues = new HashMap<>();
 
         String validationComment = "";
+        SupplierView supplierView = null;
 
         Optional<String> validationResponse = validateQuantityOverride(
                 currentQuantity,
@@ -57,17 +69,23 @@ public class CDOReviewUploadCommand extends UploadCommand {
             validationComment = convertToLineSeparatedComment(validationComment, validationResponse.get());
         }
 
+        validationResponse = validateSupplierOverride(bdProposedSupplier, currentSupplier, supplierOverrideComment);
+        if (validationResponse.isPresent()) {
+            validationComment = convertToLineSeparatedComment(validationComment, validationResponse.get());
+        }
+        else if (!isEmptyString(bdProposedSupplier)) {
+                supplierView = validateOverriddenSupplierFound(bdProposedSupplier, requirement);
+                if (supplierView == null) {
+                    validationComment = convertToLineSeparatedComment(validationComment, Constants.SUPPLIER_NOT_FOUND.toString());
+                }
+        }
+
         validationResponse = validateSlaOverride(bdProposedSla);
         if (validationResponse.isPresent()) {
             validationComment = convertToLineSeparatedComment(validationComment, validationResponse.get());
         }
 
         validationResponse = validateAppOverride(bdProposedApp, currentApp, appOverrideComment);
-        if (validationResponse.isPresent()) {
-            validationComment = convertToLineSeparatedComment(validationComment, validationResponse.get());
-        }
-
-        validationResponse = validateSupplierOverride(bdProposedSupplier, currentSupplier, supplierOverrideComment);
         if (validationResponse.isPresent()) {
             validationComment = convertToLineSeparatedComment(validationComment, validationResponse.get());
         }
@@ -89,7 +107,10 @@ public class CDOReviewUploadCommand extends UploadCommand {
                 bdProposedSupplier,
                 quantityOverrideComment,
                 appOverrideComment,
-                supplierOverrideComment
+                supplierOverrideComment,
+                supplierView,
+                requirement,
+                fsnToVerticalMap
         );
 
         return overriddenValues;
@@ -121,14 +142,37 @@ public class CDOReviewUploadCommand extends UploadCommand {
     ) {
         String validationComment;
 
-        if (isEmptyString(bdProposedSupplier)) {
-            return Optional.empty();
-        }
         if (bdProposedSupplier != currentSupplier && isEmptyString(supplierOverrideComment)) {
             validationComment = Constants.SUPPLIER_OVERRIDE_COMMENT_IS_MISSING;
             return Optional.of(validationComment);
         }
         return Optional.empty();
+    }
+
+    private SupplierView validateOverriddenSupplierFound(String supplierName, Requirement requirement) {
+        if (isEmptyString(supplierName)) {
+            return null;
+        }
+        List<Requirement> requirements = Lists.newArrayList(requirement);
+        List<SupplierSelectionRequest> requests = calculateRequirementCommandProvider.get().createSupplierSelectionRequest(requirements);
+        List<SupplierSelectionResponse> responses = sslClient.getSupplierSelectionResponse(requests);
+        if (requests.size() != responses.size()) {
+            return null;
+        }
+        SupplierSelectionResponse supplierSelectionResponse = responses.get(0);
+        if(supplierSelectionResponse.getSuppliers()!=null) {
+            Optional<SupplierView> supplier =
+                    supplierSelectionResponse.getSuppliers().stream().filter(s -> (s.getFullName().equals(supplierName) || s.getName().equals(supplierName))).findFirst();
+            if (supplier.isPresent())
+                return supplier.get();
+        }
+        if(supplierSelectionResponse.getOtherSuppliers()!=null) {
+            Optional<SupplierView> otherSupplier =
+                    supplierSelectionResponse.getOtherSuppliers().stream().filter(s -> (s.getFullName().equals(supplierName) || s.getName().equals(supplierName))).findFirst();
+            if (otherSupplier.isPresent())
+                return otherSupplier.get();
+        }
+        return null;
     }
 
     private Optional<String> validateSlaOverride(Integer bdProposedSla) {
@@ -155,7 +199,10 @@ public class CDOReviewUploadCommand extends UploadCommand {
             String bdProposedSupplier,
             String quantityOverrideComment,
             String appOverrideComment,
-            String supplierOverrideComment
+            String supplierOverrideComment,
+            SupplierView supplierView,
+            Requirement requirement,
+            Map<String, String> fsnToVerticalMap
     ) {
 
         Map<String, Object> overriddenValues = new HashMap<>();
@@ -170,22 +217,38 @@ public class CDOReviewUploadCommand extends UploadCommand {
             overriddenValues.put(Constants.STATUS, OverrideStatus.UPDATE.toString());
         }
 
-        if (!isEmptyString(bdProposedSupplier) && bdProposedSupplier != currentSupplier) {
-            String supplierToUse = bdProposedSupplier.toString();
-            overriddenValues.put(OverrideKey.SUPPLIER.toString(),supplierToUse);
+        if (!isEmptyString(bdProposedSupplier) && bdProposedSupplier != currentSupplier && supplierView!=null) {
+            overriddenValues.put(OverrideKey.SUPPLIER.toString(),supplierView);
             overrideComment.put(Constants.SUPPLIER_OVERRIDE_COMMENT, supplierOverrideComment);
             overriddenValues.put(Constants.STATUS, OverrideStatus.UPDATE.toString());
         }
 
-        if (bdProposedApp != null && bdProposedApp != currentApp) {
+        if (bdProposedApp != null && bdProposedApp != currentApp && (isEmptyString(bdProposedSupplier) ||
+                (bdProposedSupplier != currentSupplier && supplierView!=null))) {
             Integer appToUse = bdProposedApp;
             overriddenValues.put(OverrideKey.APP.toString(), appToUse);
             overrideComment.put(Constants.APP_OVERRIDE_COMMENT, appOverrideComment);
             overriddenValues.put(Constants.STATUS, OverrideStatus.UPDATE.toString());
         }
+        else if(overriddenValues.containsKey(OverrideKey.SUPPLIER.toString()))
+        {
+            Integer appToUse = supplierView.getApp();
+            overriddenValues.put(OverrideKey.APP.toString(), appToUse);
+            overrideComment.put(Constants.APP_OVERRIDE_COMMENT, Constants.DEFAULT_APP_OVERRIDE_COMMENT.toString());
+            overriddenValues.put(Constants.STATUS, OverrideStatus.UPDATE.toString());
+        }
 
-        if (bdProposedSla != null && bdProposedSla != currentSla) {
+        if (bdProposedSla != null && bdProposedSla != currentSla && (isEmptyString(bdProposedSupplier) ||
+                (bdProposedSupplier != currentSupplier && supplierView!=null))) {
             Integer slaToUse = bdProposedSla;
+            overriddenValues.put(OverrideKey.SLA.toString(), slaToUse);
+            overriddenValues.put(Constants.STATUS, OverrideStatus.UPDATE.toString());
+        }
+        else if(overriddenValues.containsKey(OverrideKey.SUPPLIER.toString()))
+        {
+            Integer slaToUse = calculateRequirementCommandProvider.get().getSla
+                (fsnToVerticalMap.get(requirement.getFsn()), requirement.getWarehouse(), supplierView.getSourceId(),
+                        supplierView.getSla());
             overriddenValues.put(OverrideKey.SLA.toString(), slaToUse);
             overriddenValues.put(Constants.STATUS, OverrideStatus.UPDATE.toString());
         }
