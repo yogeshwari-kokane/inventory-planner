@@ -53,8 +53,8 @@ public class PushToProcCommand {
                         .sku("SKU0000000000000")
                         .quantity((int)requirement.getQuantity())
                         .local(true)
-                        .supplierApp((float)requirement.getApp())
-                        .supplierMrp((float)requirement.getMrp())
+                        .supplierApp(getApp(requirement))
+                        .supplierMrp(getMrp(requirement))
                         .sourceId(requirement.getSupplier())
                         .requiredByDate(getRequiredByDate(requirement))
                         .requirementType(requirement.getProcType())
@@ -63,9 +63,23 @@ public class PushToProcCommand {
                         .build()));
     }
 
+    private Float getApp(Requirement requirement) {
+        if(requirement.getApp()!=null)
+            return (float)requirement.getApp();
+        return null;
+    }
+
+    private Float getMrp(Requirement requirement) {
+        if(requirement.getMrp()!=null)
+            return (float)requirement.getMrp();
+        return null;
+    }
+
     private Date getRequiredByDate(Requirement requirement) {
         // set required by date based on holiday calendar
-        DateTime dt = new DateTime().plusDays(requirement.getSla());
+        DateTime dt = new DateTime();
+        if(requirement.getSla()!=null)
+            dt.plusDays(requirement.getSla());
         DateTime adjustedDate = dt;
         if (dt.getDayOfWeek() == DateTimeConstants.SATURDAY) {
             adjustedDate = dt.plusDays(2);
