@@ -121,5 +121,5 @@ clientConfiguration:
 triggerRequirementConfiguration:
   url: http://10.85.53.212/v1/requirement
   projectionQueueName: retail_rp_internal_projection
-  fetchDataBatchSize: 5000
+  fetchDataBatchSize: 1000
   createReqBatchSize: 10
