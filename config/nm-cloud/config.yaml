@@ -113,7 +113,7 @@ fdpConfiguration:
 procClientConfiguration:
   url: http://10.85.52.17
   viewPath: "/requirements"
-  callbackUrl: http://10.85.53.212:32000/v1/requirement/callback/
+  callbackUrl: http://10.85.53.212/v1/requirement/callback/
   requirementQueueName: proc_b2b_production
 
 sslClientConfiguration:
