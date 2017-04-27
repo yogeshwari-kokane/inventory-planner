@@ -142,6 +142,9 @@ public class CDOReviewUploadCommand extends UploadCommand {
     ) {
         String validationComment;
 
+        if (isEmptyString(bdProposedSupplier)) {
+            return Optional.empty();
+        }
         if (bdProposedSupplier != currentSupplier && isEmptyString(supplierOverrideComment)) {
             validationComment = Constants.SUPPLIER_OVERRIDE_COMMENT_IS_MISSING;
             return Optional.of(validationComment);
@@ -150,9 +153,6 @@ public class CDOReviewUploadCommand extends UploadCommand {
     }
 
     private SupplierView validateOverriddenSupplierFound(String supplierName, Requirement requirement) {
-        if (isEmptyString(supplierName)) {
-            return null;
-        }
         List<Requirement> requirements = Lists.newArrayList(requirement);
         List<SupplierSelectionRequest> requests = calculateRequirementCommandProvider.get().createSupplierSelectionRequest(requirements);
         List<SupplierSelectionResponse> responses = sslClient.getSupplierSelectionResponse(requests);
