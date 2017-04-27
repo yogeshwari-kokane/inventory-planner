@@ -1,5 +1,6 @@
 package fk.retail.ip.manager.config;
 
+import fk.retail.ip.proc.config.ProcClientConfiguration;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -30,6 +31,9 @@ public class ManagerConfiguration extends Configuration implements HasDataSource
 
     @NotNull
     private SslClientConfiguration sslClientConfiguration;
+
+    @NotNull
+    private ProcClientConfiguration procClientConfiguration;
 
     @NotNull
     private TriggerRequirementConfiguration triggerRequirementConfigurationl;
