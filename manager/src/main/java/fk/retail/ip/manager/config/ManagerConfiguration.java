@@ -6,6 +6,7 @@ import javax.validation.constraints.NotNull;
 import fk.retail.ip.fdp.config.FdpConfiguration;
 import fk.retail.ip.proc.config.ProcClientConfiguration;
 import fk.retail.ip.requirement.config.TriggerRequirementConfiguration;
+import fk.retail.ip.d42.config.D42Configuration;
 import fk.retail.ip.ssl.config.SslClientConfiguration;
 import fk.retail.ip.zulu.config.ZuluConfiguration;
 import fk.sp.common.extensions.dropwizard.db.HasDataSourceFactory;
@@ -40,6 +41,9 @@ public class ManagerConfiguration extends Configuration implements HasDataSource
 
     @NotNull
     private FdpConfiguration fdpConfiguration;
+
+    @NotNull
+    private D42Configuration d42Configuration;
 
     @Valid
     @NotNull

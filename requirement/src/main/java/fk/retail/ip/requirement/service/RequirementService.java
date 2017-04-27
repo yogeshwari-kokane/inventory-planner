@@ -23,6 +23,7 @@ import javax.ws.rs.core.StreamingOutput;
 
 import fk.retail.ip.core.poi.SpreadSheetReader;
 import fk.retail.ip.proc.model.PushToProcResponse;
+import fk.retail.ip.d42.client.D42Client;
 import fk.retail.ip.requirement.internal.Constants;
 import fk.retail.ip.requirement.internal.command.CalculateRequirementCommand;
 import fk.retail.ip.requirement.internal.command.FdpRequirementIngestorImpl;
@@ -54,6 +55,22 @@ import fk.retail.ip.requirement.model.TriggerRequirementRequest;
 import fk.retail.ip.requirement.model.UploadOverrideFailureLineItem;
 import fk.retail.ip.requirement.model.UploadResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.json.JSONException;
+
+import java.util.Arrays;
+import javax.ws.rs.core.StreamingOutput;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * @author nidhigupta.m
@@ -74,7 +91,9 @@ public class RequirementService {
     private final PushToProcCommand pushToProcCommand;
     private final int PAGE_SIZE = 20;
     private final FdpRequirementIngestorImpl fdpRequirementIngestor;
-
+    private final D42Client d42Client;
+    private final int PAGE_SIZE = 20;
+    private final String BUCKET_NAME = "ip_requirements";
 
     @Inject
     public RequirementService(RequirementRepository requirementRepository,
@@ -82,11 +101,9 @@ public class RequirementService {
                               ApprovalService approvalService,
                               Provider<CalculateRequirementCommand> calculateRequirementCommandProvider,
                               RequirementApprovalTransitionRepository requirementApprovalStateTransitionRepository,
-                              Provider<TriggerRequirementCommand> triggerRequirementCommandProvider,
-                              SearchFilterCommand searchFilterCommand,
-                              Provider<SearchCommand> searchCommandProvider,
-                              FdpRequirementIngestorImpl fdpRequirementIngestor,
-                              PushToProcCommand pushToProcCommand) {
+                              Provider<TriggerRequirementCommand> triggerRequirementCommandProvider, PushToProcCommand pushToProcCommand,
+                              SearchFilterCommand searchFilterCommand, Provider<SearchCommand> searchCommandProvider, 
+                              FdpRequirementIngestorImpl fdpRequirementIngestor, D42Client d42Client) {
         this.requirementRepository = requirementRepository;
         this.requirementStateFactory = requirementStateFactory;
         this.approvalService = approvalService;
@@ -97,6 +114,7 @@ public class RequirementService {
         this.searchCommandProvider = searchCommandProvider;
         this.pushToProcCommand = pushToProcCommand;
         this.fdpRequirementIngestor = fdpRequirementIngestor;
+        this.d42Client = d42Client;
     }
 
     public StreamingOutput downloadRequirement(DownloadRequirementRequest downloadRequirementRequest) {
@@ -113,12 +131,28 @@ public class RequirementService {
 
     public UploadResponse uploadRequirement(
             InputStream inputStream,
+            FormDataContentDisposition fileDetail,
+            FormDataBodyPart formBody,
             String requirementState,
             String userId
     ) throws IOException, InvalidFormatException {
+        ByteArrayOutputStream baos  = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        int len;
+        while ((len = inputStream.read(buffer)) > -1 ) {
+            baos.write(buffer, 0, len);
+        }
+        baos.flush();
+        String fileName = fileDetail.getFileName();
+        String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
+        String objectKey = String.format("%s:%s:%s", timeStamp, userId, fileName);
+        String contentType = formBody.getMediaType().toString();
+
+        d42Client.put(BUCKET_NAME, objectKey, new ByteArrayInputStream(baos.toByteArray()), contentType);
 
         SpreadSheetReader spreadSheetReader = new SpreadSheetReader();
-        List<Map<String, Object>> parsedMappingList = spreadSheetReader.read(inputStream);
+        List<Map<String, Object>> parsedMappingList = spreadSheetReader.read(new ByteArrayInputStream(baos.toByteArray()));
+
         log.info("Uploaded file parsed and contains " + parsedMappingList.size() +  " records");
 
         if (parsedMappingList.size() == 0) {
