@@ -89,7 +89,6 @@ public class RequirementService {
     private final SearchFilterCommand searchFilterCommand;
     private final Provider<SearchCommand> searchCommandProvider;
     private final PushToProcCommand pushToProcCommand;
-    private final int PAGE_SIZE = 20;
     private final FdpRequirementIngestorImpl fdpRequirementIngestor;
     private final D42Client d42Client;
     private final int PAGE_SIZE = 20;
