@@ -35,10 +35,10 @@ rotationManagementConfig:
 logging:
   level: INFO
   loggers:
-    "org.hibernate.ejb.HibernatePersistence": INFO
-    "org.hibernate.SQL": INFO
-    "org.hibernate.type": INFO
-    "com.flipkart.mmq.Dispatcher": INFO
+    "org.hibernate.ejb.HibernatePersistence": ERROR
+    "org.hibernate.SQL": ERROR
+    "org.hibernate.type": ERROR
+    "com.flipkart.mmq.Dispatcher": ERROR
   appenders:
   - type: file-size-rolled
     threshold: ALL
@@ -121,5 +121,5 @@ clientConfiguration:
 triggerRequirementConfiguration:
   url: http://10.85.53.212/v1/requirement
   projectionQueueName: retail_rp_internal_projection
-  fetchDataBatchSize: 5000
+  fetchDataBatchSize: 10000
   createReqBatchSize: 10
