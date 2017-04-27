@@ -1,10 +1,10 @@
 package fk.retail.ip.manager.config;
 
-import fk.retail.ip.proc.config.ProcClientConfiguration;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import fk.retail.ip.fdp.config.FdpConfiguration;
+import fk.retail.ip.proc.config.ProcClientConfiguration;
 import fk.retail.ip.requirement.config.TriggerRequirementConfiguration;
 import fk.retail.ip.ssl.config.SslClientConfiguration;
 import fk.retail.ip.zulu.config.ZuluConfiguration;
@@ -36,7 +36,7 @@ public class ManagerConfiguration extends Configuration implements HasDataSource
     private ProcClientConfiguration procClientConfiguration;
 
     @NotNull
-    private TriggerRequirementConfiguration triggerRequirementConfigurationl;
+    private TriggerRequirementConfiguration triggerRequirementConfiguration;
 
     @NotNull
     private FdpConfiguration fdpConfiguration;

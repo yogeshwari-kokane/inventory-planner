@@ -4,12 +4,6 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.TypeLiteral;
 import com.google.inject.multibindings.Multibinder;
-import fk.retail.ip.proc.config.ProcClientConfiguration;
-import fk.retail.ip.ssl.config.SslClientConfiguration;
-import fk.retail.ip.fdp.config.FdpConfiguration;
-import fk.retail.ip.zulu.config.ZuluConfiguration;
-import fk.sp.common.extensions.dropwizard.db.HasDataSourceFactory;
-import io.dropwizard.client.JerseyClientConfiguration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -21,6 +15,7 @@ import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.client.ClientResponseFilter;
 
 import fk.retail.ip.fdp.config.FdpConfiguration;
+import fk.retail.ip.proc.config.ProcClientConfiguration;
 import fk.retail.ip.requirement.config.TriggerRequirementConfiguration;
 import fk.retail.ip.ssl.config.SslClientConfiguration;
 import fk.retail.ip.zulu.config.ZuluConfiguration;
@@ -57,13 +52,15 @@ public class ManagerModule extends AbstractModule {
     }
 
     @Provides
-    public ProcClientConfiguration getProcClientConfiguration(ManagerConfiguration managerConfiguration) {
-        return  managerConfiguration.getProcClientConfiguration();
+    public ProcClientConfiguration getProcClientConfiguration(
+            ManagerConfiguration managerConfiguration) {
+        return managerConfiguration.getProcClientConfiguration();
     }
 
     @Provides
-    public SslClientConfiguration getSslClientConfiguration(ManagerConfiguration managerConfiguration) {
-        return  managerConfiguration.getSslClientConfiguration();
+    public SslClientConfiguration getSslClientConfiguration(
+            ManagerConfiguration managerConfiguration) {
+        return managerConfiguration.getSslClientConfiguration();
     }
 
     @Provides
@@ -74,7 +71,7 @@ public class ManagerModule extends AbstractModule {
     @Provides
     public TriggerRequirementConfiguration getTriggerRequirementConfiguration(
             ManagerConfiguration managerConfiguration) {
-        return managerConfiguration.getTriggerRequirementConfigurationl();
+        return managerConfiguration.getTriggerRequirementConfiguration();
     }
 
     @Provides
