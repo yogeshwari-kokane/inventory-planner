@@ -6,6 +6,6 @@ package fk.retail.ip.proc.internal;
 public interface Constants {
 
     String APP_ID = "fk-ip-inventory-planner";
-    String XClientId = "X-CLIENT-ID";
+    String XClientId = "X_CLIENT_ID";
 
 }
