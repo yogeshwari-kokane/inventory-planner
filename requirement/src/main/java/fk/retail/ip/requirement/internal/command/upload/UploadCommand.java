@@ -24,6 +24,7 @@ import fk.retail.ip.ssl.model.SupplierSelectionRequest;
 import fk.retail.ip.ssl.model.SupplierSelectionResponse;
 import fk.retail.ip.ssl.model.SupplierView;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.map.MultiKeyMap;
 
 import java.util.*;
 import java.util.function.Function;
@@ -36,33 +37,33 @@ import java.util.stream.Collectors;
 @Slf4j
 public abstract class UploadCommand {
 
-    abstract Map<String, Object> validateAndSetStateSpecificFields(RequirementDownloadLineItem row, Requirement requirement, Map<String, String> fsnToVerticalMap);
+    abstract Map<String, Object> validateAndSetStateSpecificFields(RequirementDownloadLineItem row, Requirement requirement,
+                                                                   Map<String, String> fsnToVerticalMap,
+                                                                   MultiKeyMap<String,SupplierSelectionResponse> fsnWhSupplierMap);
 
     private final RequirementRepository requirementRepository;
     private final FdpRequirementIngestorImpl fdpRequirementIngestor;
-    private final ProductInfoRepository productInfoRepository;
 
-    public UploadCommand(RequirementRepository requirementRepository, FdpRequirementIngestorImpl fdpRequirementIngestor, ProductInfoRepository productInfoRepository) {
+    public UploadCommand(RequirementRepository requirementRepository, FdpRequirementIngestorImpl fdpRequirementIngestor) {
         this.requirementRepository = requirementRepository;
         this.fdpRequirementIngestor = fdpRequirementIngestor;
-        this.productInfoRepository = productInfoRepository;
     }
 
     public List<UploadOverrideFailureLineItem> execute (
             List<RequirementDownloadLineItem> requirementDownloadLineItems,
             List<Requirement> requirements,
-            String userId
+            String userId,
+            Map<String, String> fsnToVerticalMap,
+            MultiKeyMap<String,SupplierSelectionResponse> fsnWhSupplierMap
     ) {
 
         Map<Long, Requirement> requirementMap = requirements.stream().
                 collect(Collectors.toMap(Requirement::getId, Function.identity()));
-        Set<String> fsns = requirements.stream().map(Requirement::getFsn).collect(Collectors.toSet());
-        List<ProductInfo> productInfos = productInfoRepository.getProductInfo(fsns);
-        Map<String, String> fsnToVerticalMap = productInfos.stream().collect(Collectors.toMap(ProductInfo::getFsn, ProductInfo::getVertical, (k1, k2) -> k1));
 
         ArrayList<UploadOverrideFailureLineItem> uploadOverrideFailureLineItems = new ArrayList<>();
         int rowCount = 0;
         List<RequirementChangeRequest> requirementChangeRequestList = Lists.newArrayList();
+
         for(RequirementDownloadLineItem row : requirementDownloadLineItems) {
             UploadOverrideFailureLineItem uploadOverrideFailureLineItem = new UploadOverrideFailureLineItem();
             rowCount += 1;
@@ -84,7 +85,7 @@ public abstract class UploadCommand {
 
                 if (requirementMap.containsKey(requirementId)) {
                     Requirement requirement = requirementMap.get(requirementId);
-                    Map<String, Object> overriddenValues = validateAndSetStateSpecificFields(row, requirement, fsnToVerticalMap);
+                    Map<String, Object> overriddenValues = validateAndSetStateSpecificFields(row, requirement, fsnToVerticalMap, fsnWhSupplierMap);
 
                     String status = overriddenValues.get(Constants.STATUS).toString();
                     OverrideStatus overrideStatus = OverrideStatus.fromString(status);

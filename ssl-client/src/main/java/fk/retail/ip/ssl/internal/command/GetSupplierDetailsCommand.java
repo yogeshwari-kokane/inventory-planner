@@ -18,6 +18,10 @@ import java.io.ByteArrayOutputStream;
 import io.dropwizard.jackson.Jackson;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
+import org.jdeferred.Deferred;
+import org.jdeferred.Promise;
+import org.jdeferred.impl.DeferredObject;
+
 import java.util.List;
 
 /**
@@ -27,6 +31,7 @@ import java.util.List;
 public class GetSupplierDetailsCommand extends BaseSslCommand<List<SupplierSelectionResponse>>{
 
     List<SupplierSelectionRequest> request;
+    private final Deferred<List<SupplierSelectionResponse>,Long, String> deferred = new DeferredObject<>();
 
     @Inject
     GetSupplierDetailsCommand(@NoAuthClient Client client, SslClientConfiguration configuration) {
@@ -49,6 +54,7 @@ public class GetSupplierDetailsCommand extends BaseSslCommand<List<SupplierSelec
             return emptyResult;
         }
         List<SupplierSelectionResponse> result = response.readEntity(new GenericType<List<SupplierSelectionResponse>>(){});
+        deferred.resolve(result);
         return result;
     }
 
@@ -66,5 +72,9 @@ public class GetSupplierDetailsCommand extends BaseSslCommand<List<SupplierSelec
     public GetSupplierDetailsCommand withSslRequests(List<SupplierSelectionRequest> request) {
         this.request = request;
         return this;
+    }
+
+    public Promise<List<SupplierSelectionResponse>,Long, String> promise() {
+        return deferred.promise();
     }
 }

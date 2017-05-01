@@ -10,4 +10,5 @@ import java.util.List;
  */
 public interface SslClient {
     List<SupplierSelectionResponse> getSupplierSelectionResponse(List<SupplierSelectionRequest> requests);
+    List<SupplierSelectionResponse> getBatchedSupplierSelectionResponse(List<SupplierSelectionRequest> requests);
 }

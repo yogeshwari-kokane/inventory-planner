@@ -17,6 +17,7 @@ import fk.retail.ip.ssl.model.SupplierSelectionRequest;
 import fk.retail.ip.ssl.model.SupplierSelectionResponse;
 import fk.retail.ip.ssl.model.SupplierView;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.map.MultiKeyMap;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -35,14 +36,16 @@ public class CDOReviewUploadCommand extends UploadCommand {
     private final SslClient sslClient;
 
     @Inject
-    public CDOReviewUploadCommand(RequirementRepository requirementRepository, FdpRequirementIngestorImpl fdpRequirementIngestor, Provider<CalculateRequirementCommand> calculateRequirementCommandProvider, SslClient sslClient, ProductInfoRepository productInfoRepository) {
-        super(requirementRepository, fdpRequirementIngestor, productInfoRepository);
+    public CDOReviewUploadCommand(RequirementRepository requirementRepository, FdpRequirementIngestorImpl fdpRequirementIngestor,
+                                  Provider<CalculateRequirementCommand> calculateRequirementCommandProvider, SslClient sslClient) {
+        super(requirementRepository, fdpRequirementIngestor);
         this.calculateRequirementCommandProvider = calculateRequirementCommandProvider;
         this.sslClient = sslClient;
     }
 
     @Override
-    Map<String, Object> validateAndSetStateSpecificFields(RequirementDownloadLineItem requirementDownloadLineItem, Requirement requirement, Map<String, String> fsnToVerticalMap) {
+    Map<String, Object> validateAndSetStateSpecificFields(RequirementDownloadLineItem requirementDownloadLineItem, Requirement requirement,
+                                                          Map<String, String> fsnToVerticalMap, MultiKeyMap<String,SupplierSelectionResponse> fsnWhSupplierMap) {
         String supplierOverrideComment = requirementDownloadLineItem.getCdoSupplierOverrideReason();
         Integer bdProposedQuantity = requirementDownloadLineItem.getCdoQuantityOverride();
         Integer bdProposedSla = requirementDownloadLineItem.getNewSla();
@@ -74,7 +77,7 @@ public class CDOReviewUploadCommand extends UploadCommand {
             validationComment = convertToLineSeparatedComment(validationComment, validationResponse.get());
         }
         else if (!isEmptyString(bdProposedSupplier)) {
-                supplierView = validateOverriddenSupplierFound(bdProposedSupplier, requirement);
+                supplierView = validateOverriddenSupplierFound(bdProposedSupplier, requirement, fsnWhSupplierMap);
                 if (supplierView == null) {
                     validationComment = convertToLineSeparatedComment(validationComment, Constants.SUPPLIER_NOT_FOUND.toString());
                 }
@@ -152,14 +155,10 @@ public class CDOReviewUploadCommand extends UploadCommand {
         return Optional.empty();
     }
 
-    private SupplierView validateOverriddenSupplierFound(String supplierName, Requirement requirement) {
-        List<Requirement> requirements = Lists.newArrayList(requirement);
-        List<SupplierSelectionRequest> requests = calculateRequirementCommandProvider.get().createSupplierSelectionRequest(requirements);
-        List<SupplierSelectionResponse> responses = sslClient.getSupplierSelectionResponse(requests);
-        if (requests.size() != responses.size()) {
+    private SupplierView validateOverriddenSupplierFound(String supplierName, Requirement requirement, MultiKeyMap<String,SupplierSelectionResponse> fsnWhSupplierMap) {
+        SupplierSelectionResponse supplierSelectionResponse = fsnWhSupplierMap.get(requirement.getFsn(), requirement.getWarehouse());
+        if (supplierSelectionResponse == null)
             return null;
-        }
-        SupplierSelectionResponse supplierSelectionResponse = responses.get(0);
         if(supplierSelectionResponse.getSuppliers()!=null) {
             Optional<SupplierView> supplier =
                     supplierSelectionResponse.getSuppliers().stream().filter(s -> (s.getFullName().equals(supplierName) || s.getName().equals(supplierName))).findFirst();

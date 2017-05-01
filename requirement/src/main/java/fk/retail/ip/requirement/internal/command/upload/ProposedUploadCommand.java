@@ -12,7 +12,9 @@ import fk.retail.ip.requirement.internal.repository.ProductInfoRepository;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
 import fk.retail.ip.ssl.client.SslClient;
+import fk.retail.ip.ssl.model.SupplierSelectionResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.map.MultiKeyMap;
 import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,14 +27,14 @@ import java.util.Optional;
 public class ProposedUploadCommand extends UploadCommand {
 
     @Inject
-    public ProposedUploadCommand(RequirementRepository requirementRepository, FdpRequirementIngestorImpl fdpRequirementIngestor, ProductInfoRepository productInfoRepository) {
-        super(requirementRepository, fdpRequirementIngestor, productInfoRepository);
+    public ProposedUploadCommand(RequirementRepository requirementRepository, FdpRequirementIngestorImpl fdpRequirementIngestor) {
+        super(requirementRepository, fdpRequirementIngestor);
     }
 
     @Override
     public Map<String, Object> validateAndSetStateSpecificFields(
-            RequirementDownloadLineItem requirementDownloadLineItem, Requirement requirement, Map<String, String> fsnToVerticalMap
-    ) {
+            RequirementDownloadLineItem requirementDownloadLineItem, Requirement requirement,
+            Map<String, String> fsnToVerticalMap, MultiKeyMap<String,SupplierSelectionResponse> fsnWhSupplierMap) {
         Integer currentQuantity = requirementDownloadLineItem.getQuantity();
         Integer proposedQuantity = requirementDownloadLineItem.getIpcQuantityOverride();
         String quantityOverrideComment = requirementDownloadLineItem.getIpcQuantityOverrideReason();

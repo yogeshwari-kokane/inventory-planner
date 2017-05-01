@@ -291,7 +291,7 @@ public class CalculateRequirementCommand {
         }
     }
 
-    public List<SupplierSelectionRequest> createSupplierSelectionRequest(List<Requirement> requirements) {
+    private List<SupplierSelectionRequest> createSupplierSelectionRequest(List<Requirement> requirements) {
         List<SupplierSelectionRequest> requests = Lists.newArrayList();
         requirements.forEach(req -> {
             SupplierSelectionRequest request = new SupplierSelectionRequest();

@@ -9,15 +9,18 @@ import fk.retail.ip.core.poi.SpreadSheetReader;
 import fk.retail.ip.requirement.internal.Constants;
 import fk.retail.ip.requirement.internal.command.*;
 
+import fk.retail.ip.requirement.internal.entities.ProductInfo;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.enums.OverrideStatus;
 import fk.retail.ip.requirement.internal.enums.RequirementApprovalAction;
 import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
 import fk.retail.ip.requirement.internal.factory.RequirementStateFactory;
+import fk.retail.ip.requirement.internal.repository.ProductInfoRepository;
 import fk.retail.ip.requirement.internal.repository.RequirementApprovalTransitionRepository;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.internal.states.RequirementState;
 import fk.retail.ip.requirement.model.*;
+import fk.retail.ip.ssl.model.SupplierSelectionResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.map.MultiKeyMap;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -54,7 +57,8 @@ public class RequirementService {
     public RequirementService(RequirementRepository requirementRepository, RequirementStateFactory requirementStateFactory,
                               ApprovalService approvalService, Provider<CalculateRequirementCommand> calculateRequirementCommandProvider,
                               RequirementApprovalTransitionRepository requirementApprovalStateTransitionRepository,
-                              SearchFilterCommand searchFilterCommand, Provider<SearchCommand> searchCommandProvider, FdpRequirementIngestorImpl fdpRequirementIngestor) {
+                              SearchFilterCommand searchFilterCommand, Provider<SearchCommand> searchCommandProvider,
+                              FdpRequirementIngestorImpl fdpRequirementIngestor) {
 
         this.requirementRepository = requirementRepository;
         this.requirementStateFactory = requirementStateFactory;
@@ -117,7 +121,9 @@ public class RequirementService {
             } else {
                 RequirementState state = requirementStateFactory.getRequirementState(requirementState);
                 try {
-                    List<UploadOverrideFailureLineItem> uploadLineItems = state.upload(requirements, requirementDownloadLineItems, userId);
+                    Map<String, String> fsnToVerticalMap = state.createFsnVerticalMap(requirements);
+                    MultiKeyMap<String,SupplierSelectionResponse> fsnWhSupplierMap = state.createFsnWhSupplierMap(requirementDownloadLineItems, requirements);
+                    List<UploadOverrideFailureLineItem> uploadLineItems = state.upload(requirements, requirementDownloadLineItems, userId, fsnToVerticalMap, fsnWhSupplierMap);
                     int successfulRowCount = requirementDownloadLineItems.size() - uploadLineItems.size();
                     UploadResponse uploadResponse = new UploadResponse();
                     uploadResponse.setUploadOverrideFailureLineItems(uploadLineItems);

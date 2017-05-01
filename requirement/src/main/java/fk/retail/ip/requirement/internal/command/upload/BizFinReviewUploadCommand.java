@@ -12,7 +12,9 @@ import fk.retail.ip.requirement.internal.repository.ProductInfoRepository;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
 import fk.retail.ip.ssl.client.SslClient;
+import fk.retail.ip.ssl.model.SupplierSelectionResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.map.MultiKeyMap;
 import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,11 +28,13 @@ public class BizFinReviewUploadCommand extends UploadCommand {
 
     @Inject
     public BizFinReviewUploadCommand(RequirementRepository requirementRepository, FdpRequirementIngestorImpl fdpRequirementIngestor, ProductInfoRepository productInfoRepository) {
-        super(requirementRepository, fdpRequirementIngestor, productInfoRepository);
+        super(requirementRepository, fdpRequirementIngestor);
     }
 
     @Override
-    Map<String, Object> validateAndSetStateSpecificFields(RequirementDownloadLineItem requirementDownloadLineItem, Requirement requirement, Map<String, String> fsnToVerticalMap) {
+    Map<String, Object> validateAndSetStateSpecificFields(
+            RequirementDownloadLineItem requirementDownloadLineItem, Requirement requirement,
+            Map<String, String> fsnToVerticalMap, MultiKeyMap<String,SupplierSelectionResponse> fsnWhSupplierMap) {
 
         String quantityOverrideComment = requirementDownloadLineItem.getBizFinComment();
         Integer currentQuantity = requirementDownloadLineItem.getQuantity();

@@ -6,9 +6,12 @@ import fk.retail.ip.requirement.internal.command.download.DownloadPreProposedCom
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
 import fk.retail.ip.requirement.model.UploadOverrideFailureLineItem;
+import fk.retail.ip.ssl.model.SupplierSelectionResponse;
+import org.apache.commons.collections4.map.MultiKeyMap;
 
 import javax.ws.rs.core.StreamingOutput;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by yogeshwari.k on 23/02/17.
@@ -30,7 +33,18 @@ public class PreProposedRequirementState implements RequirementState {
     @Override
     public List<UploadOverrideFailureLineItem> upload(List<Requirement> requirements,
                                                       List<RequirementDownloadLineItem> parsedJson,
-                                                      String userId) {
+                                                      String userId, Map<String, String> fsnToVerticalMap,
+                                                      MultiKeyMap<String,SupplierSelectionResponse> fsnWhSupplierMap) {
         throw new UnsupportedOperationException("Invalid operation");
+    }
+
+    @Override
+    public Map<String, String> createFsnVerticalMap(List<Requirement> requirements) {
+        return null;
+    }
+
+    @Override
+    public MultiKeyMap<String, SupplierSelectionResponse> createFsnWhSupplierMap(List<RequirementDownloadLineItem> requirementDownloadLineItems, List<Requirement> requirements) {
+        return null;
     }
 }
