@@ -27,7 +27,7 @@ import java.util.Optional;
 public class BizFinReviewUploadCommand extends UploadCommand {
 
     @Inject
-    public BizFinReviewUploadCommand(RequirementRepository requirementRepository, FdpRequirementIngestorImpl fdpRequirementIngestor, ProductInfoRepository productInfoRepository) {
+    public BizFinReviewUploadCommand(RequirementRepository requirementRepository, FdpRequirementIngestorImpl fdpRequirementIngestor) {
         super(requirementRepository, fdpRequirementIngestor);
     }
 

@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import fk.retail.ip.requirement.internal.command.CalculateRequirementCommand;
+import fk.retail.ip.requirement.internal.command.RequirementHelper;
 import fk.retail.ip.requirement.internal.command.download.DownloadCDOReviewCommand;
 import fk.retail.ip.requirement.internal.command.upload.CDOReviewUploadCommand;
 import fk.retail.ip.requirement.internal.entities.ProductInfo;
@@ -13,6 +14,7 @@ import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
 import fk.retail.ip.requirement.model.UploadOverrideFailureLineItem;
 import fk.retail.ip.ssl.SslClientCallable;
 import fk.retail.ip.ssl.client.SslClient;
+import fk.retail.ip.ssl.config.SslClientConfiguration;
 import fk.retail.ip.ssl.model.SupplierSelectionRequest;
 import fk.retail.ip.ssl.model.SupplierSelectionResponse;
 import org.apache.commons.collections4.map.MultiKeyMap;
@@ -37,14 +39,19 @@ public class CDOReviewRequirementState implements RequirementState {
     private final Provider<CDOReviewUploadCommand> uploadCDOReviewCommandProvider;
     private final ProductInfoRepository productInfoRepository;
     private final SslClient sslClient;
+    private final RequirementHelper requirementHelper;
+    private final SslClientConfiguration sslClientConfiguration;
 
     @Inject
     public CDOReviewRequirementState(Provider<DownloadCDOReviewCommand> downloadCDOReviewCommandProvider, Provider<CDOReviewUploadCommand> uploadCDOReviewCommandProvider,
-                                     ProductInfoRepository productInfoRepository, SslClient sslClient) {
+                                     ProductInfoRepository productInfoRepository, SslClient sslClient, RequirementHelper requirementHelper,
+                                     SslClientConfiguration sslClientConfiguration) {
         this.downloadCDOReviewCommandProvider = downloadCDOReviewCommandProvider;
         this.uploadCDOReviewCommandProvider = uploadCDOReviewCommandProvider;
         this.productInfoRepository = productInfoRepository;
         this.sslClient = sslClient;
+        this.requirementHelper = requirementHelper;
+        this.sslClientConfiguration = sslClientConfiguration;
     }
 
     @Override
@@ -104,10 +111,10 @@ public class CDOReviewRequirementState implements RequirementState {
 
     public MultiKeyMap<String,SupplierSelectionResponse> getSSLResponseMap (List<Requirement> requirements) throws ExecutionException, InterruptedException {
         ExecutorService executor = Executors.newFixedThreadPool(5);
-        List<SupplierSelectionRequest> requests = createSupplierSelectionRequest(requirements);
+        List<SupplierSelectionRequest> requests = requirementHelper.createSupplierSelectionRequest(requirements);
         List<SupplierSelectionResponse> supplierSelectionResponses = Lists.newArrayList();
         List<Future<List<SupplierSelectionResponse>>> futureList = Lists.newArrayList();
-        for(List<SupplierSelectionRequest> requestList : Lists.partition(requests, 10)) {
+        for(List<SupplierSelectionRequest> requestList : Lists.partition(requests, sslClientConfiguration.getBatchSize())) {
             Future<List<SupplierSelectionResponse>> futureResponse = executor.submit(new SslClientCallable(sslClient, requestList));
             futureList.add(futureResponse);
         }
@@ -119,25 +126,6 @@ public class CDOReviewRequirementState implements RequirementState {
             supplierSelectionResponseMap.put(response.getFsn(),response.getWarehouseId(), response);
         });
         return supplierSelectionResponseMap;
-    }
-
-
-    private List<SupplierSelectionRequest> createSupplierSelectionRequest(List<Requirement> requirements) {
-        List<SupplierSelectionRequest> requests = Lists.newArrayList();
-        requirements.forEach(req -> {
-            SupplierSelectionRequest request = new SupplierSelectionRequest();
-            request.setFsn(req.getFsn());
-            request.setSku("SKU0000000000000");
-            request.setOrderType(req.getProcType());
-            request.setQuantity((int) req.getQuantity());
-            request.setEntityType("Requirement");
-            request.setWarehouseId(req.getWarehouse());
-            request.setTenantId("FKI");
-            DateTime date = DateTime.now();
-            request.setRequiredByDate(date.toString());
-            requests.add(request);
-        });
-        return requests;
     }
 
     private boolean isEmptyString(String comment) {

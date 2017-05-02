@@ -75,6 +75,7 @@ procClientConfiguration:
 sslClientConfiguration:
   url: http://10.85.52.106
   viewPath: "/supplier_selection"
+  batchSize: 10
 
 fdpConfiguration:
   url: http://10.47.2.122:28223/ingestion/objects
@@ -99,11 +100,6 @@ clientConfiguration:
   gzipEnabled: false
   gzipEnabledForRequests: false
   chunkedEncodingEnabled: false
-
-
-sslClientConfiguration:
-  url: http://10.85.52.106
-  viewPath: "/supplier_selection"
 
 triggerRequirementConfiguration:
   url: http://10.85.53.212/v1/requirement

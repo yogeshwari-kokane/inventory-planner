@@ -6,11 +6,13 @@ import com.google.inject.Provider;
 import fk.retail.ip.requirement.internal.Constants;
 import fk.retail.ip.requirement.internal.command.CalculateRequirementCommand;
 import fk.retail.ip.requirement.internal.command.FdpRequirementIngestorImpl;
+import fk.retail.ip.requirement.internal.command.RequirementHelper;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.enums.OverrideKey;
 import fk.retail.ip.requirement.internal.enums.OverrideStatus;
 import fk.retail.ip.requirement.internal.repository.ProductInfoRepository;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
+import fk.retail.ip.requirement.internal.repository.WarehouseSupplierSlaRepository;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
 import fk.retail.ip.ssl.client.SslClient;
 import fk.retail.ip.ssl.model.SupplierSelectionRequest;
@@ -32,20 +34,19 @@ import java.util.Optional;
 @Slf4j
 public class CDOReviewUploadCommand extends UploadCommand {
 
-    private final Provider<CalculateRequirementCommand> calculateRequirementCommandProvider;
-    private final SslClient sslClient;
+    private final RequirementHelper requirementHelper;
 
     @Inject
     public CDOReviewUploadCommand(RequirementRepository requirementRepository, FdpRequirementIngestorImpl fdpRequirementIngestor,
-                                  Provider<CalculateRequirementCommand> calculateRequirementCommandProvider, SslClient sslClient) {
+                                  RequirementHelper requirementHelper) {
         super(requirementRepository, fdpRequirementIngestor);
-        this.calculateRequirementCommandProvider = calculateRequirementCommandProvider;
-        this.sslClient = sslClient;
+        this.requirementHelper = requirementHelper;
     }
 
     @Override
-    Map<String, Object> validateAndSetStateSpecificFields(RequirementDownloadLineItem requirementDownloadLineItem, Requirement requirement,
-                                                          Map<String, String> fsnToVerticalMap, MultiKeyMap<String,SupplierSelectionResponse> fsnWhSupplierMap) {
+    Map<String, Object> validateAndSetStateSpecificFields(RequirementDownloadLineItem requirementDownloadLineItem,
+                                                          Requirement requirement, Map<String, String> fsnToVerticalMap,
+                                                          MultiKeyMap<String,SupplierSelectionResponse> fsnWhSupplierMap) {
         String supplierOverrideComment = requirementDownloadLineItem.getCdoSupplierOverrideReason();
         Integer bdProposedQuantity = requirementDownloadLineItem.getCdoQuantityOverride();
         Integer bdProposedSla = requirementDownloadLineItem.getNewSla();
@@ -73,12 +74,13 @@ public class CDOReviewUploadCommand extends UploadCommand {
         }
 
         validationResponse = validateSupplierOverride(bdProposedSupplier, currentSupplier, supplierOverrideComment);
-        if (validationResponse.isPresent()) {
+        if (validationResponse.isPresent()) {   //basic validation failed
             validationComment = convertToLineSeparatedComment(validationComment, validationResponse.get());
         }
         else if (!isEmptyString(bdProposedSupplier)) {
+                //validate the overridden supplier with supplier selection response
                 supplierView = validateOverriddenSupplierFound(bdProposedSupplier, requirement, fsnWhSupplierMap);
-                if (supplierView == null) {
+                if (supplierView == null) {     //overridden supplier not found in supplier selection response
                     validationComment = convertToLineSeparatedComment(validationComment, Constants.SUPPLIER_NOT_FOUND.toString());
                 }
         }
@@ -155,7 +157,8 @@ public class CDOReviewUploadCommand extends UploadCommand {
         return Optional.empty();
     }
 
-    private SupplierView validateOverriddenSupplierFound(String supplierName, Requirement requirement, MultiKeyMap<String,SupplierSelectionResponse> fsnWhSupplierMap) {
+    private SupplierView validateOverriddenSupplierFound(String supplierName, Requirement requirement,
+                                                         MultiKeyMap<String,SupplierSelectionResponse> fsnWhSupplierMap) {
         SupplierSelectionResponse supplierSelectionResponse = fsnWhSupplierMap.get(requirement.getFsn(), requirement.getWarehouse());
         if (supplierSelectionResponse == null)
             return null;
@@ -222,6 +225,7 @@ public class CDOReviewUploadCommand extends UploadCommand {
             overriddenValues.put(Constants.STATUS, OverrideStatus.UPDATE.toString());
         }
 
+        //case when app is overridden given that supplier is either not overridden or if overridden it is a valid supplier
         if (bdProposedApp != null && bdProposedApp != currentApp && (isEmptyString(bdProposedSupplier) ||
                 (bdProposedSupplier != currentSupplier && supplierView!=null))) {
             Integer appToUse = bdProposedApp;
@@ -229,6 +233,7 @@ public class CDOReviewUploadCommand extends UploadCommand {
             overrideComment.put(Constants.APP_OVERRIDE_COMMENT, appOverrideComment);
             overriddenValues.put(Constants.STATUS, OverrideStatus.UPDATE.toString());
         }
+        //case when valid supplier is overridden and app is not overridden
         else if(overriddenValues.containsKey(OverrideKey.SUPPLIER.toString()))
         {
             Integer appToUse = supplierView.getApp();
@@ -237,17 +242,18 @@ public class CDOReviewUploadCommand extends UploadCommand {
             overriddenValues.put(Constants.STATUS, OverrideStatus.UPDATE.toString());
         }
 
+        //case when sla is overridden given that supplier is either not overridden or if overridden it is a valid supplier
         if (bdProposedSla != null && bdProposedSla != currentSla && (isEmptyString(bdProposedSupplier) ||
                 (bdProposedSupplier != currentSupplier && supplierView!=null))) {
             Integer slaToUse = bdProposedSla;
             overriddenValues.put(OverrideKey.SLA.toString(), slaToUse);
             overriddenValues.put(Constants.STATUS, OverrideStatus.UPDATE.toString());
         }
+        //case when valid supplier is overridden and sla is not overridden
         else if(overriddenValues.containsKey(OverrideKey.SUPPLIER.toString()))
         {
-            Integer slaToUse = calculateRequirementCommandProvider.get().getSla
-                (fsnToVerticalMap.get(requirement.getFsn()), requirement.getWarehouse(), supplierView.getSourceId(),
-                        supplierView.getSla());
+            Integer slaToUse = requirementHelper.getSla(fsnToVerticalMap.get(requirement.getFsn()), requirement.getWarehouse(),
+                    supplierView.getSourceId(), supplierView.getSla());
             overriddenValues.put(OverrideKey.SLA.toString(), slaToUse);
             overriddenValues.put(Constants.STATUS, OverrideStatus.UPDATE.toString());
         }
