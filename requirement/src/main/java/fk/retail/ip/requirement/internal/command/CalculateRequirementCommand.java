@@ -1,12 +1,23 @@
 package fk.retail.ip.requirement.internal.command;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Table;
 import com.google.inject.Inject;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.joda.time.DateTime;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import fk.retail.ip.requirement.internal.Constants;
 import fk.retail.ip.requirement.internal.context.ForecastContext;
 import fk.retail.ip.requirement.internal.context.OnHandQuantityContext;
@@ -25,7 +36,6 @@ import fk.retail.ip.requirement.internal.entities.Warehouse;
 import fk.retail.ip.requirement.internal.entities.WarehouseInventory;
 import fk.retail.ip.requirement.internal.enums.FdpRequirementEventType;
 import fk.retail.ip.requirement.internal.enums.OverrideKey;
-import fk.retail.ip.requirement.internal.enums.PolicyType;
 import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
 import fk.retail.ip.requirement.internal.repository.ForecastRepository;
 import fk.retail.ip.requirement.internal.repository.GroupFsnRepository;
@@ -44,15 +54,7 @@ import fk.retail.ip.ssl.client.SslClient;
 import fk.retail.ip.ssl.model.SupplierSelectionRequest;
 import fk.retail.ip.ssl.model.SupplierSelectionResponse;
 import fk.retail.ip.ssl.model.SupplierView;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.map.MultiKeyMap;
-import org.joda.time.DateTime;
 
 @Slf4j
 public class CalculateRequirementCommand {
@@ -155,7 +157,7 @@ public class CalculateRequirementCommand {
         });
 
         //find supplier for non error fsns
-        List<Requirement> validRequirements = allRequirements.stream().filter(requirement -> !Constants.ERROR_STATE.equals(requirement.getState())).collect(Collectors.toList());
+        List<Requirement> validRequirements = allRequirements.stream().filter(requirement -> !RequirementApprovalState.ERROR.toString().equals(requirement.getState())).collect(Collectors.toList());
         populateSupplier(validRequirements,requirementChangeRequestList);
 
 
@@ -173,7 +175,7 @@ public class CalculateRequirementCommand {
         //TODO: remove backward compatibility changes to add entry in projections table
         for (String fsn : fsnToRequirementMap.keySet()) {
             List<Requirement> requirements = fsnToRequirementMap.get(fsn);
-            String state = Constants.ERROR_STATE;
+            String state = RequirementApprovalState.ERROR.toString();
             for (Requirement requirement : requirements) {
 
                 if (RequirementApprovalState.PRE_PROPOSED == RequirementApprovalState.fromString(requirement.getState())) {
@@ -185,7 +187,7 @@ public class CalculateRequirementCommand {
             Requirement requirement = requirements.get(0);
             projection.setFsn(requirement.getFsn());
             projection.setCurrentState(state);
-            projection.setEnabled(Constants.ERROR_STATE.equals(state) ? 0 : 1);
+            projection.setEnabled(RequirementApprovalState.ERROR.toString().equals(state) ? 0 : 1);
             projection.setError("YOLO");
             projection.setProcType(requirement.getProcType());
             projection.setForecastId(0L);
@@ -213,7 +215,7 @@ public class CalculateRequirementCommand {
     private void addProjectionCreatedRequest(List<Requirement> allRequirements, List<RequirementChangeRequest> requirementChangeRequestList) {
 
         allRequirements.forEach(requirement -> {
-            if(!requirement.getState().equals(Constants.ERROR_STATE)) {
+            if(!requirement.getState().equals(RequirementApprovalState.ERROR.toString())) {
                 RequirementChangeRequest requirementChangeRequest = new RequirementChangeRequest();
                 List<RequirementChangeMap> requirementChangeMaps = Lists.newArrayList();
                 requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.STATE.toString(), null, RequirementApprovalState.PRE_PROPOSED.toString(), FdpRequirementEventType.PROJECTION_CREATED.toString(), "Projection created", "system"));
@@ -227,7 +229,7 @@ public class CalculateRequirementCommand {
     private Requirement getErredRequirement(String fsn, String errorMessage) {
         Requirement requirement = new Requirement();
         requirement.setFsn(fsn);
-        requirement.setState(Constants.ERROR_STATE);
+        requirement.setState(RequirementApprovalState.ERROR.toString());
         requirement.setWarehouse(Constants.NOT_APPLICABLE);
         requirement.setOverrideComment(errorMessage);
         requirement.setEnabled(false);
@@ -328,7 +330,7 @@ public class CalculateRequirementCommand {
         requirement.setCurrent(true);
 //        requirement.setQuantity(0);
         //TODO: do we need procType here?
-        requirement.setProcType(group.getProcurementType());
+        requirement.setProcType(Constants.FORWARD_PLANNING_PROCUREMENT_TYPE);
         RequirementSnapshot requirementSnapshot = new RequirementSnapshot();
         requirementSnapshot.setGroup(group);
         requirementSnapshot.setForecast(forecastContext.getForecastAsString(fsn, warehouse));
@@ -370,7 +372,7 @@ public class CalculateRequirementCommand {
             }
         });
         //override with fsn level policies
-        List<Policy> policies = policyRepository.fetchByFsns(fsns);
+        List<Policy> policies = policyRepository.fetch(fsns);
         policies.forEach(policy -> policyContext.addPolicy(policy.getFsn(), policy.getPolicyType(), policy.getValue()));
 
         return policyContext;
