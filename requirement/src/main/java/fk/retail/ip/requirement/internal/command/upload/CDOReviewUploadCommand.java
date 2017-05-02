@@ -161,13 +161,13 @@ public class CDOReviewUploadCommand extends UploadCommand {
             return null;
         if(supplierSelectionResponse.getSuppliers()!=null) {
             Optional<SupplierView> supplier =
-                    supplierSelectionResponse.getSuppliers().stream().filter(s -> (s.getFullName().equals(supplierName) || s.getName().equals(supplierName))).findFirst();
+                    supplierSelectionResponse.getSuppliers().stream().filter(s -> (s.getSourceId().equals(supplierName))).findFirst();
             if (supplier.isPresent())
                 return supplier.get();
         }
         if(supplierSelectionResponse.getOtherSuppliers()!=null) {
             Optional<SupplierView> otherSupplier =
-                    supplierSelectionResponse.getOtherSuppliers().stream().filter(s -> (s.getFullName().equals(supplierName) || s.getName().equals(supplierName))).findFirst();
+                    supplierSelectionResponse.getOtherSuppliers().stream().filter(s -> (s.getSourceId().equals(supplierName))).findFirst();
             if (otherSupplier.isPresent())
                 return otherSupplier.get();
         }
