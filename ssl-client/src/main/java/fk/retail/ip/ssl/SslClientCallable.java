@@ -7,9 +7,6 @@ import fk.retail.ip.ssl.model.SupplierSelectionResponse;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-/**
- * Created by yogeshwari.k on 01/05/17.
- */
 public class SslClientCallable implements Callable {
 
     List<SupplierSelectionRequest> requests;

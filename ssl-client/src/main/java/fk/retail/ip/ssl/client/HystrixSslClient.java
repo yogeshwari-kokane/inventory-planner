@@ -29,15 +29,4 @@ public class HystrixSslClient implements SslClient{
                 .execute();
     }
 
-    @Override
-    public List<SupplierSelectionResponse> getBatchedSupplierSelectionResponse(List<SupplierSelectionRequest> requests) {
-        List<SupplierSelectionResponse> responses = Lists.newArrayList();
-        for(List<SupplierSelectionRequest> requestList : Lists.partition(requests, 10)) {
-            GetSupplierDetailsCommand getSupplierDetailsCommand = getSupplierDetailsCommandProvider.get();
-            getSupplierDetailsCommand.withSslRequests(requestList).execute();
-            getSupplierDetailsCommand.promise().done(res -> responses.addAll(res));
-        }
-        return responses;
-    }
-
 }

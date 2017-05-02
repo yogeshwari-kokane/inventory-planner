@@ -102,16 +102,6 @@ public class CDOReviewRequirementState implements RequirementState {
         return requirements;
     }
 
-    public MultiKeyMap<String,SupplierSelectionResponse> getSSLResponse (List<Requirement> requirements) {
-        List<SupplierSelectionRequest> requests = createSupplierSelectionRequest(requirements);
-        List<SupplierSelectionResponse> supplierSelectionResponses  = sslClient.getBatchedSupplierSelectionResponse(requests);
-        MultiKeyMap<String, SupplierSelectionResponse> supplierSelectionResponseMap  = new MultiKeyMap<>();
-        supplierSelectionResponses.forEach( response -> {
-            supplierSelectionResponseMap.put(response.getFsn(),response.getWarehouseId(), response);
-        });
-        return supplierSelectionResponseMap;
-    }
-
     public MultiKeyMap<String,SupplierSelectionResponse> getSSLResponseMap (List<Requirement> requirements) throws ExecutionException, InterruptedException {
         ExecutorService executor = Executors.newFixedThreadPool(5);
         List<SupplierSelectionRequest> requests = createSupplierSelectionRequest(requirements);
