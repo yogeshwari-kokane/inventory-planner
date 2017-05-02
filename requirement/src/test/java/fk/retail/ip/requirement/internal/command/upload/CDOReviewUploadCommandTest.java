@@ -63,6 +63,7 @@ public class CDOReviewUploadCommandTest {
         Assert.assertEquals(100, (int)requirementMap.get((long)1).getApp());
         Assert.assertEquals("new_supplier", requirementMap.get((long)1).getSupplier());
         Assert.assertEquals(20, (int)requirementMap.get((long)1).getSla());
+        Assert.assertEquals(200, (int)requirementMap.get((long)1).getMrp());
 
         Assert.assertEquals(100, (int)requirementMap.get((long)2).getQuantity());
         Assert.assertEquals(100, (int)requirementMap.get((long)3).getQuantity());
@@ -71,6 +72,8 @@ public class CDOReviewUploadCommandTest {
 
         Assert.assertEquals("new Supplier", requirementMap.get((long)6).getSupplier());
         Assert.assertEquals(20, (int)requirementMap.get((long)6).getSla());
+        Assert.assertEquals(200, (int)requirementMap.get((long)6).getMrp());
+        Assert.assertEquals(150, (int)requirementMap.get((long)6).getApp());
 
         Assert.assertEquals(4, uploadOverrideFailureLineItems.size());
         Assert.assertEquals(Constants.SUGGESTED_QUANTITY_IS_NOT_GREATER_THAN_ZERO,
@@ -215,7 +218,7 @@ public class CDOReviewUploadCommandTest {
         SupplierView supplier = new SupplierView();
         supplier.setSla(5);
         supplier.setApp(150);
-        supplier.setFullName("new_supplier");
+        supplier.setSource_id("new_supplier");
         supplier.setMrp(200);
         supplier.setName("new_s");
         supplierSelectionResponse.setFsn("fsn");
@@ -228,7 +231,7 @@ public class CDOReviewUploadCommandTest {
         SupplierView supplier2 = new SupplierView();
         supplier2.setSla(5);
         supplier2.setApp(150);
-        supplier2.setFullName("new Supplier");
+        supplier2.setSource_id("new Supplier");
         supplier2.setMrp(200);
         supplier2.setName("new_s2");
         supplierSelectionResponse2.setFsn("fsn_2");
