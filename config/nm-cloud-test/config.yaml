@@ -83,6 +83,12 @@ zuluConfiguration:
   clientId: "retail.rp"
   maxBatchSize: 30
 
+procClientConfiguration:
+  url: http://10.85.52.17
+  viewPath: "/requirements"
+  callbackUrl: http://10.85.110.102:32000/v1/requirement/callback/
+  requirementQueueName: proc_b2b_produciton
+
 fdpConfiguration:
   url: http://10.47.2.122:28223/ingestion/objects
   queueName: "fdp_requirement_ingestion"
@@ -111,3 +117,13 @@ clientConfiguration:
   gzipEnabledForRequests: false
   chunkedEncodingEnabled: false
 
+triggerRequirementConfiguration:
+  url: http://10.85.53.212/v1/requirement
+  projectionQueueName: retail_rp_internal_projection
+  fetchDataBatchSize: 10000
+  createReqBatchSize: 10
+
+d42Configuration:
+  accessKey: "EKBK5XNIHLM7E3290RBX"
+  secretKey: "QGXi9BkrIArIb255tHRFR7trEcPSvxBi3X0LsBwP"
+  url: "http://10.47.2.2"

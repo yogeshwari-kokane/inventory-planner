@@ -11,6 +11,7 @@ import fk.retail.ip.requirement.config.RequirementModule;
 import fk.retail.ip.ssl.config.SslClientModule;
 import fk.retail.ip.zulu.config.ZuluModule;
 import fk.retail.ip.fdp.config.FdpModule;
+import fk.retail.ip.d42.config.D42ClientModule;
 import fk.sp.common.extensions.RequestContextFilter;
 import fk.sp.common.extensions.config.CustomEnumModule;
 import fk.sp.common.extensions.dropwizard.jersey.JerseyClientModule;
@@ -55,6 +56,7 @@ public class ManagerApplication extends Application<ManagerConfiguration> {
                 .addModule(new SslClientModule())
                 .addModule(new FdpModule())
                 .addModule(new RestbusSenderModule())
+                .addModule(new D42ClientModule())
                 .addModule(new JpaWithSpringModule(
                         Sets.newHashSet(
                                 "fk.retail.ip",

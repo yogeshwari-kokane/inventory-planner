@@ -14,6 +14,7 @@ public interface Constants {
     int WEEKS_OF_FORECAST = 15;
     double MIN_CASE_SIZE = 1D;
     long DEFAULT_TRANSITION_GROUP = 1;
+    String FORWARD_PLANNING_PROCUREMENT_TYPE = "DAILY_PLANNING";
     String MAX_COVERAGE_KEY = "max_coverage";
     String CASE_SIZE_KEY = "case_size";
     Set<String> INTRANSIT_REQUEST_STATUSES = Sets.newHashSet("in-process", "dispatched", "requested");
@@ -27,6 +28,7 @@ public interface Constants {
     String UNABLE_TO_PARSE = "Unable to parse: {}";
     String NOT_APPLICABLE = "N/A";
     String ERROR_STATE = "error";
+    String PUSHED_TO_PROC_FAILED = "Pushed to proc failed";
 
     String FSN_OR_WAREHOUSE_IS_MISSING = "FSN or Warehouse is missing";
     String QUANTITY_OVERRIDE_COMMENT_IS_MISSING = "Quantity override reason is missing";
