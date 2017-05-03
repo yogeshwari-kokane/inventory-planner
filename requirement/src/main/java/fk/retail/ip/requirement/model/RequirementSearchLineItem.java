@@ -43,7 +43,7 @@ public class RequirementSearchLineItem {
     private String appCurrency;
     private Integer sla;
     private String procType;
-    private Long requirementId;
+    private String requirementId;
     private String createdBy;
     private Integer international;
     private String mrpCurrency;

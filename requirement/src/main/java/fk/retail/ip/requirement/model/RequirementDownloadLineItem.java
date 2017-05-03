@@ -90,7 +90,7 @@ public class RequirementDownloadLineItem {
     @JsonProperty("Warehouse")
     private String warehouseName;
     @JsonProperty("Requirement Id")
-    private Long requirementId;
+    private String requirementId;
     @JsonProperty("IPC Quantity Override")
     private Integer ipcQuantityOverride;
     @JsonProperty("IPC Quantity Override Reason")

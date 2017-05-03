@@ -30,7 +30,7 @@ public class PushToProcClient {
         this.restbusMessageSender = restbusMessageSender;
     }
 
-    public void pushToProc(Map<Long, PushToProcRequest> allRequirements) {
+    public void pushToProc(Map<String, PushToProcRequest> allRequirements) {
         allRequirements.forEach((id, requirement) -> {
             Message message = getMessageInstance();
             PushToProcRequestWrapper pushToProcRequest = new PushToProcRequestWrapper();

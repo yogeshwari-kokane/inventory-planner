@@ -6,11 +6,8 @@ import fk.retail.ip.requirement.config.TestDbModule;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.entities.RequirementSnapshot;
 import fk.sp.common.extensions.jpa.TransactionalJpaRepositoryTest;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+
+import java.util.*;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import org.apache.commons.lang.ArrayUtils;
@@ -39,7 +36,7 @@ public class RequirementRepositoryTest extends TransactionalJpaRepositoryTest {
     public void testFindRequirementById() {
         Requirement requirement = getRequirement(1);
         requirementRepository.persist(requirement);
-        List<Requirement> requirements = requirementRepository.findRequirementByIds(Lists.newArrayList(new Long(1)));
+        List<Requirement> requirements = requirementRepository.findRequirementByIds(Lists.newArrayList("1"));
         Assert.assertEquals(1, requirements.size());
         Assert.assertEquals(requirement, requirements.get(0));
     }
@@ -47,17 +44,16 @@ public class RequirementRepositoryTest extends TransactionalJpaRepositoryTest {
     @Test
     public void testFindRequirementByIdArray() {
 
-        IntStream.rangeClosed(1, 30).forEach(i -> {
+        IntStream.rangeClosed(1, 10).forEach(i -> {
 
             requirementRepository.persist(getRequirement(i));
         });
 
-        long[] ids = LongStream.rangeClosed(1, 30).toArray();
-        Long[] idList = ArrayUtils.toObject(ids);
-        List<Long> idsAsList = Arrays.asList(idList);
+
+        List idsAsList = Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9", "10");
 
         List<Requirement> requirements = requirementRepository.findRequirementByIds(idsAsList);
-        Assert.assertEquals(30, requirements.size());
+        Assert.assertEquals(10, requirements.size());
     }
 
     @Test
@@ -115,23 +111,22 @@ public class RequirementRepositoryTest extends TransactionalJpaRepositoryTest {
         inactiveRequirement.setCurrent(false);
 
         requirementRepository.persist(inactiveRequirement);
-        IntStream.rangeClosed(2, 30).forEach(i -> {
+        IntStream.rangeClosed(2, 10).forEach(i -> {
 
             requirementRepository.persist(getRequirement(i));
         });
 
-        long[] ids = LongStream.rangeClosed(1, 30).toArray();
-        Long[] idList = ArrayUtils.toObject(ids);
-        List<Long> idsAsList = Arrays.asList(idList);
+
+        List idsAsList = Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9", "10");
 
         List<Requirement> requirements = requirementRepository.findActiveRequirementForState(idsAsList, "proposed");
-        Assert.assertEquals(29, requirements.size());
+        Assert.assertEquals(9, requirements.size());
     }
 
     private Requirement getRequirement(int i) {
         String fsn = "fsn" + String.valueOf(i);
         Requirement requirement = TestHelper.getRequirement(fsn, "dummy_warehouse", "proposed", true, null, 10, "supplier",
-                10, 11, "INR", 2, "comment", "daily");
+                10, 11, "INR", 2, "comment", "daily", String.valueOf(i));
         requirement.setCurrent(true);
 
         return requirement;

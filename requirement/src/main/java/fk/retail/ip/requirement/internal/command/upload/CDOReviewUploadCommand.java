@@ -3,8 +3,10 @@ package fk.retail.ip.requirement.internal.command.upload;
 import com.google.inject.Inject;
 import fk.retail.ip.requirement.internal.Constants;
 import fk.retail.ip.requirement.internal.command.FdpRequirementIngestorImpl;
+import fk.retail.ip.requirement.internal.entities.RequirementEventLog;
 import fk.retail.ip.requirement.internal.enums.OverrideKey;
 import fk.retail.ip.requirement.internal.enums.OverrideStatus;
+import fk.retail.ip.requirement.internal.repository.RequirementEventLogRepository;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
 import lombok.extern.slf4j.Slf4j;
@@ -22,8 +24,12 @@ import java.util.Optional;
 public class CDOReviewUploadCommand extends UploadCommand {
 
     @Inject
-    public CDOReviewUploadCommand(RequirementRepository requirementRepository, FdpRequirementIngestorImpl fdpRequirementIngestor) {
-        super(requirementRepository, fdpRequirementIngestor);
+    public CDOReviewUploadCommand(
+            RequirementRepository requirementRepository,
+            FdpRequirementIngestorImpl fdpRequirementIngestor,
+            RequirementEventLogRepository requirementEventLogRepository
+    ) {
+        super(requirementRepository, fdpRequirementIngestor, requirementEventLogRepository);
     }
 
     @Override

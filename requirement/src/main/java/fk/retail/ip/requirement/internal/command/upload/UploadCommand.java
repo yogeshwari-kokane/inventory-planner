@@ -3,13 +3,12 @@ package fk.retail.ip.requirement.internal.command.upload;
 
 import com.google.common.collect.Lists;
 import fk.retail.ip.requirement.internal.Constants;
+import fk.retail.ip.requirement.internal.command.EventLogger;
 import fk.retail.ip.requirement.internal.command.FdpRequirementIngestorImpl;
 import fk.retail.ip.requirement.internal.command.PayloadCreationHelper;
 import fk.retail.ip.requirement.internal.entities.Requirement;
-import fk.retail.ip.requirement.internal.enums.FdpRequirementEventType;
-import fk.retail.ip.requirement.internal.enums.OverrideKey;
-import fk.retail.ip.requirement.internal.enums.OverrideStatus;
-import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
+import fk.retail.ip.requirement.internal.enums.*;
+import fk.retail.ip.requirement.internal.repository.RequirementEventLogRepository;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.model.RequirementChangeMap;
 import fk.retail.ip.requirement.model.RequirementChangeRequest;
@@ -35,10 +34,16 @@ public abstract class UploadCommand {
 
     private final RequirementRepository requirementRepository;
     private final FdpRequirementIngestorImpl fdpRequirementIngestor;
+    private final RequirementEventLogRepository requirementEventLogRepository;
 
-    public UploadCommand(RequirementRepository requirementRepository, FdpRequirementIngestorImpl fdpRequirementIngestor) {
+    public UploadCommand(
+            RequirementRepository requirementRepository,
+            FdpRequirementIngestorImpl fdpRequirementIngestor,
+            RequirementEventLogRepository requirementEventLogRepository
+    ) {
         this.requirementRepository = requirementRepository;
         this.fdpRequirementIngestor = fdpRequirementIngestor;
+        this.requirementEventLogRepository = requirementEventLogRepository;
     }
 
     public List<UploadOverrideFailureLineItem> execute(
@@ -47,7 +52,7 @@ public abstract class UploadCommand {
             String userId
     ) {
 
-        Map<Long, Requirement> requirementMap = requirements.stream().
+        Map<String, Requirement> requirementMap = requirements.stream().
                 collect(Collectors.toMap(Requirement::getId, Function.identity()));
 
         ArrayList<UploadOverrideFailureLineItem> uploadOverrideFailureLineItems = new ArrayList<>();
@@ -85,7 +90,7 @@ public abstract class UploadCommand {
                         break;
 
                     case UPDATE:
-                        Long requirementId = row.getRequirementId();
+                        String requirementId = row.getRequirementId();
 
                         if (requirementMap.containsKey(requirementId)) {
                             //Add IPC_QUANTITY_OVERRIDE, CDO_QUANTITY_OVERRIDE, CDO_APP_OVERRIDE, CDO_SLA_OVERRIDE, CDO_SUPPLIER_OVERRIDE events to fdp request
@@ -104,6 +109,9 @@ public abstract class UploadCommand {
                                 else if(RequirementApprovalState.CDO_REVIEW.toString().equals(requirement.getState())) {
                                     eventType = FdpRequirementEventType.CDO_QUANTITY_OVERRIDE.toString();
                                     overrideReason = row.getCdoQuantityOverrideReason();
+                                } else if (RequirementApprovalState.BIZFIN_REVIEW.toString().equals(requirement.getState())) {
+                                    eventType = FdpRequirementEventType.BIZFIN_QUANTITY_RECOMMENDATION.toString();
+                                    overrideReason = row.getBizFinComment();
                                 }
                                 if(eventType!=null)
                                     requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.QUANTITY.toString(), String.valueOf(requirement.getQuantity()), overriddenValues.get(OverrideKey.QUANTITY.toString()).toString(), eventType, overrideReason, userId));
@@ -133,6 +141,19 @@ public abstract class UploadCommand {
                                         (overriddenValues.get(OverrideKey.OVERRIDE_COMMENT.toString()).toString());
                             }
 
+                            if (!overriddenValues.containsKey(OverrideKey.QUANTITY.toString()) &&
+                                    overriddenValues.containsKey(OverrideKey.OVERRIDE_COMMENT.toString()) &&
+                                    requirement.getState().equals(RequirementApprovalState.BIZFIN_REVIEW.toString())) {
+                                requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(
+                                        OverrideKey.OVERRIDE_COMMENT.toString(),
+                                        null,
+                                        row.getBizFinComment(),
+                                        FdpRequirementEventType.BIZFIN_QUANTITY_RECOMMENDATION.toString(),
+                                        FdpRequirementEventType.BIZFIN_COMMENT_RECOMMENDATION.toString(),
+                                        userId
+                                ));
+                            }
+
                             if(!requirementChangeMaps.isEmpty()) {
                                 requirementChangeRequest.setRequirement(requirement);
                                 requirementChangeRequest.setRequirementChangeMaps(requirementChangeMaps);
@@ -160,8 +181,10 @@ public abstract class UploadCommand {
             }
 
         //Push IPC_QUANTITY_OVERRIDE, CDO_QUANTITY_OVERRIDE, CDO_APP_OVERRIDE, CDO_SLA_OVERRIDE, CDO_SUPPLIER_OVERRIDE events to fdp
-        log.info("Pushing IPC_QUANTITY_OVERRIDE, CDO_QUANTITY_OVERRIDE, CDO_APP_OVERRIDE, CDO_SLA_OVERRIDE, CDO_SUPPLIER_OVERRIDE events to fdp");
+        log.debug("Pushing IPC_QUANTITY_OVERRIDE, CDO_QUANTITY_OVERRIDE, CDO_APP_OVERRIDE, CDO_SLA_OVERRIDE, CDO_SUPPLIER_OVERRIDE events to fdp");
         fdpRequirementIngestor.pushToFdp(requirementChangeRequestList);
+        EventLogger eventLogger = new EventLogger(requirementEventLogRepository);
+        eventLogger.insertEvent(requirementChangeRequestList, EventType.OVERRIDE);
 
         return uploadOverrideFailureLineItems;
     }
