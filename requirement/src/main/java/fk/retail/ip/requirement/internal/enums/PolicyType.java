@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public enum PolicyType {
 
-    PLANNING_CYCLE("PlanningCycle"), SKIP_LIST("SkipList"), ROP("Rop"), ROC("Roc"), MAX_COVERAGE("MaxCoverage"), CASE_SIZE("CaseSize"), UNKNOWN("Unknown"), MIN("Min"), MAX("Max");
+    PLANNING_CYCLE("PlanningCycle"), SKIP_LIST("SkipList"), ROP("Rop"), ROC("Roc"), MAX_COVERAGE("MaxCoverage"), CASE_SIZE("CaseSize"), MIN("Min"), MAX("Max"), UNKNOWN("Unknown");
 
     String value;
 

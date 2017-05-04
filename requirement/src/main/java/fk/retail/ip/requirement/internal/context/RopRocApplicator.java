@@ -29,13 +29,19 @@ public class RopRocApplicator extends PolicyApplicator {
     public void applyPolicies(String fsn, List<Requirement> requirements, Map<PolicyType, String> policyTypeMap, ForecastContext forecastContext, OnHandQuantityContext onHandQuantityContext, List<RequirementChangeRequest> requirementChangeRequestList) {
         Map<String, Double> warehouseToRopMap = parseRopRoc(policyTypeMap.get(PolicyType.ROP));
         Map<String, Double> warehouseToRocMap = parseRopRoc(policyTypeMap.get(PolicyType.ROC));
+        Map<String, Double> warehouseToMinMap = parseMinMax(policyTypeMap.get(PolicyType.MIN));
+        Map<String, Double> warehouseToMaxMap = parseMinMax(policyTypeMap.get(PolicyType.MAX));
         requirements.stream().filter(requirement -> !RequirementApprovalState.ERROR.toString().equals(requirement.getState())).forEach(requirement -> {
             String warehouse = requirement.getWarehouse();
             Double ropDays = warehouseToRopMap.get(warehouse);
             if (!isValidRopRoc(ropDays)) {
                 //rop policy not found
-                markAsError(requirement, String.format(Constants.VALID_POLICY_NOT_FOUND, PolicyType.ROP));
-                return;
+                Double minUnits = warehouseToMinMap.get(warehouse);
+                Double maxUnits = warehouseToMaxMap.get(warehouse);
+                if(!isValidMinMax(minUnits, maxUnits)) {
+                    markAsError(requirement, String.format(Constants.VALID_POLICY_NOT_FOUND, PolicyType.ROP));
+                    return;
+                }
             }
             addToSnapshot(requirement, PolicyType.ROP, ropDays);
             List<Double> forecast = forecastContext.getForecast(fsn, warehouse);
@@ -46,8 +52,12 @@ public class RopRocApplicator extends PolicyApplicator {
                 Double rocDays = warehouseToRocMap.get(warehouse);
                 if (!isValidRopRoc(rocDays) || rocDays < ropDays) {
                     //roc policy not found
-                    markAsError(requirement, String.format(Constants.VALID_POLICY_NOT_FOUND, PolicyType.ROC));
-                    return;
+                    Double minUnits = warehouseToMinMap.get(warehouse);
+                    Double maxUnits = warehouseToMaxMap.get(warehouse);
+                    if(!isValidMinMax(minUnits, maxUnits)) {
+                        markAsError(requirement, String.format(Constants.VALID_POLICY_NOT_FOUND, PolicyType.ROC));
+                        return;
+                    }
                 }
                 addToSnapshot(requirement, PolicyType.ROC, rocDays);
                 double demand = convertDaysToQuantity(rocDays, forecast);
@@ -83,4 +93,23 @@ public class RopRocApplicator extends PolicyApplicator {
             return true;
         }
     }
+
+    private Map<String, Double> parseMinMax(String value) {
+        Map<String, Double> policyMap = Maps.newHashMap();
+        TypeReference<Map<String, Map<String, Double>>> typeReference = new TypeReference<Map<String, Map<String, Double>>>() {};
+        Map<String, Map<String, Double>> rawMap = super.parsePolicy(value, typeReference);
+        if (rawMap != null) {
+            rawMap.entrySet().stream().forEach(entry -> policyMap.put(entry.getKey(), entry.getValue().get("units")));
+        }
+        return policyMap;
+    }
+
+    public boolean isValidMinMax(Double minValue, Double maxValue) {
+        if (minValue == null || maxValue == null) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
 }

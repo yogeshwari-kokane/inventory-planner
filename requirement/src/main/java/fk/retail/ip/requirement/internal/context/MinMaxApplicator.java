@@ -28,7 +28,9 @@ public class MinMaxApplicator extends PolicyApplicator {
     }
 
     @Override
-    public void applyPolicies(String fsn, List<Requirement> requirements, Map<PolicyType, String> policyTypeMap, ForecastContext forecastContext, OnHandQuantityContext onHandQuantityContext, List<RequirementChangeRequest> requirementChangeRequestList) {
+    public void applyPolicies(String fsn, List<Requirement> requirements, Map<PolicyType, String> policyTypeMap,
+                              ForecastContext forecastContext, OnHandQuantityContext onHandQuantityContext,
+                              List<RequirementChangeRequest> requirementChangeRequestList) {
         Map<String, Double> warehouseToMinMap = parseMinMax(policyTypeMap.get(PolicyType.MIN));
         Map<String, Double> warehouseToMaxMap = parseMinMax(policyTypeMap.get(PolicyType.MAX));
         requirements.stream().filter(requirement -> !Constants.ERROR_STATE.equals(requirement.getState())).forEach(requirement -> {
@@ -40,7 +42,6 @@ public class MinMaxApplicator extends PolicyApplicator {
                 return;
             }
             addToSnapshot(requirement, PolicyType.MIN, minUnits);
-            List<Double> forecast = forecastContext.getForecast(fsn, warehouse);
             double onHandQuantity = onHandQuantityContext.getTotalQuantity(fsn, warehouse);
             if (onHandQuantity <= minUnits) {
                 //reorder point has been reached
@@ -52,11 +53,13 @@ public class MinMaxApplicator extends PolicyApplicator {
                 }
                 addToSnapshot(requirement, PolicyType.MAX, maxUnits);
                 requirement.setQuantity(maxUnits - onHandQuantity);
-                //Add ORDER_POLICY_QUANTITY events to fdp request
+                //Add MIN_MAX_QUANTITY events to fdp request
                 log.info("Adding MIN_MAX_QUANTITY events to fdp request");
                 RequirementChangeRequest requirementChangeRequest = new RequirementChangeRequest();
                 List<RequirementChangeMap> requirementChangeMaps = Lists.newArrayList();
-                requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.QUANTITY.toString(), null, String.valueOf(requirement.getQuantity()), FdpRequirementEventType.MIN_MAX_QUANTITY.toString(), "MIN MAX policies applied", "system"));
+                requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.QUANTITY.toString(), null,
+                        String.valueOf(requirement.getQuantity()), FdpRequirementEventType.MIN_MAX_QUANTITY.toString(),
+                        "MIN MAX policies applied", "system"));
                 requirementChangeRequest.setRequirement(requirement);
                 requirementChangeRequest.setRequirementChangeMaps(requirementChangeMaps);
                 requirementChangeRequestList.add(requirementChangeRequest);
@@ -69,7 +72,7 @@ public class MinMaxApplicator extends PolicyApplicator {
         TypeReference<Map<String, Map<String, Double>>> typeReference = new TypeReference<Map<String, Map<String, Double>>>() {};
         Map<String, Map<String, Double>> rawMap = super.parsePolicy(value, typeReference);
         if (rawMap != null) {
-            rawMap.entrySet().stream().forEach(entry -> policyMap.put(entry.getKey(), entry.getValue().get("days")));
+            rawMap.entrySet().stream().forEach(entry -> policyMap.put(entry.getKey(), entry.getValue().get("units")));
         }
         return policyMap;
     }
@@ -77,7 +80,13 @@ public class MinMaxApplicator extends PolicyApplicator {
     public boolean isValidMinMax(Double value) {
         if (value == null) {
             return false;
-        } else if (value < 0 || value > Constants.WEEKS_OF_FORECAST * Constants.DAYS_IN_WEEK) {
+        } else {
+            return true;
+        }
+    }
+
+    public boolean isValidRopRoc(Double ropDays, Double rocDays) {
+        if (ropDays == null || rocDays == null) {
             return false;
         } else {
             return true;
