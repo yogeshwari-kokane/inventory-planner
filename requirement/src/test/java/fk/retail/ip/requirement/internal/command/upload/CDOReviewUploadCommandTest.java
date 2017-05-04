@@ -6,8 +6,12 @@ import fk.retail.ip.requirement.internal.Constants;
 import fk.retail.ip.requirement.internal.command.CalculateRequirementCommand;
 import fk.retail.ip.requirement.internal.command.FdpRequirementIngestorImpl;
 import fk.retail.ip.requirement.internal.entities.Requirement;
+import fk.retail.ip.requirement.internal.entities.RequirementEventLog;
 import fk.retail.ip.requirement.internal.entities.RequirementSnapshot;
+import fk.retail.ip.requirement.internal.enums.EventType;
+import fk.retail.ip.requirement.internal.enums.OverrideKey;
 import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
+import fk.retail.ip.requirement.internal.repository.RequirementEventLogRepository;
 import fk.retail.ip.requirement.internal.repository.TestHelper;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
 import fk.retail.ip.requirement.model.UploadOverrideFailureLineItem;
@@ -42,6 +46,12 @@ public class CDOReviewUploadCommandTest {
     @Mock
     FdpRequirementIngestorImpl fdpRequirementIngestor;
 
+    @Mock
+    RequirementEventLogRepository requirementEventLogRepository;
+
+    @Captor
+    private ArgumentCaptor<List<RequirementEventLog>> argumentCaptor;
+
     @Before
     public void init() {
         MockitoAnnotations.initMocks(this);
@@ -56,24 +66,26 @@ public class CDOReviewUploadCommandTest {
         MultiKeyMap<String,SupplierSelectionResponse> fsnWhSupplierMap = getFsnWhSupplierMap();
         List<UploadOverrideFailureLineItem> uploadOverrideFailureLineItems = CDOReviewUploadCommand.execute(requirementDownloadLineItems ,requirements, "", fsnVerticalMap, fsnWhSupplierMap);
 
-        Map<Long, Requirement> requirementMap = requirements.stream().collect
+        Mockito.verify(requirementEventLogRepository).persist(argumentCaptor.capture());
+
+        Map<String, Requirement> requirementMap = requirements.stream().collect
                 (Collectors.toMap(Requirement::getId, Function.identity()));
 
-        Assert.assertEquals(20, (int)requirementMap.get((long)1).getQuantity());
-        Assert.assertEquals(100, (int)requirementMap.get((long)1).getApp());
-        Assert.assertEquals("new_supplier", requirementMap.get((long)1).getSupplier());
-        Assert.assertEquals(20, (int)requirementMap.get((long)1).getSla());
-        Assert.assertEquals(200, (int)requirementMap.get((long)1).getMrp());
+        Assert.assertEquals(20, (int)requirementMap.get("1").getQuantity());
+        Assert.assertEquals(100, (int)requirementMap.get("1").getApp());
+        Assert.assertEquals("new_supplier", requirementMap.get("1").getSupplier());
+        Assert.assertEquals(20, (int)requirementMap.get("1").getSla());
+        Assert.assertEquals(200, (int)requirementMap.get("1").getMrp());
 
-        Assert.assertEquals(100, (int)requirementMap.get((long)2).getQuantity());
-        Assert.assertEquals(100, (int)requirementMap.get((long)3).getQuantity());
-        Assert.assertEquals(4, (int)requirementMap.get((long)4).getSla());
-        Assert.assertEquals(9, (int)requirementMap.get((long)5).getApp());
+        Assert.assertEquals(100, (int)requirementMap.get("2").getQuantity());
+        Assert.assertEquals(100, (int)requirementMap.get("3").getQuantity());
+        Assert.assertEquals(4, (int)requirementMap.get("4").getSla());
+        Assert.assertEquals(9, (int)requirementMap.get("5").getApp());
 
-        Assert.assertEquals("new Supplier", requirementMap.get((long)6).getSupplier());
-        Assert.assertEquals(20, (int)requirementMap.get((long)6).getSla());
-        Assert.assertEquals(200, (int)requirementMap.get((long)6).getMrp());
-        Assert.assertEquals(150, (int)requirementMap.get((long)6).getApp());
+        Assert.assertEquals("new Supplier", requirementMap.get("6").getSupplier());
+        Assert.assertEquals(20, (int)requirementMap.get("6").getSla());
+        Assert.assertEquals(200, (int)requirementMap.get("6").getMrp());
+        Assert.assertEquals(150, (int)requirementMap.get("6").getApp());
 
         Assert.assertEquals(4, uploadOverrideFailureLineItems.size());
         Assert.assertEquals(Constants.SUGGESTED_QUANTITY_IS_NOT_GREATER_THAN_ZERO,
@@ -85,6 +97,39 @@ public class CDOReviewUploadCommandTest {
                 uploadOverrideFailureLineItems.get(2).getFailureReason());
         Assert.assertEquals(Constants.INVALID_APP_WITHOUT_COMMENT,
                 uploadOverrideFailureLineItems.get(3).getFailureReason());
+
+
+        Assert.assertEquals("100.0", argumentCaptor.getValue().get(0).getOldValue());
+        Assert.assertEquals("20", argumentCaptor.getValue().get(0).getNewValue());
+        Assert.assertEquals(OverrideKey.QUANTITY.toString(), argumentCaptor.getValue().get(0).getAttribute());
+        Assert.assertEquals("test_cdo_quantity", argumentCaptor.getValue().get(0).getReason());
+        Assert.assertEquals(EventType.OVERRIDE.toString(), argumentCaptor.getValue().get(0).getEventType());
+
+        Assert.assertEquals("101", argumentCaptor.getValue().get(2).getOldValue());
+        Assert.assertEquals("100", argumentCaptor.getValue().get(2).getNewValue());
+        Assert.assertEquals(OverrideKey.APP.toString(), argumentCaptor.getValue().get(2).getAttribute());
+        Assert.assertEquals("test_cdo_price", argumentCaptor.getValue().get(2).getReason());
+
+        Assert.assertEquals("ABC", argumentCaptor.getValue().get(3).getOldValue());
+        Assert.assertEquals("new_supplier", argumentCaptor.getValue().get(3).getNewValue());
+        Assert.assertEquals(OverrideKey.SUPPLIER.toString(), argumentCaptor.getValue().get(3).getAttribute());
+        Assert.assertEquals("test_cdo_supplier", argumentCaptor.getValue().get(3).getReason());
+
+        Assert.assertEquals("3", argumentCaptor.getValue().get(1).getOldValue());
+        Assert.assertEquals("20", argumentCaptor.getValue().get(1).getNewValue());
+        Assert.assertEquals(OverrideKey.SLA.toString(), argumentCaptor.getValue().get(1).getAttribute());
+        Assert.assertEquals("Sla overridden by CDO", argumentCaptor.getValue().get(1).getReason());
+        Assert.assertEquals(EventType.OVERRIDE.toString(), argumentCaptor.getValue().get(0).getEventType());
+
+        Assert.assertEquals("4", argumentCaptor.getValue().get(4).getOldValue());
+        Assert.assertEquals("20", argumentCaptor.getValue().get(4).getNewValue());
+        Assert.assertEquals(OverrideKey.SLA.toString(), argumentCaptor.getValue().get(4).getAttribute());
+
+        Assert.assertEquals("DEF", argumentCaptor.getValue().get(5).getOldValue());
+        Assert.assertEquals("new Supplier", argumentCaptor.getValue().get(5).getNewValue());
+        Assert.assertEquals(OverrideKey.SUPPLIER.toString(), argumentCaptor.getValue().get(5).getAttribute());
+
+        Assert.assertEquals(6, argumentCaptor.getValue().size());
 
     }
 
@@ -112,7 +157,7 @@ public class CDOReviewUploadCommandTest {
                 "",
                 "Daily planning"
         );
-        requirement.setId((long) 1);
+        requirement.setId("1");
         requirements.add(requirement);
 
         requirement = TestHelper.getRequirement(
@@ -130,7 +175,7 @@ public class CDOReviewUploadCommandTest {
                 "",
                 "Daily planning"
         );
-        requirement.setId((long) 2);
+        requirement.setId("2");
         requirements.add(requirement);
 
         requirement = TestHelper.getRequirement(
@@ -148,7 +193,7 @@ public class CDOReviewUploadCommandTest {
                 "",
                 "Daily planning"
         );
-        requirement.setId((long) 3);
+        requirement.setId("3");
         requirements.add(requirement);
 
         requirement = TestHelper.getRequirement(
@@ -166,7 +211,7 @@ public class CDOReviewUploadCommandTest {
                 "",
                 "Daily planning"
         );
-        requirement.setId((long) 4);
+        requirement.setId("4");
         requirements.add(requirement);
 
         requirement = TestHelper.getRequirement(
@@ -184,7 +229,7 @@ public class CDOReviewUploadCommandTest {
                 "",
                 "Daily planning"
         );
-        requirement.setId((long) 5);
+        requirement.setId("5");
         requirements.add(requirement);
 
         requirement = TestHelper.getRequirement(
@@ -202,7 +247,7 @@ public class CDOReviewUploadCommandTest {
                 "",
                 "Daily planning"
         );
-        requirement.setId((long) 6);
+        requirement.setId("6");
         requirements.add(requirement);
 
         return requirements;

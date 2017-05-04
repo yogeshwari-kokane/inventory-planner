@@ -1,12 +1,12 @@
 package fk.retail.ip.requirement.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.apache.commons.collections4.map.MultiKeyMap;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.json.JSONException;
@@ -19,9 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
 import javax.ws.rs.core.StreamingOutput;
-
 import fk.retail.ip.core.poi.SpreadSheetReader;
 import fk.retail.ip.proc.model.PushToProcResponse;
 import fk.retail.ip.d42.client.D42Client;
@@ -43,6 +41,7 @@ import fk.retail.ip.requirement.internal.enums.RequirementApprovalAction;
 import fk.retail.ip.requirement.internal.factory.RequirementStateFactory;
 import fk.retail.ip.requirement.internal.repository.ProductInfoRepository;
 import fk.retail.ip.requirement.internal.repository.RequirementApprovalTransitionRepository;
+import fk.retail.ip.requirement.internal.repository.RequirementEventLogRepository;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.internal.states.RequirementState;
 import fk.retail.ip.requirement.model.*;
@@ -96,6 +95,7 @@ public class RequirementService {
     private final Provider<SearchCommand> searchCommandProvider;
     private final PushToProcCommand pushToProcCommand;
     private final FdpRequirementIngestorImpl fdpRequirementIngestor;
+    private final RequirementEventLogRepository requirementEventLogRepository;
     private final D42Client d42Client;
     private final int PAGE_SIZE = 20;
     private final String BUCKET_NAME = "ip_requirements";
@@ -107,7 +107,9 @@ public class RequirementService {
                               Provider<CalculateRequirementCommand> calculateRequirementCommandProvider,
                               RequirementApprovalTransitionRepository requirementApprovalStateTransitionRepository,
                               SearchFilterCommand searchFilterCommand, Provider<SearchCommand> searchCommandProvider,
-                              FdpRequirementIngestorImpl fdpRequirementIngestor, Provider<TriggerRequirementCommand> triggerRequirementCommandProvider,
+                              FdpRequirementIngestorImpl fdpRequirementIngestor,
+                              RequirementEventLogRepository requirementEventLogRepository,
+                              Provider<TriggerRequirementCommand> triggerRequirementCommandProvider,
                               PushToProcCommand pushToProcCommand, D42Client d42Client) {
 
         this.requirementRepository = requirementRepository;
@@ -120,6 +122,7 @@ public class RequirementService {
         this.searchCommandProvider = searchCommandProvider;
         this.pushToProcCommand = pushToProcCommand;
         this.fdpRequirementIngestor = fdpRequirementIngestor;
+        this.requirementEventLogRepository = requirementEventLogRepository;
         this.d42Client = d42Client;
     }
 
@@ -173,7 +176,7 @@ public class RequirementService {
             List<RequirementDownloadLineItem> requirementDownloadLineItems = mapper.convertValue(parsedMappingList,
                     new TypeReference<List<RequirementDownloadLineItem>>() {});
             List<Requirement> requirements;
-            List<Long> requirementIds = new ArrayList<>();
+            List<String> requirementIds = new ArrayList<>();
             requirementDownloadLineItems.forEach(row ->
                             requirementIds.add(row.getRequirementId())
             );
@@ -233,7 +236,18 @@ public class RequirementService {
         List<String> fsns = searchFilterCommand.getSearchFilterFsns(request.getFilters());
         requirements = requirementRepository.findRequirements(ids, state, fsns);
         log.info("Change state Request for {} number of requirements", requirements.size());
-        approvalService.changeState(requirements, state, userId, forward, getter, new ApprovalService.CopyOnStateChangeAction(requirementRepository, requirementApprovalStateTransitionRepository, fdpRequirementIngestor));
+        approvalService.changeState(
+                requirements,
+                state,
+                userId,
+                forward,
+                getter,
+                new ApprovalService.CopyOnStateChangeAction(requirementRepository,
+                        requirementApprovalStateTransitionRepository,
+                        fdpRequirementIngestor,
+                        requirementEventLogRepository
+                )
+        );
         log.info("State changed for {} number of requirements", requirements.size());
         return "{\"msg\":\"Moved " + requirements.size() + " requirements to new state.\"}";
     }
@@ -249,7 +263,7 @@ public class RequirementService {
         return "{\"msg\":\"Moved " + pushedRequirements +" requirements to Procurement.\"}";
     }
 
-    public String setPurchaseOrderId(Long reqId, PushToProcResponse callback) {
+    public String setPurchaseOrderId(String reqId, PushToProcResponse callback) {
         log.info("Proc response received for requirement_id: " + reqId);
         List<Requirement> requirementList = requirementRepository.findRequirementByIds(Arrays.asList(reqId));
         Requirement requirement = requirementList.get(0);

@@ -16,10 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -39,7 +37,7 @@ public class PushToProcCommand {
         this.fdpRequirementIngestor = fdpRequirementIngestor;
     }
 
-    private Map<Long, PushToProcRequest> getPushToProcRequest(List<Requirement> requirements) {
+    private Map<String, PushToProcRequest> getPushToProcRequest(List<Requirement> requirements) {
         return requirements.stream()
                 .collect(Collectors.toMap(requirement -> requirement.getId(), requirement -> PushToProcRequest.builder()
                         .fsn(requirement.getFsn())
@@ -93,7 +91,6 @@ public class PushToProcCommand {
             Requirement newEntity = new Requirement(requirement);
             requirement.setCurrent(false);
             newEntity.setCreatedBy(userId);
-            newEntity.setPreviousStateId(requirement.getId());
             newEntity.setCurrent(true);
             String eventType;
             String reason;
@@ -133,7 +130,7 @@ public class PushToProcCommand {
 
     public int pushToProc(List<Requirement> requirements, String userId) {
         List<Requirement> pushToProcRequirements = createPushToProcRequirement(requirements,userId);
-        Map<Long, PushToProcRequest> allRequirements = getPushToProcRequest(pushToProcRequirements);
+        Map<String, PushToProcRequest> allRequirements = getPushToProcRequest(pushToProcRequirements);
         pushToProcClient.pushToProc(allRequirements);
         return allRequirements.size();
     }

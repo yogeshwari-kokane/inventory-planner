@@ -5,8 +5,12 @@ import fk.retail.ip.requirement.config.TestModule;
 import fk.retail.ip.requirement.internal.Constants;
 import fk.retail.ip.requirement.internal.command.FdpRequirementIngestorImpl;
 import fk.retail.ip.requirement.internal.entities.Requirement;
+import fk.retail.ip.requirement.internal.entities.RequirementEventLog;
 import fk.retail.ip.requirement.internal.entities.RequirementSnapshot;
+import fk.retail.ip.requirement.internal.enums.EventType;
+import fk.retail.ip.requirement.internal.enums.OverrideKey;
 import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
+import fk.retail.ip.requirement.internal.repository.RequirementEventLogRepository;
 import fk.retail.ip.requirement.internal.repository.TestHelper;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
 import fk.retail.ip.requirement.model.UploadOverrideFailureLineItem;
@@ -38,6 +42,12 @@ public class ProposedUploadCommandTest {
     @Mock
     FdpRequirementIngestorImpl fdpRequirementIngestor;
 
+    @Mock
+    RequirementEventLogRepository requirementEventLogRepository;
+
+    @Captor
+    private ArgumentCaptor<List<RequirementEventLog>> argumentCaptor;
+
     @Before
     public void init() {
         MockitoAnnotations.initMocks(this);
@@ -50,23 +60,44 @@ public class ProposedUploadCommandTest {
         List<Requirement> requirements = getRequirements();
         Map<String, String> fsnVerticalMap = getFsnVerticalMap();
         MultiKeyMap<String,SupplierSelectionResponse> fsnWhSupplierMap = getFsnWhSupplierMap();
-        List<UploadOverrideFailureLineItem> uploadOverrideFailureLineItems = uploadProposedCommand.execute(requirementDownloadLineItems, requirements, "", fsnVerticalMap, fsnWhSupplierMap);
 
-        Map<Long, Requirement> requirementMap = requirements.stream().collect
+        List<UploadOverrideFailureLineItem> uploadOverrideFailureLineItems = uploadProposedCommand
+                .execute(requirementDownloadLineItems, requirements, "dummyUser", fsnVerticalMap, fsnWhSupplierMap);
+
+        Mockito.verify(requirementEventLogRepository).persist(argumentCaptor.capture());
+
+        Map<String, Requirement> requirementMap = requirements.stream().collect
                 (Collectors.toMap(Requirement::getId, Function.identity()));
 
-
-        Assert.assertEquals(20, (int)requirementMap.get((long)1).getQuantity());
+        Assert.assertEquals(20, (int)requirementMap.get("1").getQuantity());
         Assert.assertEquals("{\"quantityOverrideComment\":\"test_ipc\"}",
-                requirementMap.get((long)1).getOverrideComment());
-        Assert.assertEquals(100, (int)requirementMap.get((long)2).getQuantity());
-        Assert.assertEquals(100, (int)requirementMap.get((long)3).getQuantity());
-        Assert.assertEquals(0, (int)requirementMap.get((long)4).getQuantity());
+                requirementMap.get("1").getOverrideComment());
+        Assert.assertEquals(100, (int)requirementMap.get("2").getQuantity());
+        Assert.assertEquals(100, (int)requirementMap.get("3").getQuantity());
+        Assert.assertEquals(0, (int)requirementMap.get("4").getQuantity());
 
         Assert.assertEquals(Constants.QUANTITY_OVERRIDE_COMMENT_IS_MISSING,
                 uploadOverrideFailureLineItems.get(0).getFailureReason());
         Assert.assertEquals(Constants.FSN_OR_WAREHOUSE_IS_MISSING,
                 uploadOverrideFailureLineItems.get(1).getFailureReason());
+
+        /*Test the entities ingested to fdp and saved in requirement event log*/
+        Assert.assertEquals(OverrideKey.QUANTITY.toString(), argumentCaptor.getValue().get(0).getAttribute());
+        Assert.assertEquals("20", argumentCaptor.getValue().get(0).getNewValue());
+        Assert.assertEquals("100.0", argumentCaptor.getValue().get(0).getOldValue());
+        Assert.assertEquals("test_ipc", argumentCaptor.getValue().get(0).getReason());
+        Assert.assertEquals("dummyUser", argumentCaptor.getValue().get(0).getUserId());
+        Assert.assertEquals(EventType.OVERRIDE.toString(), argumentCaptor.getValue().get(0).getEventType());
+
+        Assert.assertEquals(OverrideKey.QUANTITY.toString(), argumentCaptor.getValue().get(1).getAttribute());
+        Assert.assertEquals("0", argumentCaptor.getValue().get(1).getNewValue());
+        Assert.assertEquals("100.0", argumentCaptor.getValue().get(1).getOldValue());
+        Assert.assertEquals("test_ipc", argumentCaptor.getValue().get(1).getReason());
+        Assert.assertEquals("dummyUser", argumentCaptor.getValue().get(1).getUserId());
+        Assert.assertEquals(EventType.OVERRIDE.toString(), argumentCaptor.getValue().get(0).getEventType());
+
+        Assert.assertEquals(2, argumentCaptor.getValue().size());
+
     }
 
 
@@ -93,7 +124,7 @@ public class ProposedUploadCommandTest {
                 "",
                 "Daily planning"
         );
-        requirement.setId((long) 1);
+        requirement.setId("1");
         requirements.add(requirement);
 
         requirement = TestHelper.getRequirement(
@@ -111,7 +142,7 @@ public class ProposedUploadCommandTest {
                 "",
                 "Daily planning"
         );
-        requirement.setId((long) 2);
+        requirement.setId("2");
         requirements.add(requirement);
 
         requirement = TestHelper.getRequirement(
@@ -129,7 +160,7 @@ public class ProposedUploadCommandTest {
                 "",
                 "Daily planning"
         );
-        requirement.setId((long) 3);
+        requirement.setId("3");
         requirements.add(requirement);
 
         requirement = TestHelper.getRequirement(
@@ -147,7 +178,7 @@ public class ProposedUploadCommandTest {
                 "",
                 "Daily planning"
         );
-        requirement.setId((long) 4);
+        requirement.setId("4");
         requirements.add(requirement);
         return requirements;
     }

@@ -11,6 +11,10 @@ import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.enums.OverrideKey;
 import fk.retail.ip.requirement.internal.enums.OverrideStatus;
 import fk.retail.ip.requirement.internal.repository.ProductInfoRepository;
+import fk.retail.ip.requirement.internal.entities.RequirementEventLog;
+import fk.retail.ip.requirement.internal.enums.OverrideKey;
+import fk.retail.ip.requirement.internal.enums.OverrideStatus;
+import fk.retail.ip.requirement.internal.repository.RequirementEventLogRepository;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.internal.repository.WarehouseSupplierSlaRepository;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
@@ -37,9 +41,13 @@ public class CDOReviewUploadCommand extends UploadCommand {
     private final RequirementHelper requirementHelper;
 
     @Inject
-    public CDOReviewUploadCommand(RequirementRepository requirementRepository, FdpRequirementIngestorImpl fdpRequirementIngestor,
-                                  RequirementHelper requirementHelper) {
-        super(requirementRepository, fdpRequirementIngestor);
+    public CDOReviewUploadCommand(
+            RequirementRepository requirementRepository,
+            FdpRequirementIngestorImpl fdpRequirementIngestor,
+            RequirementEventLogRepository requirementEventLogRepository,
+            RequirementHelper requirementHelper
+    ) {
+        super(requirementRepository, fdpRequirementIngestor, requirementEventLogRepository);
         this.requirementHelper = requirementHelper;
     }
 
