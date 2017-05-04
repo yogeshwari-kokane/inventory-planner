@@ -101,7 +101,6 @@ fdpConfiguration:
 sslClientConfiguration:
   url: http://10.85.52.106
   viewPath: "/supplier_selection"
-  batchSize: 10
 
 clientConfiguration:
   timeout: 80000ms

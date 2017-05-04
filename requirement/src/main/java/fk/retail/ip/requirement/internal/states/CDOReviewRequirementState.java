@@ -115,7 +115,7 @@ public class CDOReviewRequirementState implements RequirementState {
         List<SupplierSelectionRequest> requests = requirementHelper.createSupplierSelectionRequest(requirements);
         List<SupplierSelectionResponse> supplierSelectionResponses = Lists.newArrayList();
         List<Future<List<SupplierSelectionResponse>>> futureList = Lists.newArrayList();
-        for(List<SupplierSelectionRequest> requestList : Lists.partition(requests, sslClientConfiguration.getBatchSize())) {
+        for(List<SupplierSelectionRequest> requestList : Lists.partition(requests, 10)) {
             Future<List<SupplierSelectionResponse>> futureResponse = executor.submit(new SslClientCallable(sslClient, requestList));
             futureList.add(futureResponse);
         }

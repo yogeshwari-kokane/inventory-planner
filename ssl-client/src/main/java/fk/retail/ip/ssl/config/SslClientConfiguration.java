@@ -9,5 +9,4 @@ import lombok.Getter;
 public class SslClientConfiguration {
     String url;
     String viewPath;
-    int batchSize;
 }
