@@ -74,7 +74,7 @@ public class CDOReviewRequirementState implements RequirementState {
     @Override
     public MultiKeyMap<String, SupplierSelectionResponse> createFsnWhSupplierMap(
             List<RequirementDownloadLineItem> requirementDownloadLineItems, List<Requirement> requirements) {
-        Map<Long, Requirement> requirementMap = requirements.stream().
+        Map<String, Requirement> requirementMap = requirements.stream().
                 collect(Collectors.toMap(Requirement::getId, Function.identity()));
         List<Requirement> supplierOverriddenRequirements = getSupplierOverriddenRequirement(requirementDownloadLineItems, requirementMap);
         MultiKeyMap<String,SupplierSelectionResponse> fsnWhSupplierMap = null;
@@ -93,10 +93,11 @@ public class CDOReviewRequirementState implements RequirementState {
         return downloadCDOReviewCommandProvider.get().execute(requirements, isLastAppSupplierRequired);
     }
 
-    private List<Requirement> getSupplierOverriddenRequirement(List<RequirementDownloadLineItem> requirementDownloadLineItems, Map<Long, Requirement> requirementMap) {
+    private List<Requirement> getSupplierOverriddenRequirement(List<RequirementDownloadLineItem> requirementDownloadLineItems,
+                                                               Map<String, Requirement> requirementMap) {
         List<Requirement> requirements = Lists.newArrayList();
         for(RequirementDownloadLineItem row : requirementDownloadLineItems) {
-            Long requirementId = row.getRequirementId();
+            String requirementId = row.getRequirementId();
             if(requirementMap.containsKey(requirementId)) {
                 String overridenSupplier = row.getCdoSupplierOverride();
                 String supplierOverrideReason = row.getCdoSupplierOverrideReason();
