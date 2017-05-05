@@ -3,6 +3,7 @@ package fk.retail.ip.requirement.internal.command.upload;
 import com.google.inject.Inject;
 import fk.retail.ip.requirement.internal.Constants;
 import fk.retail.ip.requirement.internal.command.FdpRequirementIngestorImpl;
+import fk.retail.ip.requirement.internal.command.RequirementHelper;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.enums.OverrideKey;
 import fk.retail.ip.requirement.internal.enums.OverrideStatus;
@@ -27,9 +28,10 @@ public class ProposedUploadCommand extends UploadCommand {
     public ProposedUploadCommand(
             RequirementRepository requirementRepository,
             FdpRequirementIngestorImpl fdpRequirementIngestor,
-            RequirementEventLogRepository requirementEventLogRepository
+            RequirementEventLogRepository requirementEventLogRepository,
+            RequirementHelper requirementHelper
     ) {
-        super(requirementRepository, fdpRequirementIngestor, requirementEventLogRepository);
+        super(requirementRepository, fdpRequirementIngestor, requirementEventLogRepository, requirementHelper);
     }
 
     @Override

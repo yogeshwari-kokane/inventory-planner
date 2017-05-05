@@ -27,7 +27,6 @@ subprojects {
         compile('fk.sp.common:spring-jpa:' + commonExtentions)
         compile('flipkart.retail.libraries:dropwizard-admin:5.0.3')
 
-        compile 'org.jdeferred:jdeferred-android:1.2.3'
         compile group: 'org.apache.poi', name: 'poi', version: '3.10-FINAL'
         compile group: 'org.apache.poi', name: 'poi-ooxml', version: '3.10-FINAL'
         compile ('fk.sp.common:restbus-sender:' + commonExtentions){

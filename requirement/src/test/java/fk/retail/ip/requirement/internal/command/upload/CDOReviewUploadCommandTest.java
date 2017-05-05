@@ -5,6 +5,7 @@ import fk.retail.ip.requirement.config.TestModule;
 import fk.retail.ip.requirement.internal.Constants;
 import fk.retail.ip.requirement.internal.command.CalculateRequirementCommand;
 import fk.retail.ip.requirement.internal.command.FdpRequirementIngestorImpl;
+import fk.retail.ip.requirement.internal.command.RequirementHelper;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.entities.RequirementEventLog;
 import fk.retail.ip.requirement.internal.entities.RequirementSnapshot;
@@ -27,6 +28,7 @@ import org.junit.runner.RunWith;
 import org.mockito.*;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +51,9 @@ public class CDOReviewUploadCommandTest {
     @Mock
     RequirementEventLogRepository requirementEventLogRepository;
 
+    @Mock
+    RequirementHelper requirementHelper;
+
     @Captor
     private ArgumentCaptor<List<RequirementEventLog>> argumentCaptor;
 
@@ -62,10 +67,11 @@ public class CDOReviewUploadCommandTest {
         List<RequirementDownloadLineItem> requirementDownloadLineItems =
                 TestHelper.getCdoReviewRequirementDownloadLineItem();
         List<Requirement> requirements = getRequirements();
-        Map<String, String> fsnVerticalMap = getFsnVerticalMap();
-        MultiKeyMap<String,SupplierSelectionResponse> fsnWhSupplierMap = getFsnWhSupplierMap();
-        List<UploadOverrideFailureLineItem> uploadOverrideFailureLineItems = CDOReviewUploadCommand.execute(requirementDownloadLineItems ,requirements, "", fsnVerticalMap, fsnWhSupplierMap);
+        List<UploadOverrideFailureLineItem> uploadOverrideFailureLineItems = CDOReviewUploadCommand.
+                execute(requirementDownloadLineItems ,requirements, "", RequirementApprovalState.CDO_REVIEW.toString());
 
+        Mockito.when(requirementHelper.createFsnVerticalMap(Mockito.anySetOf(String.class))).thenReturn(getFsnVerticalMap());
+        Mockito.when(requirementHelper.createFsnWhSupplierMap(Mockito.anyListOf(Requirement.class))).thenReturn(getFsnWhSupplierMap());
         Mockito.verify(requirementEventLogRepository).persist(argumentCaptor.capture());
 
         Map<String, Requirement> requirementMap = requirements.stream().collect

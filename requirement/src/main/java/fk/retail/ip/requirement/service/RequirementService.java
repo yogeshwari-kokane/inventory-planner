@@ -5,12 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.collections4.map.MultiKeyMap;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.json.JSONException;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -24,8 +20,6 @@ import fk.retail.ip.core.poi.SpreadSheetReader;
 import fk.retail.ip.proc.model.PushToProcResponse;
 import fk.retail.ip.d42.client.D42Client;
 import fk.retail.ip.requirement.internal.Constants;
-import fk.retail.ip.requirement.internal.command.*;
-import fk.retail.ip.requirement.internal.entities.ProductInfo;
 import fk.retail.ip.requirement.internal.command.CalculateRequirementCommand;
 import fk.retail.ip.requirement.internal.command.FdpRequirementIngestorImpl;
 import fk.retail.ip.requirement.internal.command.PayloadCreationHelper;
@@ -39,13 +33,10 @@ import fk.retail.ip.requirement.internal.enums.OverrideKey;
 import fk.retail.ip.requirement.internal.enums.OverrideStatus;
 import fk.retail.ip.requirement.internal.enums.RequirementApprovalAction;
 import fk.retail.ip.requirement.internal.factory.RequirementStateFactory;
-import fk.retail.ip.requirement.internal.repository.ProductInfoRepository;
 import fk.retail.ip.requirement.internal.repository.RequirementApprovalTransitionRepository;
 import fk.retail.ip.requirement.internal.repository.RequirementEventLogRepository;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.internal.states.RequirementState;
-import fk.retail.ip.requirement.model.*;
-import fk.retail.ip.ssl.model.SupplierSelectionResponse;
 import fk.retail.ip.requirement.model.CalculateRequirementRequest;
 import fk.retail.ip.requirement.model.DownloadRequirementRequest;
 import fk.retail.ip.requirement.model.RaisePORequest;
@@ -60,22 +51,12 @@ import fk.retail.ip.requirement.model.TriggerRequirementRequest;
 import fk.retail.ip.requirement.model.UploadOverrideFailureLineItem;
 import fk.retail.ip.requirement.model.UploadResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
-import org.json.JSONException;
-
-import java.util.Arrays;
-import javax.ws.rs.core.StreamingOutput;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * @author nidhigupta.m
@@ -192,9 +173,7 @@ public class RequirementService {
             } else {
                 RequirementState state = requirementStateFactory.getRequirementState(requirementState);
                 try {
-                    Map<String, String> fsnToVerticalMap = state.createFsnVerticalMap(requirements);
-                    MultiKeyMap<String,SupplierSelectionResponse> fsnWhSupplierMap = state.createFsnWhSupplierMap(requirementDownloadLineItems, requirements);
-                    List<UploadOverrideFailureLineItem> uploadLineItems = state.upload(requirements, requirementDownloadLineItems, userId, fsnToVerticalMap, fsnWhSupplierMap);
+                    List<UploadOverrideFailureLineItem> uploadLineItems = state.upload(requirements, requirementDownloadLineItems, userId, requirementState);
                     int successfulRowCount = requirementDownloadLineItems.size() - uploadLineItems.size();
                     UploadResponse uploadResponse = new UploadResponse();
                     uploadResponse.setUploadOverrideFailureLineItems(uploadLineItems);

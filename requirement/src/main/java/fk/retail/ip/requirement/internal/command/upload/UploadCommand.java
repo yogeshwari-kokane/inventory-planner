@@ -6,6 +6,7 @@ import fk.retail.ip.requirement.internal.Constants;
 import fk.retail.ip.requirement.internal.command.EventLogger;
 import fk.retail.ip.requirement.internal.command.FdpRequirementIngestorImpl;
 import fk.retail.ip.requirement.internal.command.PayloadCreationHelper;
+import fk.retail.ip.requirement.internal.command.RequirementHelper;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.enums.*;
 import fk.retail.ip.requirement.internal.repository.RequirementEventLogRepository;
@@ -19,10 +20,7 @@ import fk.retail.ip.ssl.model.SupplierView;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.map.MultiKeyMap;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -40,30 +38,40 @@ public abstract class UploadCommand {
     private final RequirementRepository requirementRepository;
     private final FdpRequirementIngestorImpl fdpRequirementIngestor;
     private final RequirementEventLogRepository requirementEventLogRepository;
+    private final RequirementHelper requirementHelper;
 
     public UploadCommand(
             RequirementRepository requirementRepository,
             FdpRequirementIngestorImpl fdpRequirementIngestor,
-            RequirementEventLogRepository requirementEventLogRepository
+            RequirementEventLogRepository requirementEventLogRepository,
+            RequirementHelper requirementHelper
     ) {
         this.requirementRepository = requirementRepository;
         this.fdpRequirementIngestor = fdpRequirementIngestor;
         this.requirementEventLogRepository = requirementEventLogRepository;
+        this.requirementHelper = requirementHelper;
     }
 
     public List<UploadOverrideFailureLineItem> execute(
             List<RequirementDownloadLineItem> requirementDownloadLineItems,
             List<Requirement> requirements,
-            String userId, Map<String, String> fsnToVerticalMap,
-            MultiKeyMap<String,SupplierSelectionResponse> fsnWhSupplierMap
+            String userId, String state
     ) {
 
+        Map<String, String> fsnToVerticalMap = null;
+        MultiKeyMap<String,SupplierSelectionResponse> fsnWhSupplierMap = null;
         Map<String, Requirement> requirementMap = requirements.stream().
                 collect(Collectors.toMap(Requirement::getId, Function.identity()));
 
         ArrayList<UploadOverrideFailureLineItem> uploadOverrideFailureLineItems = new ArrayList<>();
         int rowCount = 0;
         List<RequirementChangeRequest> requirementChangeRequestList = Lists.newArrayList();
+        if(RequirementApprovalState.CDO_REVIEW.toString().equals(state)) {
+            Set<String> fsns = requirements.stream().map(Requirement::getFsn).collect(Collectors.toSet());
+            fsnToVerticalMap = requirementHelper.createFsnVerticalMap(fsns);
+            List<Requirement> supplierOverriddenRequirements = requirementHelper.getSupplierOverriddenRequirement(requirementDownloadLineItems, requirementMap);
+            fsnWhSupplierMap = requirementHelper.createFsnWhSupplierMap(supplierOverriddenRequirements);
+        }
         for(RequirementDownloadLineItem row : requirementDownloadLineItems) {
             UploadOverrideFailureLineItem uploadOverrideFailureLineItem = new UploadOverrideFailureLineItem();
             rowCount += 1;

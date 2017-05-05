@@ -62,7 +62,7 @@ public class BizFinReviewUploadCommandTest {
         Map<String, String> fsnVerticalMap = getFsnVerticalMap();
         MultiKeyMap<String,SupplierSelectionResponse> fsnWhSupplierMap = getFsnWhSupplierMap();
         List<UploadOverrideFailureLineItem> uploadOverrideFailureLineItems = bizFinReviewUploadCommand
-                .execute(requirementDownloadLineItems, requirements, "", fsnVerticalMap, fsnWhSupplierMap);
+                .execute(requirementDownloadLineItems, requirements, "", RequirementApprovalState.BIZFIN_REVIEW.toString());
 
         Mockito.verify(requirementEventLogRepository).persist(argumentCaptor.capture());
 

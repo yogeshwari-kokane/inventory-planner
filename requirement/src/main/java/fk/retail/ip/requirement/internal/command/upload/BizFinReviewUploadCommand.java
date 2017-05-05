@@ -5,6 +5,7 @@ import com.google.inject.Provider;
 import fk.retail.ip.requirement.internal.Constants;
 import fk.retail.ip.requirement.internal.command.CalculateRequirementCommand;
 import fk.retail.ip.requirement.internal.command.FdpRequirementIngestorImpl;
+import fk.retail.ip.requirement.internal.command.RequirementHelper;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.enums.OverrideKey;
 import fk.retail.ip.requirement.internal.enums.OverrideStatus;
@@ -32,8 +33,9 @@ public class BizFinReviewUploadCommand extends UploadCommand {
     public BizFinReviewUploadCommand(
             RequirementRepository requirementRepository,
             FdpRequirementIngestorImpl fdpRequirementIngestor,
-            RequirementEventLogRepository requirementEventLogRepository) {
-        super(requirementRepository, fdpRequirementIngestor, requirementEventLogRepository);
+            RequirementEventLogRepository requirementEventLogRepository,
+            RequirementHelper requirementHelper) {
+        super(requirementRepository, fdpRequirementIngestor, requirementEventLogRepository, requirementHelper);
     }
 
     @Override

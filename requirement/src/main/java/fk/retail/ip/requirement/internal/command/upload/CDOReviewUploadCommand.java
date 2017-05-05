@@ -38,7 +38,7 @@ import java.util.Optional;
 @Slf4j
 public class CDOReviewUploadCommand extends UploadCommand {
 
-    private final RequirementHelper requirementHelper;
+    RequirementHelper requirementHelper;
 
     @Inject
     public CDOReviewUploadCommand(
@@ -47,7 +47,7 @@ public class CDOReviewUploadCommand extends UploadCommand {
             RequirementEventLogRepository requirementEventLogRepository,
             RequirementHelper requirementHelper
     ) {
-        super(requirementRepository, fdpRequirementIngestor, requirementEventLogRepository);
+        super(requirementRepository, fdpRequirementIngestor, requirementEventLogRepository, requirementHelper);
         this.requirementHelper = requirementHelper;
     }
 
@@ -167,6 +167,8 @@ public class CDOReviewUploadCommand extends UploadCommand {
 
     private SupplierView validateOverriddenSupplierFound(String supplierName, Requirement requirement,
                                                          MultiKeyMap<String,SupplierSelectionResponse> fsnWhSupplierMap) {
+        if(fsnWhSupplierMap==null)
+            return null;
         SupplierSelectionResponse supplierSelectionResponse = fsnWhSupplierMap.get(requirement.getFsn(), requirement.getWarehouse());
         if (supplierSelectionResponse == null)
             return null;

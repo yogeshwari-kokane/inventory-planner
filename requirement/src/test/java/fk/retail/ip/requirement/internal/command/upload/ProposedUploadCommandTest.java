@@ -62,7 +62,7 @@ public class ProposedUploadCommandTest {
         MultiKeyMap<String,SupplierSelectionResponse> fsnWhSupplierMap = getFsnWhSupplierMap();
 
         List<UploadOverrideFailureLineItem> uploadOverrideFailureLineItems = uploadProposedCommand
-                .execute(requirementDownloadLineItems, requirements, "dummyUser", fsnVerticalMap, fsnWhSupplierMap);
+                .execute(requirementDownloadLineItems, requirements, "dummyUser", RequirementApprovalState.PROPOSED.toString());
 
         Mockito.verify(requirementEventLogRepository).persist(argumentCaptor.capture());
 
