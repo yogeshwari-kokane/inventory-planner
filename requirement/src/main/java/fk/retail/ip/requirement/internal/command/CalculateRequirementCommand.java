@@ -1,60 +1,29 @@
 package fk.retail.ip.requirement.internal.command;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Table;
 import com.google.inject.Inject;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import org.joda.time.DateTime;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import fk.retail.ip.requirement.internal.Constants;
 import fk.retail.ip.requirement.internal.context.ForecastContext;
 import fk.retail.ip.requirement.internal.context.OnHandQuantityContext;
 import fk.retail.ip.requirement.internal.context.PolicyContext;
-import fk.retail.ip.requirement.internal.entities.Forecast;
-import fk.retail.ip.requirement.internal.entities.Group;
-import fk.retail.ip.requirement.internal.entities.GroupFsn;
-import fk.retail.ip.requirement.internal.entities.IwtRequestItem;
-import fk.retail.ip.requirement.internal.entities.OpenRequirementAndPurchaseOrder;
-import fk.retail.ip.requirement.internal.entities.Policy;
-import fk.retail.ip.requirement.internal.entities.ProductInfo;
-import fk.retail.ip.requirement.internal.entities.Projection;
-import fk.retail.ip.requirement.internal.entities.Requirement;
-import fk.retail.ip.requirement.internal.entities.RequirementSnapshot;
-import fk.retail.ip.requirement.internal.entities.Warehouse;
-import fk.retail.ip.requirement.internal.entities.WarehouseInventory;
-import fk.retail.ip.requirement.internal.enums.FdpRequirementEventType;
-import fk.retail.ip.requirement.internal.enums.OverrideKey;
-import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
-import fk.retail.ip.requirement.internal.repository.ForecastRepository;
-import fk.retail.ip.requirement.internal.repository.GroupFsnRepository;
-import fk.retail.ip.requirement.internal.repository.IwtRequestItemRepository;
-import fk.retail.ip.requirement.internal.repository.OpenRequirementAndPurchaseOrderRepository;
-import fk.retail.ip.requirement.internal.repository.PolicyRepository;
-import fk.retail.ip.requirement.internal.repository.ProductInfoRepository;
-import fk.retail.ip.requirement.internal.repository.ProjectionRepository;
-import fk.retail.ip.requirement.internal.repository.RequirementRepository;
-import fk.retail.ip.requirement.internal.repository.WarehouseInventoryRepository;
-import fk.retail.ip.requirement.internal.repository.WarehouseRepository;
-import fk.retail.ip.requirement.internal.repository.WarehouseSupplierSlaRepository;
+import fk.retail.ip.requirement.internal.entities.*;
+import fk.retail.ip.requirement.internal.enums.*;
+import fk.retail.ip.requirement.internal.repository.*;
 import fk.retail.ip.requirement.model.RequirementChangeMap;
 import fk.retail.ip.requirement.model.RequirementChangeRequest;
 import fk.retail.ip.ssl.client.SslClient;
 import fk.retail.ip.ssl.model.SupplierSelectionRequest;
 import fk.retail.ip.ssl.model.SupplierSelectionResponse;
 import fk.retail.ip.ssl.model.SupplierView;
+import java.util.*;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.joda.time.DateTime;
 
 @Slf4j
 public class CalculateRequirementCommand {
@@ -74,6 +43,7 @@ public class CalculateRequirementCommand {
     private final ProjectionRepository projectionRepository;
     private final ObjectMapper objectMapper;
     private final FdpRequirementIngestorImpl fdpRequirementIngestor;
+    private final RequirementEventLogRepository requirementEventLogRepository;
 
     private Set<String> fsns = Sets.newHashSet();
     private Map<String, String> warehouseCodeMap = Maps.newHashMap();
@@ -83,7 +53,23 @@ public class CalculateRequirementCommand {
     private OnHandQuantityContext onHandQuantityContext;
 
     @Inject
-    public CalculateRequirementCommand(WarehouseRepository warehouseRepository, GroupFsnRepository groupFsnRepository, PolicyRepository policyRepository, ForecastRepository forecastRepository, WarehouseInventoryRepository warehouseInventoryRepository, IwtRequestItemRepository iwtRequestItemRepository, OpenRequirementAndPurchaseOrderRepository openRequirementAndPurchaseOrderRepository, RequirementRepository requirementRepository, ProductInfoRepository productInfoRepository, WarehouseSupplierSlaRepository warehouseSupplierSlaRepository, SslClient sslClient, ProjectionRepository projectionRepository, ObjectMapper objectMapper, FdpRequirementIngestorImpl fdpRequirementIngestor) {
+    public CalculateRequirementCommand(
+            WarehouseRepository warehouseRepository,
+            GroupFsnRepository groupFsnRepository,
+            PolicyRepository policyRepository,
+            ForecastRepository forecastRepository,
+            WarehouseInventoryRepository warehouseInventoryRepository,
+            IwtRequestItemRepository iwtRequestItemRepository,
+            OpenRequirementAndPurchaseOrderRepository openRequirementAndPurchaseOrderRepository,
+            RequirementRepository requirementRepository,
+            ProductInfoRepository productInfoRepository,
+            WarehouseSupplierSlaRepository warehouseSupplierSlaRepository,
+            SslClient sslClient,
+            ProjectionRepository projectionRepository,
+            ObjectMapper objectMapper,
+            FdpRequirementIngestorImpl fdpRequirementIngestor,
+            RequirementEventLogRepository requirementEventLogRepository
+    ) {
         this.warehouseRepository = warehouseRepository;
         this.groupFsnRepository = groupFsnRepository;
         this.policyRepository = policyRepository;
@@ -98,6 +84,7 @@ public class CalculateRequirementCommand {
         this.projectionRepository = projectionRepository;
         this.objectMapper = objectMapper;
         this.fdpRequirementIngestor = fdpRequirementIngestor;
+        this.requirementEventLogRepository = requirementEventLogRepository;
     }
 
     public CalculateRequirementCommand withFsns(Set<String> fsns) {
@@ -204,11 +191,14 @@ public class CalculateRequirementCommand {
         requirementRepository.persist(allRequirements);
 
         //Add PROJECTION_CREATED events to fdp request
-        log.info("Adding PROJECTION_CREATED events to fdp request");
+        log.debug("Adding PROJECTION_CREATED events to fdp request");
         addProjectionCreatedRequest(allRequirements, requirementChangeRequestList);
 
+        EventLogger eventLogger = new EventLogger(requirementEventLogRepository);
+        eventLogger.insertEvent(requirementChangeRequestList, EventType.REQUIREMENT_CREATION);
+
         //Push PROJECTION_CREATED, SUPPLIER_ASSIGNED and APP_ASSIGNED events to fdp
-        log.info("Pushing PROJECTION_CREATED, SUPPLIER_ASSIGNED and APP_ASSIGNED events to fdp");
+        log.debug("Pushing PROJECTION_CREATED, SUPPLIER_ASSIGNED and APP_ASSIGNED events to fdp");
         fdpRequirementIngestor.pushToFdp(requirementChangeRequestList);
     }
 

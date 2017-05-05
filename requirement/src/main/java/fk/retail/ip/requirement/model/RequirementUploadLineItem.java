@@ -8,14 +8,12 @@ import lombok.NoArgsConstructor;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Created by nidhigupta.m on 26/01/17.
+ * Created by agarwal.vaibhav on 03/05/17.
  */
 @XmlRootElement
 @Data
 @NoArgsConstructor
-public class RequirementDownloadLineItem {
-
-    //todo: verify with excel columns
+public class RequirementUploadLineItem {
     @JsonProperty("FSN")
     private String fsn;
     private String warehouse;
@@ -80,7 +78,7 @@ public class RequirementDownloadLineItem {
     @JsonProperty("Last Supplier")
     private String lastSupplier;
     @JsonProperty("BizFin Quantity Recommendation")
-    private Integer bizFinRecommendedQuantity;
+    private Object bizFinRecommendedQuantity;
     @JsonProperty("BizFin Comments")
     private String bizFinComment;
     @JsonProperty("IPC Proposed Quantity")
@@ -92,25 +90,25 @@ public class RequirementDownloadLineItem {
     @JsonProperty("Requirement Id")
     private String requirementId;
     @JsonProperty("IPC Quantity Override")
-    private Integer ipcQuantityOverride;
+    private Object ipcQuantityOverride;
     @JsonProperty("IPC Quantity Override Reason")
     private String ipcQuantityOverrideReason;
     @JsonProperty ("CDO Quantity Override")
-    private Integer cdoQuantityOverride;
+    private Object cdoQuantityOverride;
     @JsonProperty ("CDO Quantity Override Reason")
     private String cdoQuantityOverrideReason;
     @JsonProperty ("CDO Price Override")
-    private Double cdoPriceOverride;
+    private Object cdoPriceOverride;
     @JsonProperty ("CDO Price Override Reason")
     private String cdoPriceOverrideReason;
     @JsonProperty ("New SLA")
-    private Integer newSla;
+    private Object newSla;
     @JsonProperty ("CDO Supplier Override")
     private String cdoSupplierOverride;
     @JsonProperty("CDO Supplier Override Reason")
     private String cdoSupplierOverrideReason;
 
-    public RequirementDownloadLineItem(Requirement req) {
+    public RequirementUploadLineItem(Requirement req) {
 
         this.requirementId = req.getId();
         this.fsn = req.getFsn();

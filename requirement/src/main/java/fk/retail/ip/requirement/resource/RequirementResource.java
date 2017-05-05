@@ -146,7 +146,7 @@ public class RequirementResource {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/callback/{req_id}")
-    public String updateRequirements(@PathParam("req_id") Long reqId, PushToProcResponse callback) {
+    public String updateRequirements(@PathParam("req_id") String reqId, PushToProcResponse callback) {
         return requirementService.setPurchaseOrderId(reqId, callback);
     }
 

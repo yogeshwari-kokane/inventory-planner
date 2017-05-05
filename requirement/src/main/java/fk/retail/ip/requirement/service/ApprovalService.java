@@ -2,20 +2,21 @@ package fk.retail.ip.requirement.service;
 
 import com.google.common.collect.Lists;
 import fk.retail.ip.requirement.internal.Constants;
+import fk.retail.ip.requirement.internal.command.EventLogger;
 import fk.retail.ip.requirement.internal.command.FdpRequirementIngestorImpl;
 import fk.retail.ip.requirement.internal.command.PayloadCreationHelper;
 import fk.retail.ip.requirement.internal.entities.AbstractEntity;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.entities.RequirementApprovalTransition;
+import fk.retail.ip.requirement.internal.enums.EventType;
 import fk.retail.ip.requirement.internal.enums.FdpRequirementEventType;
 import fk.retail.ip.requirement.internal.enums.OverrideKey;
 import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
 import fk.retail.ip.requirement.internal.repository.RequirementApprovalTransitionRepository;
+import fk.retail.ip.requirement.internal.repository.RequirementEventLogRepository;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -29,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 
 @Slf4j
-public class ApprovalService<E extends AbstractEntity> {
+public class ApprovalService<E> {
 
     public void changeState(List<E> items,
                             String fromState,
@@ -47,12 +48,13 @@ public class ApprovalService<E extends AbstractEntity> {
         for (E item : items) {
             String currentState = getter.apply(item);
             if (!currentState.equals(fromState)) {
-                throw new IllegalStateException("Entity[id=" + item.getId() + "] is not in " + fromState + " state");
+                /*TODO: add id here*/
+                throw new IllegalStateException("Entity[id=" + item + "] is not in " + fromState + " state");
             }
         }
     }
 
-    public interface StageChangeAction<E extends AbstractEntity> {
+    public interface StageChangeAction<E> {
 
         void execute(String userId,
                      String fromState,
@@ -65,11 +67,18 @@ public class ApprovalService<E extends AbstractEntity> {
         private RequirementRepository requirementRepository;
         private RequirementApprovalTransitionRepository requirementApprovalStateTransitionRepository;
         private FdpRequirementIngestorImpl fdpRequirementIngestor;
+        private RequirementEventLogRepository requirementEventLogRepository;
 
-        public CopyOnStateChangeAction(RequirementRepository requirementRepository, RequirementApprovalTransitionRepository requirementApprovalStateTransitionRepository, FdpRequirementIngestorImpl fdpRequirementIngestor) {
+        public CopyOnStateChangeAction(
+                RequirementRepository requirementRepository,
+                RequirementApprovalTransitionRepository requirementApprovalStateTransitionRepository,
+                FdpRequirementIngestorImpl fdpRequirementIngestor,
+                RequirementEventLogRepository requirementEventLogRepository
+        ) {
             this.requirementRepository = requirementRepository;
             this.requirementApprovalStateTransitionRepository = requirementApprovalStateTransitionRepository;
             this.fdpRequirementIngestor = fdpRequirementIngestor;
+            this.requirementEventLogRepository = requirementEventLogRepository;
         }
 
 
@@ -77,11 +86,12 @@ public class ApprovalService<E extends AbstractEntity> {
         public void execute(String userId, String fromState, boolean forward, List<Requirement> requirements) {
             Map<Long, String> groupToTargetState = getGroupToTargetStateMap(fromState, forward);
             log.info("Constructed map for group to Target state " + groupToTargetState);
-            Map<Long, String> requirementToTargetStateMap = getRequirementToTargetStateMap(groupToTargetState, requirements);
+            Map<String, String> requirementToTargetStateMap = getRequirementToTargetStateMap(groupToTargetState, requirements);
             Set<String> fsns = requirements.stream().map(Requirement::getFsn).collect(Collectors.toSet());
             List<RequirementChangeRequest> requirementChangeRequestList = Lists.newArrayList();
             List<Requirement> allEnabledRequirements = requirementRepository.find(fsns, true);
-            requirements.stream().forEach((requirement) -> {
+            EventType eventType = EventType.APPROVAL;
+            for (Requirement requirement : requirements) {
                 String toState = requirementToTargetStateMap.get(requirement.getId());
                 boolean isIPCReviewState = RequirementApprovalState.IPC_REVIEW.toString().equals(toState);
                 boolean isBizFinReviewState = RequirementApprovalState.BIZFIN_REVIEW.toString().equals(toState);
@@ -103,7 +113,6 @@ public class ApprovalService<E extends AbstractEntity> {
                         toStateEntity.get().setSupplier(requirement.getSupplier());
                         toStateEntity.get().setApp(requirement.getApp());
                         toStateEntity.get().setSla(requirement.getSla());
-                        toStateEntity.get().setPreviousStateId(requirement.getId());
                         toStateEntity.get().setCreatedBy(userId);
                         toStateEntity.get().setCurrent(true);
                         requirement.setCurrent(false);
@@ -118,12 +127,12 @@ public class ApprovalService<E extends AbstractEntity> {
                             newEntity.setQuantity(-1);
                         newEntity.setState(toState);
                         newEntity.setCreatedBy(userId);
-                        newEntity.setPreviousStateId(requirement.getId());
                         newEntity.setCurrent(true);
                         requirementRepository.persist(newEntity);
                         requirement.setCurrent(false);
                         requirementChangeRequest.setRequirement(newEntity);
                     }
+                    eventType = EventType.APPROVAL;
                 } else {
                     //Add CANCEL events to fdp request
                     log.info("Adding CANCEL events to fdp request");
@@ -134,15 +143,18 @@ public class ApprovalService<E extends AbstractEntity> {
                         requirementChangeRequest.setRequirement(toStateEntity.get());
                         e.setCreatedBy(userId);
                     });
+                    eventType = EventType.CANCELLATION;
                 }
                 requirementChangeRequest.setRequirementChangeMaps(requirementChangeMaps);
                 requirementChangeRequestList.add(requirementChangeRequest);
-            });
+            }
             log.info("Updating Projections tables for Requirements");
             requirementRepository.updateProjections(requirements, groupToTargetState);
             //Push APPROVE and CANCEL events to fdp
-            log.info("Pushing APPROVE and CANCEL events to fdp");
+            log.debug("Pushing APPROVE and CANCEL events to fdp");
             fdpRequirementIngestor.pushToFdp(requirementChangeRequestList);
+            EventLogger eventLogger = new EventLogger(requirementEventLogRepository);
+            eventLogger.insertEvent(requirementChangeRequestList, eventType);
         }
 
 
@@ -151,7 +163,7 @@ public class ApprovalService<E extends AbstractEntity> {
             return transitionList.stream().collect(Collectors.toMap(RequirementApprovalTransition::getGroupId, RequirementApprovalTransition::getToState));
         }
 
-        private Map<Long,String> getRequirementToTargetStateMap(Map<Long, String> groupToTargetState, List<Requirement> requirements) {
+        private Map<String,String> getRequirementToTargetStateMap(Map<Long, String> groupToTargetState, List<Requirement> requirements) {
             return requirements.stream().collect(Collectors.toMap(requirement -> requirement.getId(), requirement -> groupToTargetState.get(requirement.getGroup())!= null ? groupToTargetState.get(requirement.getGroup()):groupToTargetState.get(Constants.DEFAULT_TRANSITION_GROUP)));
         }
 
