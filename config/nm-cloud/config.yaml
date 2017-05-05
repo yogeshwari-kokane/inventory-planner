@@ -113,11 +113,20 @@ fdpConfiguration:
 procClientConfiguration:
   url: http://10.85.52.17
   viewPath: "/requirements"
-  callbackUrl: http://10.85.53.212:32000/v1/requirement/callback/
-  requirementQueueName: retail_rp_internal_requirement
+  callbackUrl: http://10.85.53.212/v1/requirement/callback/
+  requirementQueueName: proc_b2b_production
 
 sslClientConfiguration:
   url: http://10.85.52.106
   viewPath: "/supplier_selection"
 
+triggerRequirementConfiguration:
+  url: http://10.85.53.212/v1/requirement
+  projectionQueueName: retail_rp_internal_projection
+  fetchDataBatchSize: 10000
+  createReqBatchSize: 10
 
+d42Configuration:
+  accessKey: "A3O82LF3YGNY0DBDRE34"
+  secretKey: "j9/QcoFtMN9cA2ZgDy/E6Yvx+Gv4zqhB63cru55G"
+  url: "http://10.47.2.22"
