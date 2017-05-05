@@ -67,11 +67,11 @@ public class CDOReviewUploadCommandTest {
         List<RequirementDownloadLineItem> requirementDownloadLineItems =
                 TestHelper.getCdoReviewRequirementDownloadLineItem();
         List<Requirement> requirements = getRequirements();
+        Mockito.when(requirementHelper.createFsnVerticalMap(Mockito.anySetOf(String.class))).thenReturn(getFsnVerticalMap());
+        Mockito.when(requirementHelper.createFsnWhSupplierMap(Mockito.anyListOf(Requirement.class))).thenReturn(getFsnWhSupplierMap());
         List<UploadOverrideFailureLineItem> uploadOverrideFailureLineItems = CDOReviewUploadCommand.
                 execute(requirementDownloadLineItems ,requirements, "", RequirementApprovalState.CDO_REVIEW.toString());
 
-        Mockito.when(requirementHelper.createFsnVerticalMap(Mockito.anySetOf(String.class))).thenReturn(getFsnVerticalMap());
-        Mockito.when(requirementHelper.createFsnWhSupplierMap(Mockito.anyListOf(Requirement.class))).thenReturn(getFsnWhSupplierMap());
         Mockito.verify(requirementEventLogRepository).persist(argumentCaptor.capture());
 
         Map<String, Requirement> requirementMap = requirements.stream().collect
