@@ -54,9 +54,9 @@ public class PushToProcCommand {
                         .build()));
     }
 
-    private Float getApp(Requirement requirement) {
+    private Double getApp(Requirement requirement) {
         if(requirement.getApp()!=null)
-            return (float)requirement.getApp();
+            return requirement.getApp();
         return null;
     }
 

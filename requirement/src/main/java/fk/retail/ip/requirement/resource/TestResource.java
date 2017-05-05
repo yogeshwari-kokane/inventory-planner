@@ -135,7 +135,7 @@ public class TestResource {
         requirement.setQuantity(358);
         requirement.setSupplier("supplier1");
         requirement.setMrp(100);
-        requirement.setApp(120);
+        requirement.setApp(120.0);
         requirement.setCurrency("INR");
         requirement.setSla(10);
         requirement.setOverrideComment("comment1");

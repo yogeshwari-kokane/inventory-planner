@@ -10,10 +10,7 @@ import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.enums.*;
 import fk.retail.ip.requirement.internal.repository.RequirementEventLogRepository;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
-import fk.retail.ip.requirement.model.RequirementChangeMap;
-import fk.retail.ip.requirement.model.RequirementChangeRequest;
-import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
-import fk.retail.ip.requirement.model.UploadOverrideFailureLineItem;
+import fk.retail.ip.requirement.model.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -30,7 +27,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public abstract class UploadCommand {
 
-    abstract Map<String, Object> validateAndSetStateSpecificFields(RequirementDownloadLineItem row);
+    abstract Map<String, Object> validateAndSetStateSpecificFields(RequirementUploadLineItem row);
 
     private final RequirementRepository requirementRepository;
     private final FdpRequirementIngestorImpl fdpRequirementIngestor;
@@ -46,8 +43,8 @@ public abstract class UploadCommand {
         this.requirementEventLogRepository = requirementEventLogRepository;
     }
 
-    public List<UploadOverrideFailureLineItem> execute(
-            List<RequirementDownloadLineItem> requirementDownloadLineItems,
+    public UploadOverrideResult execute(
+            List<RequirementUploadLineItem> requirementUploadLineItems,
             List<Requirement> requirements,
             String userId
     ) {
@@ -56,9 +53,13 @@ public abstract class UploadCommand {
                 collect(Collectors.toMap(Requirement::getId, Function.identity()));
 
         ArrayList<UploadOverrideFailureLineItem> uploadOverrideFailureLineItems = new ArrayList<>();
-        int rowCount = 0;
+        /*Row count has been made to initiliase to 1 to accommodate the headers in the excel*/
+        int rowCount = 1;
+
+        /*Stores the count for the number of rows actually updated upon override*/
+        int successfulRowCount = 0;
         List<RequirementChangeRequest> requirementChangeRequestList = Lists.newArrayList();
-        for(RequirementDownloadLineItem row : requirementDownloadLineItems) {
+        for(RequirementUploadLineItem row : requirementUploadLineItems) {
             UploadOverrideFailureLineItem uploadOverrideFailureLineItem = new UploadOverrideFailureLineItem();
             rowCount += 1;
             String fsn = row.getFsn();
@@ -127,7 +128,7 @@ public abstract class UploadCommand {
 
                             if (overriddenValues.containsKey(OverrideKey.APP.toString())) {
                                 requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.APP.toString(), String.valueOf(requirement.getApp()),row.getCdoPriceOverride().toString(), FdpRequirementEventType.CDO_APP_OVERRIDE.toString(), row.getCdoPriceOverrideReason(), userId));
-                                requirement.setApp((Integer) overriddenValues.get(OverrideKey.APP.toString()));
+                                requirement.setApp((Double) overriddenValues.get(OverrideKey.APP.toString()));
                             }
 
                             if (overriddenValues.containsKey(OverrideKey.SUPPLIER.toString())) {
@@ -161,6 +162,7 @@ public abstract class UploadCommand {
                             }
 
                             requirement.setUpdatedBy(userId);
+                            successfulRowCount += 1;
 
                         } else {
                             uploadOverrideFailureLineItem.setFailureReason
@@ -185,8 +187,11 @@ public abstract class UploadCommand {
         fdpRequirementIngestor.pushToFdp(requirementChangeRequestList);
         EventLogger eventLogger = new EventLogger(requirementEventLogRepository);
         eventLogger.insertEvent(requirementChangeRequestList, EventType.OVERRIDE);
+        UploadOverrideResult uploadOverrideResult = new UploadOverrideResult();
+        uploadOverrideResult.setSuccessfulRowCount(successfulRowCount);
+        uploadOverrideResult.setUploadOverrideFailureLineItemList(uploadOverrideFailureLineItems);
 
-        return uploadOverrideFailureLineItems;
+        return uploadOverrideResult;
     }
 
     private Optional<String> validateGenericColumns(String fsn, String warehouse){
@@ -199,21 +204,29 @@ public abstract class UploadCommand {
     }
 
     protected Optional<String> validateQuantityOverride(
-            Integer currentQuantity, Integer suggestedQuantity, String overrideComment) {
+            Integer currentQuantity, Object suggestedQuantity, String overrideComment) {
         String validationComment;
         if (suggestedQuantity == null) {
             return Optional.empty();
         }
-        if (suggestedQuantity < 0) {
-            validationComment = isEmptyString(overrideComment) ?
-                    Constants.INVALID_QUANTITY_WITHOUT_COMMENT :
-                    Constants.SUGGESTED_QUANTITY_IS_NOT_GREATER_THAN_ZERO;
-            return Optional.of(validationComment);
-        } else if (suggestedQuantity != currentQuantity && isEmptyString(overrideComment)) {
-            validationComment = Constants.QUANTITY_OVERRIDE_COMMENT_IS_MISSING;
-            return Optional.of(validationComment);
+
+        if (suggestedQuantity instanceof Integer) {
+            if ((int)suggestedQuantity < 0) {
+                validationComment = isEmptyString(overrideComment) ?
+                        Constants.INVALID_QUANTITY_WITHOUT_COMMENT :
+                        Constants.SUGGESTED_QUANTITY_IS_NOT_GREATER_THAN_ZERO;
+                return Optional.of(validationComment);
+            } else if (suggestedQuantity != currentQuantity && isEmptyString(overrideComment)) {
+                validationComment = Constants.QUANTITY_OVERRIDE_COMMENT_IS_MISSING;
+                return Optional.of(validationComment);
+            } else {
+                return Optional.empty();
+            }
+
         } else {
-            return Optional.empty();
+            validationComment = isEmptyString(overrideComment) ? Constants.INVALID_QUANTITY_WITHOUT_COMMENT:
+                    Constants.QUANTITY_IS_NOT_INTEGER;
+            return Optional.of(validationComment);
         }
     }
 

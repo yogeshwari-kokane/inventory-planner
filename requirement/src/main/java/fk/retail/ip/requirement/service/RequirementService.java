@@ -136,13 +136,13 @@ public class RequirementService {
         ObjectMapper mapper = new ObjectMapper();
 
         try {
-            List<RequirementDownloadLineItem> requirementDownloadLineItems = mapper.convertValue(parsedMappingList,
-                    new TypeReference<List<RequirementDownloadLineItem>>() {});
+            List<RequirementUploadLineItem> requirementUploadLineItems = mapper.convertValue(parsedMappingList,
+                    new TypeReference<List<RequirementUploadLineItem>>() {});
             List<Requirement> requirements;
             List<String> requirementIds = new ArrayList<>();
-            requirementDownloadLineItems.forEach(row ->
-                            requirementIds.add(row.getRequirementId())
-            );
+            requirementUploadLineItems.forEach(row -> {
+                requirementIds.add(row.getRequirementId());
+            });
 
             requirements = requirementRepository.findActiveRequirementForState(requirementIds, requirementState);
             log.info("number of requirements found for uploaded records : " + requirements.size());
@@ -155,12 +155,13 @@ public class RequirementService {
             } else {
                 RequirementState state = requirementStateFactory.getRequirementState(requirementState);
                 try {
-                    List<UploadOverrideFailureLineItem> uploadLineItems = state.upload(requirements, requirementDownloadLineItems, userId);
-                    int successfulRowCount = requirementDownloadLineItems.size() - uploadLineItems.size();
+                    UploadOverrideResult uploadOverrideResult = state.upload(requirements, requirementUploadLineItems, userId);
+
+                    List<UploadOverrideFailureLineItem> uploadOverrideFailureLineItems = uploadOverrideResult.getUploadOverrideFailureLineItemList();
                     UploadResponse uploadResponse = new UploadResponse();
-                    uploadResponse.setUploadOverrideFailureLineItems(uploadLineItems);
-                    uploadResponse.setSuccessfulRowCount(successfulRowCount);
-                    if (uploadLineItems.isEmpty()) {
+                    uploadResponse.setUploadOverrideFailureLineItems(uploadOverrideFailureLineItems);
+                    uploadResponse.setSuccessfulRowCount(uploadOverrideResult.getSuccessfulRowCount());
+                    if (uploadOverrideFailureLineItems.isEmpty()) {
                         uploadResponse.setStatus(OverrideStatus.SUCCESS.toString());
                     } else {
                         uploadResponse.setStatus(OverrideStatus.FAILURE.toString());

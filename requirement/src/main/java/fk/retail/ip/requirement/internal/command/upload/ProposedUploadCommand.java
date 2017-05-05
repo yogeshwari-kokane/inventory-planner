@@ -8,6 +8,7 @@ import fk.retail.ip.requirement.internal.enums.OverrideStatus;
 import fk.retail.ip.requirement.internal.repository.RequirementEventLogRepository;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
+import fk.retail.ip.requirement.model.RequirementUploadLineItem;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import java.util.HashMap;
@@ -31,11 +32,11 @@ public class ProposedUploadCommand extends UploadCommand {
 
     @Override
     public Map<String, Object> validateAndSetStateSpecificFields(
-            RequirementDownloadLineItem requirementDownloadLineItem
+            RequirementUploadLineItem requirementUploadLineItem
     ) {
-        Integer currentQuantity = requirementDownloadLineItem.getQuantity();
-        Integer proposedQuantity = requirementDownloadLineItem.getIpcQuantityOverride();
-        String quantityOverrideComment = requirementDownloadLineItem.getIpcQuantityOverrideReason();
+        Integer currentQuantity = requirementUploadLineItem.getQuantity();
+        Object proposedQuantity = requirementUploadLineItem.getIpcQuantityOverride();
+        String quantityOverrideComment = requirementUploadLineItem.getIpcQuantityOverrideReason();
         Map<String, Object> overriddenFields = new HashMap<>();
 
         Optional<String> validationResponse = validateQuantityOverride(
@@ -53,7 +54,7 @@ public class ProposedUploadCommand extends UploadCommand {
 
     private Map<String, Object> getOverriddenFields(
             Integer currentQuantity,
-            Integer proposedQuantity,
+            Object proposedQuantity,
             String quantityOverrideComment
     ) {
         Map<String, Object> overriddenValues = new HashMap<>();

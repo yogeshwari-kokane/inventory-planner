@@ -30,7 +30,7 @@ public class PushToProcRequest {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private Date requiredByDate;
     private String requirementType;
-    private Float supplierApp;
+    private Double supplierApp;
     private Float supplierMrp;
     private String currency;
 }

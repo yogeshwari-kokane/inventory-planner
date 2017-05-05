@@ -22,7 +22,7 @@ public class FdpRequirementEntityData {
     String forecast;
     double quantity;
     String supplier;
-    Integer app;
+    double app;
     Integer mrp;
     String currency;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")

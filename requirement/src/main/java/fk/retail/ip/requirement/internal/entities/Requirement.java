@@ -50,7 +50,7 @@ public class Requirement {
 
     private Integer mrp;
 
-    private Integer app;
+    private Double app;
 
     //todo:cleanup
     @Column(name = "app_currency")
