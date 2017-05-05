@@ -38,7 +38,6 @@ public class RequirementHelper {
     @Inject
     public RequirementHelper (WarehouseSupplierSlaRepository warehouseSupplierSlaRepository,
                               ProductInfoRepository productInfoRepository, SslClient sslClient,
-                              RequirementHelper requirementHelper,
                               SslClientConfiguration sslClientConfiguration) {
         this.warehouseSupplierSlaRepository = warehouseSupplierSlaRepository;
         this.productInfoRepository = productInfoRepository;
