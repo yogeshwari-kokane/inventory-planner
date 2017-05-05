@@ -33,12 +33,18 @@ public class MinMaxApplicator extends PolicyApplicator {
                               List<RequirementChangeRequest> requirementChangeRequestList) {
         Map<String, Double> warehouseToMinMap = parseMinMax(policyTypeMap.get(PolicyType.MIN));
         Map<String, Double> warehouseToMaxMap = parseMinMax(policyTypeMap.get(PolicyType.MAX));
+        Map<String, Double> warehouseToRopMap = parseRopRoc(policyTypeMap.get(PolicyType.ROP));
+        Map<String, Double> warehouseToRocMap = parseRopRoc(policyTypeMap.get(PolicyType.ROC));
         requirements.stream().filter(requirement -> !Constants.ERROR_STATE.equals(requirement.getState())).forEach(requirement -> {
             String warehouse = requirement.getWarehouse();
             Double minUnits = warehouseToMinMap.get(warehouse);
             if (!isValidMinMax(minUnits)) {
                 //min policy not found
-                markAsError(requirement, String.format(Constants.VALID_POLICY_NOT_FOUND, PolicyType.MIN));
+                Double ropDays = warehouseToRopMap.get(warehouse);
+                Double rocDays = warehouseToRocMap.get(warehouse);
+                if(!isValidRopRoc(ropDays) || !isValidRopRoc(rocDays) || rocDays < ropDays) {
+                    markAsError(requirement, String.format(Constants.VALID_POLICY_NOT_FOUND, PolicyType.MIN));
+                }
                 return;
             }
             addToSnapshot(requirement, PolicyType.MIN, minUnits);
@@ -78,19 +84,29 @@ public class MinMaxApplicator extends PolicyApplicator {
     }
 
     public boolean isValidMinMax(Double value) {
-        if (value == null) {
+        if (value == null || value < 0) {
             return false;
         } else {
             return true;
         }
     }
 
-    public boolean isValidRopRoc(Double ropDays, Double rocDays) {
-        if (ropDays == null || rocDays == null) {
+    public boolean isValidRopRoc(Double value) {
+        if (value == null || value < 0 || value > Constants.WEEKS_OF_FORECAST * Constants.DAYS_IN_WEEK) {
             return false;
         } else {
             return true;
         }
+    }
+
+    private Map<String, Double> parseRopRoc(String value) {
+        Map<String, Double> policyMap = Maps.newHashMap();
+        TypeReference<Map<String, Map<String, Double>>> typeReference = new TypeReference<Map<String, Map<String, Double>>>() {};
+        Map<String, Map<String, Double>> rawMap = super.parsePolicy(value, typeReference);
+        if (rawMap != null) {
+            rawMap.entrySet().stream().forEach(entry -> policyMap.put(entry.getKey(), entry.getValue().get("days")));
+        }
+        return policyMap;
     }
 
 }

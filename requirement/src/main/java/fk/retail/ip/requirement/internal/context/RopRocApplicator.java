@@ -38,10 +38,10 @@ public class RopRocApplicator extends PolicyApplicator {
                 //rop policy not found
                 Double minUnits = warehouseToMinMap.get(warehouse);
                 Double maxUnits = warehouseToMaxMap.get(warehouse);
-                if(!isValidMinMax(minUnits, maxUnits)) {
+                if(!isValidMinMax(minUnits) || !isValidMinMax(maxUnits) || maxUnits < minUnits) {
                     markAsError(requirement, String.format(Constants.VALID_POLICY_NOT_FOUND, PolicyType.ROP));
-                    return;
                 }
+                return;
             }
             addToSnapshot(requirement, PolicyType.ROP, ropDays);
             List<Double> forecast = forecastContext.getForecast(fsn, warehouse);
@@ -54,7 +54,7 @@ public class RopRocApplicator extends PolicyApplicator {
                     //roc policy not found
                     Double minUnits = warehouseToMinMap.get(warehouse);
                     Double maxUnits = warehouseToMaxMap.get(warehouse);
-                    if(!isValidMinMax(minUnits, maxUnits)) {
+                    if(!isValidMinMax(minUnits) || !isValidMinMax(maxUnits) || maxUnits < minUnits) {
                         markAsError(requirement, String.format(Constants.VALID_POLICY_NOT_FOUND, PolicyType.ROC));
                         return;
                     }
@@ -66,7 +66,9 @@ public class RopRocApplicator extends PolicyApplicator {
                 log.info("Adding ORDER_POLICY_QUANTITY events to fdp request");
                 RequirementChangeRequest requirementChangeRequest = new RequirementChangeRequest();
                 List<RequirementChangeMap> requirementChangeMaps = Lists.newArrayList();
-                requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.QUANTITY.toString(), null, String.valueOf(requirement.getQuantity()), FdpRequirementEventType.ORDER_POLICY_QUANTITY.toString(), "ROP ROC policies applied", "system"));
+                requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.QUANTITY.toString(), null,
+                        String.valueOf(requirement.getQuantity()), FdpRequirementEventType.ORDER_POLICY_QUANTITY.toString(),
+                        "ROP ROC policies applied", "system"));
                 requirementChangeRequest.setRequirement(requirement);
                 requirementChangeRequest.setRequirementChangeMaps(requirementChangeMaps);
                 requirementChangeRequestList.add(requirementChangeRequest);
@@ -104,8 +106,8 @@ public class RopRocApplicator extends PolicyApplicator {
         return policyMap;
     }
 
-    public boolean isValidMinMax(Double minValue, Double maxValue) {
-        if (minValue == null || maxValue == null) {
+    public boolean isValidMinMax(Double value) {
+        if (value == null || value < 0) {
             return false;
         } else {
             return true;
