@@ -15,6 +15,8 @@ import fk.retail.ip.requirement.internal.repository.TestHelper;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
 import fk.retail.ip.requirement.model.RequirementUploadLineItem;
 import fk.retail.ip.requirement.model.UploadOverrideFailureLineItem;
+import fk.retail.ip.ssl.model.SupplierSelectionResponse;
+import org.apache.commons.collections4.map.MultiKeyMap;
 import org.jukito.JukitoRunner;
 import org.jukito.UseModules;
 import org.junit.Assert;
@@ -58,8 +60,12 @@ public class ProposedUploadCommandTest {
         List<RequirementUploadLineItem> requirementUploadLineItems =
                 TestHelper.getProposedRequirementUploadLineItems();
         List<Requirement> requirements = getRequirements();
+        Map<String, String> fsnVerticalMap = getFsnVerticalMap();
+        MultiKeyMap<String,SupplierSelectionResponse> fsnWhSupplierMap = getFsnWhSupplierMap();
+
         List<UploadOverrideFailureLineItem> uploadOverrideFailureLineItems = uploadProposedCommand
-                .execute(requirementUploadLineItems, requirements, "dummyUser").getUploadOverrideFailureLineItemList();
+                .execute(requirementUploadLineItems, requirements, "dummyUser",
+                        RequirementApprovalState.PROPOSED.toString()).getUploadOverrideFailureLineItemList();
 
         Mockito.verify(requirementEventLogRepository).persist(argumentCaptor.capture());
 
@@ -220,6 +226,14 @@ public class ProposedUploadCommandTest {
         requirement.setId("6");
         requirements.add(requirement);
         return requirements;
+    }
+
+    Map<String,String> getFsnVerticalMap() {
+        return null;
+    }
+
+    MultiKeyMap<String,SupplierSelectionResponse> getFsnWhSupplierMap() {
+        return  null;
     }
 
 }

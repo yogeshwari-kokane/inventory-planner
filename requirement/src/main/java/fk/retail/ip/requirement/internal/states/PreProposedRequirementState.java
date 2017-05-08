@@ -8,7 +8,6 @@ import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
 import fk.retail.ip.requirement.model.RequirementUploadLineItem;
 import fk.retail.ip.requirement.model.UploadOverrideFailureLineItem;
 import fk.retail.ip.requirement.model.UploadOverrideResult;
-
 import javax.ws.rs.core.StreamingOutput;
 import java.util.List;
 
@@ -32,7 +31,8 @@ public class PreProposedRequirementState implements RequirementState {
     @Override
     public UploadOverrideResult upload(List<Requirement> requirements,
                                        List<RequirementUploadLineItem> parsedJson,
-                                       String userId) {
+                                       String userId, String state) {
         throw new UnsupportedOperationException("Invalid operation");
     }
+
 }

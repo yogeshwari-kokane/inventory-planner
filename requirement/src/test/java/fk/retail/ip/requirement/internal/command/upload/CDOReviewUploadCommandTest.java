@@ -3,7 +3,9 @@ package fk.retail.ip.requirement.internal.command.upload;
 import com.google.common.collect.Lists;
 import fk.retail.ip.requirement.config.TestModule;
 import fk.retail.ip.requirement.internal.Constants;
+import fk.retail.ip.requirement.internal.command.CalculateRequirementCommand;
 import fk.retail.ip.requirement.internal.command.FdpRequirementIngestorImpl;
+import fk.retail.ip.requirement.internal.command.RequirementHelper;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.entities.RequirementEventLog;
 import fk.retail.ip.requirement.internal.entities.RequirementSnapshot;
@@ -15,6 +17,9 @@ import fk.retail.ip.requirement.internal.repository.TestHelper;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
 import fk.retail.ip.requirement.model.RequirementUploadLineItem;
 import fk.retail.ip.requirement.model.UploadOverrideFailureLineItem;
+import fk.retail.ip.ssl.model.SupplierSelectionResponse;
+import fk.retail.ip.ssl.model.SupplierView;
+import org.apache.commons.collections4.map.MultiKeyMap;
 import org.junit.Assert;
 import org.jukito.JukitoRunner;
 import org.jukito.UseModules;
@@ -24,6 +29,8 @@ import org.junit.runner.RunWith;
 import org.mockito.*;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -45,6 +52,9 @@ public class CDOReviewUploadCommandTest {
     @Mock
     RequirementEventLogRepository requirementEventLogRepository;
 
+    @Mock
+    RequirementHelper requirementHelper;
+
     @Captor
     private ArgumentCaptor<List<RequirementEventLog>> argumentCaptor;
 
@@ -58,8 +68,12 @@ public class CDOReviewUploadCommandTest {
         List<RequirementUploadLineItem> requirementUploadLineItems =
                 TestHelper.getCdoReviewRequirementUploadLineItem();
         List<Requirement> requirements = getRequirements();
+
+        Mockito.when(requirementHelper.createFsnVerticalMap(Mockito.anySetOf(String.class))).thenReturn(getFsnVerticalMap());
+        Mockito.when(requirementHelper.createFsnWhSupplierMap(Mockito.anyListOf(Requirement.class))).thenReturn(getFsnWhSupplierMap());
         List<UploadOverrideFailureLineItem> uploadOverrideFailureLineItems = CDOReviewUploadCommand.
-                execute(requirementUploadLineItems ,requirements, "").getUploadOverrideFailureLineItemList();
+                execute(requirementUploadLineItems ,requirements, "",
+                        RequirementApprovalState.CDO_REVIEW.toString()).getUploadOverrideFailureLineItemList();
 
         Mockito.verify(requirementEventLogRepository).persist(argumentCaptor.capture());
 
@@ -70,6 +84,7 @@ public class CDOReviewUploadCommandTest {
         Assert.assertEquals(100.0, (double)requirementMap.get("1").getApp(), 0.01);
         Assert.assertEquals("new_supplier", requirementMap.get("1").getSupplier());
         Assert.assertEquals(20, (int)requirementMap.get("1").getSla());
+        Assert.assertEquals(200, (int)requirementMap.get("1").getMrp());
 
         Assert.assertEquals(100, (int)requirementMap.get("2").getQuantity());
         Assert.assertEquals(100, (int)requirementMap.get("3").getQuantity());
@@ -78,6 +93,8 @@ public class CDOReviewUploadCommandTest {
 
         Assert.assertEquals("new Supplier", requirementMap.get("6").getSupplier());
         Assert.assertEquals(20, (int)requirementMap.get("6").getSla());
+        Assert.assertEquals(200, (int)requirementMap.get("6").getMrp());
+        Assert.assertEquals(150.0, (double)requirementMap.get("6").getApp(), 0.01);
 
         Assert.assertEquals(4, (int)requirementMap.get("7").getSla());
         Assert.assertEquals(4, (int)requirementMap.get("8").getSla());
@@ -88,8 +105,8 @@ public class CDOReviewUploadCommandTest {
                 uploadOverrideFailureLineItems.get(0).getFailureReason());
         Assert.assertEquals(Constants.QUANTITY_OVERRIDE_COMMENT_IS_MISSING,
                 uploadOverrideFailureLineItems.get(1).getFailureReason());
-        Assert.assertEquals(Constants.SLA_QUANTITY_IS_NOT_GREATER_THAN_ZERO
-                 + System.lineSeparator() + Constants.SUPPLIER_OVERRIDE_COMMENT_IS_MISSING,
+        Assert.assertEquals(Constants.SUPPLIER_OVERRIDE_COMMENT_IS_MISSING
+                + System.lineSeparator() + Constants.SLA_QUANTITY_IS_NOT_GREATER_THAN_ZERO,
                 uploadOverrideFailureLineItems.get(2).getFailureReason());
         Assert.assertEquals(Constants.INVALID_APP_WITHOUT_COMMENT,
                 uploadOverrideFailureLineItems.get(3).getFailureReason());
@@ -125,13 +142,18 @@ public class CDOReviewUploadCommandTest {
         Assert.assertEquals("20", argumentCaptor.getValue().get(4).getNewValue());
         Assert.assertEquals(OverrideKey.SLA.toString(), argumentCaptor.getValue().get(4).getAttribute());
 
-        Assert.assertEquals("DEF", argumentCaptor.getValue().get(5).getOldValue());
-        Assert.assertEquals("new Supplier", argumentCaptor.getValue().get(5).getNewValue());
-        Assert.assertEquals(OverrideKey.SUPPLIER.toString(), argumentCaptor.getValue().get(5).getAttribute());
+        Assert.assertEquals("DEF", argumentCaptor.getValue().get(6).getOldValue());
+        Assert.assertEquals("new Supplier", argumentCaptor.getValue().get(6).getNewValue());
+        Assert.assertEquals(OverrideKey.SUPPLIER.toString(), argumentCaptor.getValue().get(6).getAttribute());
 
-        Assert.assertEquals(6, argumentCaptor.getValue().size());
+        Assert.assertEquals("9.0", argumentCaptor.getValue().get(5).getOldValue());
+        Assert.assertEquals("150.0", argumentCaptor.getValue().get(5).getNewValue());
+        Assert.assertEquals(OverrideKey.APP.toString(), argumentCaptor.getValue().get(5).getAttribute());
+
+        Assert.assertEquals(7, argumentCaptor.getValue().size());
 
     }
+
 
     private List<Requirement> getRequirements() {
 
@@ -304,6 +326,41 @@ public class CDOReviewUploadCommandTest {
         requirements.add(requirement);
 
         return requirements;
+    }
+
+    Map<String,String> getFsnVerticalMap() {
+        return new HashMap<>();
+    }
+
+    MultiKeyMap<String,SupplierSelectionResponse> getFsnWhSupplierMap() {
+        MultiKeyMap<String, SupplierSelectionResponse> fsnWhSupplierMap = new MultiKeyMap<>();
+        SupplierSelectionResponse supplierSelectionResponse = new SupplierSelectionResponse();
+        SupplierView supplier = new SupplierView();
+        supplier.setSla(5);
+        supplier.setApp(150.0);
+        supplier.setSource_id("new_supplier");
+        supplier.setMrp(200);
+        supplier.setName("new_s");
+        supplierSelectionResponse.setFsn("fsn");
+        supplierSelectionResponse.setWarehouseId("dummy_warehouse_1");
+        List<SupplierView> suppliers = Lists.newArrayList(supplier);
+        supplierSelectionResponse.setSuppliers(suppliers);
+        fsnWhSupplierMap.put("fsn", "dummy_warehouse_1", supplierSelectionResponse);
+
+        SupplierSelectionResponse supplierSelectionResponse2 = new SupplierSelectionResponse();
+        SupplierView supplier2 = new SupplierView();
+        supplier2.setSla(5);
+        supplier2.setApp(150.0);
+        supplier2.setSource_id("new Supplier");
+        supplier2.setMrp(200);
+        supplier2.setName("new_s2");
+        supplierSelectionResponse2.setFsn("fsn_2");
+        supplierSelectionResponse2.setWarehouseId("dummy_warehouse_2");
+        List<SupplierView> suppliers2 = Lists.newArrayList(supplier2);
+        supplierSelectionResponse2.setSuppliers(suppliers2);
+        fsnWhSupplierMap.put("fsn_2", "dummy_warehouse_2", supplierSelectionResponse2);
+
+        return fsnWhSupplierMap;
     }
 
 }

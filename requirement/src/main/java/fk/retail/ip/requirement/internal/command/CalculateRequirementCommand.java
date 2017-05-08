@@ -37,12 +37,12 @@ public class CalculateRequirementCommand {
     private final OpenRequirementAndPurchaseOrderRepository openRequirementAndPurchaseOrderRepository;
     private final RequirementRepository requirementRepository;
     private final ProductInfoRepository productInfoRepository;
-    private final WarehouseSupplierSlaRepository warehouseSupplierSlaRepository;
     private final SslClient sslClient;
     //TODO: remove
     private final ProjectionRepository projectionRepository;
     private final ObjectMapper objectMapper;
     private final FdpRequirementIngestorImpl fdpRequirementIngestor;
+    private final RequirementHelper requirementHelper;
     private final RequirementEventLogRepository requirementEventLogRepository;
 
     private Set<String> fsns = Sets.newHashSet();
@@ -63,13 +63,14 @@ public class CalculateRequirementCommand {
             OpenRequirementAndPurchaseOrderRepository openRequirementAndPurchaseOrderRepository,
             RequirementRepository requirementRepository,
             ProductInfoRepository productInfoRepository,
-            WarehouseSupplierSlaRepository warehouseSupplierSlaRepository,
+            RequirementHelper requirementHelper,
             SslClient sslClient,
             ProjectionRepository projectionRepository,
             ObjectMapper objectMapper,
             FdpRequirementIngestorImpl fdpRequirementIngestor,
             RequirementEventLogRepository requirementEventLogRepository
     ) {
+
         this.warehouseRepository = warehouseRepository;
         this.groupFsnRepository = groupFsnRepository;
         this.policyRepository = policyRepository;
@@ -79,7 +80,7 @@ public class CalculateRequirementCommand {
         this.openRequirementAndPurchaseOrderRepository = openRequirementAndPurchaseOrderRepository;
         this.requirementRepository = requirementRepository;
         this.productInfoRepository = productInfoRepository;
-        this.warehouseSupplierSlaRepository = warehouseSupplierSlaRepository;
+        this.requirementHelper = requirementHelper;
         this.sslClient = sslClient;
         this.projectionRepository = projectionRepository;
         this.objectMapper = objectMapper;
@@ -228,7 +229,7 @@ public class CalculateRequirementCommand {
     }
 
     private void populateSupplier(List<Requirement> requirements, List<RequirementChangeRequest> requirementChangeRequestList) {
-        List<SupplierSelectionRequest> requests = createSupplierSelectionRequest(requirements);
+        List<SupplierSelectionRequest> requests = requirementHelper.createSupplierSelectionRequest(requirements);
         List<SupplierSelectionResponse> responses = sslClient.getSupplierSelectionResponse(requests);
         if (requests.size() != responses.size()) {
             return;
@@ -248,7 +249,7 @@ public class CalculateRequirementCommand {
                 requirement.setSupplier(supplier.getSourceId());
                 requirement.setApp(supplier.getApp());
                 requirement.setMrp(supplier.getMrp());
-                int sla = getSla(fsnToVerticalMap.get(requirement.getFsn()), requirement.getWarehouse(), supplier.getSourceId(), supplier.getSla());
+                int sla = requirementHelper.getSla(fsnToVerticalMap.get(requirement.getFsn()), requirement.getWarehouse(), supplier.getSourceId(), supplier.getSla());
                 requirement.setSla(sla);
                 requirement.setCurrency(supplier.getVendorPreferredCurrency());
                 requirement.setMrpCurrency(supplier.getVendorPreferredCurrency());
@@ -263,42 +264,6 @@ public class CalculateRequirementCommand {
                 requirementChangeRequestList.add(requirementChangeRequest);
             }
         });
-    }
-
-    //TODO: optimize this
-    private int getSla(String vertical, String warehouse, String supplier, int apiSla) {
-        if (vertical == null || warehouse == null) {
-            return apiSla;
-        }
-        try {
-            Optional<Integer> sla = warehouseSupplierSlaRepository.getSla(vertical, warehouse, supplier);
-            if (sla.isPresent()) {
-                return sla.get();
-            } else {
-                return apiSla;
-            }
-        } catch (Exception e) {
-            log.warn(e.getMessage(), e);
-            return apiSla;
-        }
-    }
-
-    public List<SupplierSelectionRequest> createSupplierSelectionRequest(List<Requirement> requirements) {
-        List<SupplierSelectionRequest> requests = Lists.newArrayList();
-        requirements.forEach(req -> {
-            SupplierSelectionRequest request = new SupplierSelectionRequest();
-            request.setFsn(req.getFsn());
-            request.setSku("SKU0000000000000");
-            request.setOrderType(req.getProcType());
-            request.setQuantity((int) req.getQuantity());
-            request.setEntityType("Requirement");
-            request.setWarehouseId(req.getWarehouse());
-            request.setTenantId("FKI");
-            DateTime date = DateTime.now();
-            request.setRequiredByDate(date.toString());
-            requests.add(request);
-        });
-        return requests;
     }
 
     public Map<String, String> getWarehouseCodeMap() {

@@ -15,6 +15,8 @@ import fk.retail.ip.requirement.internal.repository.TestHelper;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
 import fk.retail.ip.requirement.model.RequirementUploadLineItem;
 import fk.retail.ip.requirement.model.UploadOverrideFailureLineItem;
+import fk.retail.ip.ssl.model.SupplierSelectionResponse;
+import org.apache.commons.collections4.map.MultiKeyMap;
 import org.jukito.JukitoRunner;
 import org.jukito.UseModules;
 import org.junit.Assert;
@@ -58,8 +60,9 @@ public class BizFinReviewUploadCommandTest {
     public void uploadTest() throws IOException {
         List<RequirementUploadLineItem> requirementUploadLineItems = TestHelper.getBizfinReviewUploadLineItem();
         List<Requirement> requirements = getRequirements();
-        List<UploadOverrideFailureLineItem> uploadOverrideFailureLineItems = bizFinReviewUploadCommand.
-                execute(requirementUploadLineItems, requirements, "").getUploadOverrideFailureLineItemList();
+        List<UploadOverrideFailureLineItem> uploadOverrideFailureLineItems = bizFinReviewUploadCommand
+                .execute(requirementUploadLineItems, requirements, "",
+                        RequirementApprovalState.BIZFIN_REVIEW.toString()).getUploadOverrideFailureLineItemList();
 
         Mockito.verify(requirementEventLogRepository).persist(argumentCaptor.capture());
 
@@ -190,4 +193,5 @@ public class BizFinReviewUploadCommandTest {
 
         return requirements;
     }
+
 }

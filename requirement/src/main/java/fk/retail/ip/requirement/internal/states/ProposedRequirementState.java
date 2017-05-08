@@ -30,8 +30,8 @@ public class ProposedRequirementState implements RequirementState {
     @Override
     public UploadOverrideResult upload(List<Requirement> requirements,
                                        List<RequirementUploadLineItem> parsedJson,
-                                       String userId) {
-        return uploadProposedCommandProvider.get().execute(parsedJson, requirements, userId);
+                                       String userId, String state) {
+        return uploadProposedCommandProvider.get().execute(parsedJson, requirements, userId, state);
     }
 
     @Override

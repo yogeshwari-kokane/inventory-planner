@@ -1,15 +1,24 @@
 package fk.retail.ip.requirement.internal.command.upload;
 
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import fk.retail.ip.requirement.internal.Constants;
+import fk.retail.ip.requirement.internal.command.CalculateRequirementCommand;
 import fk.retail.ip.requirement.internal.command.FdpRequirementIngestorImpl;
+import fk.retail.ip.requirement.internal.command.RequirementHelper;
+import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.enums.OverrideKey;
 import fk.retail.ip.requirement.internal.enums.OverrideStatus;
+import fk.retail.ip.requirement.internal.repository.ProductInfoRepository;
 import fk.retail.ip.requirement.internal.repository.RequirementEventLogRepository;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
+import fk.retail.ip.ssl.client.SslClient;
+import fk.retail.ip.ssl.model.SupplierSelectionResponse;
 import fk.retail.ip.requirement.model.RequirementUploadLineItem;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.map.MultiKeyMap;
+import org.bouncycastle.cert.ocsp.Req;
 import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,12 +34,16 @@ public class BizFinReviewUploadCommand extends UploadCommand {
     public BizFinReviewUploadCommand(
             RequirementRepository requirementRepository,
             FdpRequirementIngestorImpl fdpRequirementIngestor,
-            RequirementEventLogRepository requirementEventLogRepository) {
-        super(requirementRepository, fdpRequirementIngestor, requirementEventLogRepository);
+            RequirementEventLogRepository requirementEventLogRepository,
+            RequirementHelper requirementHelper) {
+        super(requirementRepository, fdpRequirementIngestor, requirementEventLogRepository, requirementHelper);
     }
 
     @Override
-    Map<String, Object> validateAndSetStateSpecificFields(RequirementUploadLineItem requirementUploadLineItem) {
+    Map<String, Object> validateAndSetStateSpecificFields(
+                    RequirementUploadLineItem requirementUploadLineItem, Requirement requirement,
+            Map<String, String> fsnToVerticalMap,
+            MultiKeyMap<String, SupplierSelectionResponse> fsnWhSupplierMap) {
 
         String quantityOverrideComment = requirementUploadLineItem.getBizFinComment();
         Integer currentQuantity = requirementUploadLineItem.getQuantity();

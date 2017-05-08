@@ -5,7 +5,6 @@ import fk.retail.ip.ssl.config.SslClientConfiguration;
 import fk.retail.ip.ssl.model.SupplierSelectionRequest;
 import fk.retail.ip.ssl.model.SupplierSelectionResponse;
 import fk.sp.common.extensions.dropwizard.jersey.NoAuthClient;
-
 import javax.inject.Inject;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.core.GenericType;

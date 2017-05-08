@@ -16,6 +16,6 @@ import javax.ws.rs.core.StreamingOutput;
 public interface RequirementState {
 
     StreamingOutput download(List<Requirement> requirements, boolean isLastAppSupplierRequired);
-    UploadOverrideResult upload(List<Requirement> requirements, List<RequirementUploadLineItem> requirementUploadLineItems, String userID);
+    UploadOverrideResult upload(List<Requirement> requirements, List<RequirementUploadLineItem> requirementUploadLineItems, String userID, String state);
 
 }
