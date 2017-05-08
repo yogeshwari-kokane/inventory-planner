@@ -1,27 +1,12 @@
 package fk.retail.ip.requirement.config;
 
 import com.google.inject.AbstractModule;
-import fk.retail.ip.requirement.internal.repository.FsnBandRepository;
-import fk.retail.ip.requirement.internal.repository.GroupFsnRepository;
-import fk.retail.ip.requirement.internal.repository.IwtRequestItemRepository;
-import fk.retail.ip.requirement.internal.repository.JPAFsnBandRepository;
-import fk.retail.ip.requirement.internal.repository.JPAGroupFsnRepository;
-import fk.retail.ip.requirement.internal.repository.JPALastAppSupplierRepository;
-import fk.retail.ip.requirement.internal.repository.JPAOpenRequirementAndPurchaseOrderRepository;
-import fk.retail.ip.requirement.internal.repository.JPAPolicyRepository;
-import fk.retail.ip.requirement.internal.repository.JPARequirementRepository;
-import fk.retail.ip.requirement.internal.repository.JPAWeeklySaleRepository;
-import fk.retail.ip.requirement.internal.repository.JpaIwtRequestItemRepository;
-import fk.retail.ip.requirement.internal.repository.LastAppSupplierRepository;
-import fk.retail.ip.requirement.internal.repository.OpenRequirementAndPurchaseOrderRepository;
-import fk.retail.ip.requirement.internal.repository.PolicyRepository;
-import fk.retail.ip.requirement.internal.repository.RequirementRepository;
-import fk.retail.ip.requirement.internal.repository.WeeklySaleRepository;
+import com.google.inject.name.Names;
+import fk.retail.ip.requirement.internal.command.FdpRequirementIngestorImpl;
 import fk.retail.ip.requirement.internal.repository.*;
+import fk.retail.ip.requirement.model.*;
 import fk.retail.ip.requirement.resource.RequirementResource;
 import fk.retail.ip.requirement.resource.TestResource;
-import fk.retail.ip.zulu.client.HystrixZuluClient;
-import fk.retail.ip.zulu.client.ZuluClient;
 
 /**
  * Created by nidhigupta.m on 26/01/17.
@@ -33,8 +18,6 @@ public class RequirementModule extends AbstractModule {
 
         bind(RequirementResource.class);
         bind(TestResource.class);
-
-        bind(ZuluClient.class).to(HystrixZuluClient.class);
         bind(FsnBandRepository.class).to(JPAFsnBandRepository.class);
         bind(WeeklySaleRepository.class).to(JPAWeeklySaleRepository.class);
         bind(RequirementRepository.class).to(JPARequirementRepository.class);
@@ -45,5 +28,15 @@ public class RequirementModule extends AbstractModule {
         bind(GroupFsnRepository.class).to(JPAGroupFsnRepository.class);
         bind(ProductInfoRepository.class).to(JPAProductInfoRepository.class);
         bind(WarehouseRepository.class).to(JPAWarehouseRepository.class);
+        bind(WarehouseInventoryRepository.class).to(JPAWarehouseInventoryRepository.class);
+        bind(ForecastRepository.class).to(JPAForecastRepository.class);
+        bind(ProcPurchaseOrderRepository.class).to(ProcPurchaseOrderRepositoryImpl.class);
+        bind(WarehouseSupplierSlaRepository.class).to(WarehouseSupplierSlaRepositoryImpl.class);
+        bind(RequirementApprovalTransitionRepository.class).to(JPARequirementApprovalTransitionRepository.class);
+        bind(RequirementEventLogRepository.class).to(JPARequirementEventLogRepository.class);
+        //TODO:remove
+        bind(ProjectionRepository.class).to(ProjectionRepositoryImpl.class);
+
+        bind(String.class).annotatedWith(Names.named("actionConfiguration")).toInstance("/requirement-state-actions.json");
     }
 }
