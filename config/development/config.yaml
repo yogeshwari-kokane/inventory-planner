@@ -99,6 +99,7 @@ clientConfiguration:
 sslClientConfiguration:
   url: http://10.85.52.106
   viewPath: "/supplier_selection"
+  batchSize: 10
 
 d42Configuration:
   accessKey: "EKBK5XNIHLM7E3290RBX"
