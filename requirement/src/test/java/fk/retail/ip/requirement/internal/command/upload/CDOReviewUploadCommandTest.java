@@ -146,8 +146,8 @@ public class CDOReviewUploadCommandTest {
         Assert.assertEquals("new Supplier", argumentCaptor.getValue().get(6).getNewValue());
         Assert.assertEquals(OverrideKey.SUPPLIER.toString(), argumentCaptor.getValue().get(6).getAttribute());
 
-        Assert.assertEquals("9", argumentCaptor.getValue().get(5).getOldValue());
-        Assert.assertEquals("150", argumentCaptor.getValue().get(5).getNewValue());
+        Assert.assertEquals("9.0", argumentCaptor.getValue().get(5).getOldValue());
+        Assert.assertEquals("150.0", argumentCaptor.getValue().get(5).getNewValue());
         Assert.assertEquals(OverrideKey.APP.toString(), argumentCaptor.getValue().get(5).getAttribute());
 
         Assert.assertEquals(7, argumentCaptor.getValue().size());
