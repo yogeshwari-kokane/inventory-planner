@@ -6,7 +6,10 @@ import fk.retail.ip.requirement.internal.command.download.DownloadBizFinReviewCo
 import fk.retail.ip.requirement.internal.command.upload.BizFinReviewUploadCommand;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
+import fk.retail.ip.requirement.model.RequirementUploadLineItem;
 import fk.retail.ip.requirement.model.UploadOverrideFailureLineItem;
+import fk.retail.ip.requirement.model.UploadOverrideResult;
+
 import java.util.List;
 import javax.ws.rs.core.StreamingOutput;
 
@@ -24,9 +27,9 @@ public class BizFinRequirementState implements RequirementState {
     }
 
     @Override
-    public List<UploadOverrideFailureLineItem> upload(List<Requirement> requirements,
-                                                      List<RequirementDownloadLineItem> parsedJson,
-                                                      String userId, String state) {
+    public UploadOverrideResult upload(List<Requirement> requirements,
+                                       List<RequirementUploadLineItem> parsedJson,
+                                       String userId, String state) {
         return uploadBizFinReviewCommandProvider.get().execute(parsedJson, requirements, userId, state);
     }
 

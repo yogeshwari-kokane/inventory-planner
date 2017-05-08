@@ -13,6 +13,7 @@ import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
 import fk.retail.ip.requirement.internal.repository.RequirementEventLogRepository;
 import fk.retail.ip.requirement.internal.repository.TestHelper;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
+import fk.retail.ip.requirement.model.RequirementUploadLineItem;
 import fk.retail.ip.requirement.model.UploadOverrideFailureLineItem;
 import fk.retail.ip.ssl.model.SupplierSelectionResponse;
 import org.apache.commons.collections4.map.MultiKeyMap;
@@ -23,6 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.*;
+//import java.io.IOException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -55,14 +57,15 @@ public class ProposedUploadCommandTest {
 
     @Test
     public void uploadTest() throws IOException {
-        List<RequirementDownloadLineItem> requirementDownloadLineItems =
-                TestHelper.getProposedRequirementDownloadLineItem();
+        List<RequirementUploadLineItem> requirementUploadLineItems =
+                TestHelper.getProposedRequirementUploadLineItems();
         List<Requirement> requirements = getRequirements();
         Map<String, String> fsnVerticalMap = getFsnVerticalMap();
         MultiKeyMap<String,SupplierSelectionResponse> fsnWhSupplierMap = getFsnWhSupplierMap();
 
         List<UploadOverrideFailureLineItem> uploadOverrideFailureLineItems = uploadProposedCommand
-                .execute(requirementDownloadLineItems, requirements, "dummyUser", RequirementApprovalState.PROPOSED.toString());
+                .execute(requirementUploadLineItems, requirements, "dummyUser",
+                        RequirementApprovalState.PROPOSED.toString()).getUploadOverrideFailureLineItemList();
 
         Mockito.verify(requirementEventLogRepository).persist(argumentCaptor.capture());
 
@@ -75,11 +78,17 @@ public class ProposedUploadCommandTest {
         Assert.assertEquals(100, (int)requirementMap.get("2").getQuantity());
         Assert.assertEquals(100, (int)requirementMap.get("3").getQuantity());
         Assert.assertEquals(0, (int)requirementMap.get("4").getQuantity());
+        Assert.assertEquals(100, (int)requirementMap.get("5").getQuantity());
+        Assert.assertEquals(100, (int)requirementMap.get("6").getQuantity());
 
         Assert.assertEquals(Constants.QUANTITY_OVERRIDE_COMMENT_IS_MISSING,
                 uploadOverrideFailureLineItems.get(0).getFailureReason());
         Assert.assertEquals(Constants.FSN_OR_WAREHOUSE_IS_MISSING,
                 uploadOverrideFailureLineItems.get(1).getFailureReason());
+        Assert.assertEquals(Constants.INVALID_QUANTITY_WITHOUT_COMMENT,
+                uploadOverrideFailureLineItems.get(2).getFailureReason());
+        Assert.assertEquals(Constants.INVALID_QUANTITY_WITHOUT_COMMENT,
+                uploadOverrideFailureLineItems.get(3).getFailureReason());
 
         /*Test the entities ingested to fdp and saved in requirement event log*/
         Assert.assertEquals(OverrideKey.QUANTITY.toString(), argumentCaptor.getValue().get(0).getAttribute());
@@ -179,6 +188,42 @@ public class ProposedUploadCommandTest {
                 "Daily planning"
         );
         requirement.setId("4");
+        requirements.add(requirement);
+
+        requirement = TestHelper.getRequirement(
+                "dummy_fsn_1",
+                "dummy_warehouse_2",
+                RequirementApprovalState.PROPOSED.toString(),
+                true,
+                snapshot1,
+                100,
+                "DEF",
+                10,
+                9,
+                "USD",
+                4,
+                "",
+                "Daily planning"
+        );
+        requirement.setId("5");
+        requirements.add(requirement);
+
+        requirement = TestHelper.getRequirement(
+                "dummy_fsn_1",
+                "dummy_warehouse_2",
+                RequirementApprovalState.PROPOSED.toString(),
+                true,
+                snapshot1,
+                100,
+                "DEF",
+                10,
+                9,
+                "USD",
+                4,
+                "",
+                "Daily planning"
+        );
+        requirement.setId("6");
         requirements.add(requirement);
         return requirements;
     }

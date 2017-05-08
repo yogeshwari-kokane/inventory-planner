@@ -7,6 +7,7 @@ import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.repository.ProductInfoRepository;
 import fk.retail.ip.requirement.internal.repository.WarehouseSupplierSlaRepository;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
+import fk.retail.ip.requirement.model.RequirementUploadLineItem;
 import fk.retail.ip.ssl.SslClientCallable;
 import fk.retail.ip.ssl.client.SslClient;
 import fk.retail.ip.ssl.config.SslClientConfiguration;
@@ -99,10 +100,10 @@ public class RequirementHelper {
         return fsnWhSupplierMap;
     }
 
-    public List<Requirement> getSupplierOverriddenRequirement(List<RequirementDownloadLineItem> requirementDownloadLineItems,
+    public List<Requirement> getSupplierOverriddenRequirement(List<RequirementUploadLineItem> requirementUploadLineItems,
                                                                Map<String, Requirement> requirementMap) {
         List<Requirement> requirements = Lists.newArrayList();
-        for(RequirementDownloadLineItem row : requirementDownloadLineItems) {
+        for(RequirementUploadLineItem row : requirementUploadLineItems) {
             String requirementId = row.getRequirementId();
             if(requirementMap.containsKey(requirementId)) {
                 String overridenSupplier = row.getCdoSupplierOverride();

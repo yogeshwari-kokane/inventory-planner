@@ -22,6 +22,7 @@ import fk.retail.ip.ssl.client.SslClient;
 import fk.retail.ip.ssl.model.SupplierSelectionRequest;
 import fk.retail.ip.ssl.model.SupplierSelectionResponse;
 import fk.retail.ip.ssl.model.SupplierView;
+import fk.retail.ip.requirement.model.RequirementUploadLineItem;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.map.MultiKeyMap;
 import org.json.JSONObject;
@@ -52,20 +53,21 @@ public class CDOReviewUploadCommand extends UploadCommand {
     }
 
     @Override
-    Map<String, Object> validateAndSetStateSpecificFields(RequirementDownloadLineItem requirementDownloadLineItem,
-                                                          Requirement requirement, Map<String, String> fsnToVerticalMap,
-                                                          MultiKeyMap<String,SupplierSelectionResponse> fsnWhSupplierMap) {
-        String supplierOverrideComment = requirementDownloadLineItem.getCdoSupplierOverrideReason();
-        Integer bdProposedQuantity = requirementDownloadLineItem.getCdoQuantityOverride();
-        Integer bdProposedSla = requirementDownloadLineItem.getNewSla();
-        Integer bdProposedApp = requirementDownloadLineItem.getCdoPriceOverride();
-        String bdProposedSupplier = requirementDownloadLineItem.getCdoSupplierOverride();
-        String currentSupplier = requirementDownloadLineItem.getSupplier();
-        Integer currentQuantity =  requirementDownloadLineItem.getQuantity();
-        Integer currentApp = requirementDownloadLineItem.getApp();
-        Integer currentSla = requirementDownloadLineItem.getSla();
-        String quantityOverrideComment = requirementDownloadLineItem.getCdoQuantityOverrideReason();
-        String appOverrideComment = requirementDownloadLineItem.getCdoPriceOverrideReason();
+    Map<String, Object> validateAndSetStateSpecificFields(RequirementUploadLineItem requirementUploadLineItem,
+                Requirement requirement, Map<String, String> fsnToVerticalMap,
+                MultiKeyMap<String,SupplierSelectionResponse> fsnWhSupplierMap) {
+        String supplierOverrideComment = requirementUploadLineItem.getCdoSupplierOverrideReason();
+        Object bdProposedQuantity = requirementUploadLineItem.getCdoQuantityOverride();
+        Object bdProposedSla = requirementUploadLineItem.getNewSla();
+        Object bdProposedApp = requirementUploadLineItem.getCdoPriceOverride();
+        String bdProposedSupplier = requirementUploadLineItem.getCdoSupplierOverride();
+        String currentSupplier = requirementUploadLineItem.getSupplier();
+        Integer currentQuantity =  requirementUploadLineItem.getQuantity();
+        Double currentApp = requirementUploadLineItem.getApp();
+        Integer currentSla = requirementUploadLineItem.getSla();
+        String quantityOverrideComment = requirementUploadLineItem.getCdoQuantityOverrideReason();
+        String appOverrideComment = requirementUploadLineItem.getCdoPriceOverrideReason();
+
         Map<String, Object> overriddenValues = new HashMap<>();
 
         String validationComment = "";
@@ -129,21 +131,28 @@ public class CDOReviewUploadCommand extends UploadCommand {
         return overriddenValues;
     }
 
-    private Optional<String> validateAppOverride(Integer bdProposedApp, Integer currentApp, String appOverrideComment) {
+    private Optional<String> validateAppOverride(Object bdProposedApp, Double currentApp, String appOverrideComment) {
         String validationComment;
         if (bdProposedApp == null) {
             return Optional.empty();
         }
-        if (bdProposedApp <= 0) {
-            validationComment = isEmptyString(appOverrideComment) ?
-                    Constants.INVALID_APP_WITHOUT_COMMENT :
-                    Constants.APP_QUANTITY_IS_NOT_GREATER_THAN_ZERO;
-            return Optional.of(validationComment);
-        } else if(bdProposedApp != currentApp && isEmptyString(appOverrideComment)) {
-            validationComment = Constants.APP_OVERRIDE_COMMENT_IS_MISSING;
-            return Optional.of(validationComment);
+
+        if (bdProposedApp instanceof Double) {
+            if ((double)bdProposedApp <= 0) {
+                validationComment = isEmptyString(appOverrideComment) ?
+                        Constants.INVALID_APP_WITHOUT_COMMENT :
+                        Constants.APP_QUANTITY_IS_NOT_GREATER_THAN_ZERO;
+                return Optional.of(validationComment);
+            } else if(bdProposedApp != currentApp && isEmptyString(appOverrideComment)) {
+                validationComment = Constants.APP_OVERRIDE_COMMENT_IS_MISSING;
+                return Optional.of(validationComment);
+            } else {
+                return Optional.empty();
+            }
         } else {
-            return Optional.empty();
+            validationComment = isEmptyString(appOverrideComment) ? Constants.INVALID_APP_WITHOUT_COMMENT :
+                    Constants.APP_IS_NOT_VALID;
+            return Optional.of(validationComment);
         }
 
     }
@@ -187,27 +196,33 @@ public class CDOReviewUploadCommand extends UploadCommand {
         return null;
     }
 
-    private Optional<String> validateSlaOverride(Integer bdProposedSla) {
+    private Optional<String> validateSlaOverride(Object bdProposedSla) {
         String validationComment;
         if (bdProposedSla == null) {
             return Optional.empty();
         }
 
-        if (bdProposedSla <= 0){
-            validationComment = Constants.SLA_QUANTITY_IS_NOT_GREATER_THAN_ZERO;
+        if (bdProposedSla instanceof Integer) {
+            if ((int)bdProposedSla <= 0){
+                validationComment = Constants.SLA_QUANTITY_IS_NOT_GREATER_THAN_ZERO;
+                return Optional.of(validationComment);
+            } else {
+                return Optional.empty();
+            }
+        } else {
+            validationComment = Constants.SLA_IS_NOT_INTEGER;
             return Optional.of(validationComment);
         }
-        return Optional.empty();
     }
 
     private Map<String, Object> getOverriddenFields(
             Integer currentQuantity,
             String currentSupplier,
-            Integer currentApp,
+            Double currentApp,
             Integer currentSla,
-            Integer bdProposedQuantity,
-            Integer bdProposedApp,
-            Integer bdProposedSla,
+            Object bdProposedQuantity,
+            Object bdProposedApp,
+            Object bdProposedSla,
             String bdProposedSupplier,
             String quantityOverrideComment,
             String appOverrideComment,
@@ -223,7 +238,7 @@ public class CDOReviewUploadCommand extends UploadCommand {
 
 
         if (bdProposedQuantity != null && bdProposedQuantity != currentQuantity) {
-            Integer quantityToUse = bdProposedQuantity;
+            Integer quantityToUse = (Integer) bdProposedQuantity;
             overriddenValues.put(OverrideKey.QUANTITY.toString(), quantityToUse);
             overrideComment.put(Constants.QUANTITY_OVERRIDE_COMMENT, quantityOverrideComment);
             overriddenValues.put(Constants.STATUS, OverrideStatus.UPDATE.toString());
@@ -238,7 +253,7 @@ public class CDOReviewUploadCommand extends UploadCommand {
         //case when app is overridden given that supplier is either not overridden or if overridden it is a valid supplier
         if (bdProposedApp != null && bdProposedApp != currentApp && (isEmptyString(bdProposedSupplier) ||
                 (bdProposedSupplier != currentSupplier && supplierView!=null))) {
-            Integer appToUse = bdProposedApp;
+            Double appToUse = (Double) bdProposedApp;
             overriddenValues.put(OverrideKey.APP.toString(), appToUse);
             overrideComment.put(Constants.APP_OVERRIDE_COMMENT, appOverrideComment);
             overriddenValues.put(Constants.STATUS, OverrideStatus.UPDATE.toString());
@@ -246,7 +261,7 @@ public class CDOReviewUploadCommand extends UploadCommand {
         //case when valid supplier is overridden and app is not overridden
         else if(overriddenValues.containsKey(OverrideKey.SUPPLIER.toString()))
         {
-            Integer appToUse = supplierView.getApp();
+            Double appToUse = supplierView.getApp();
             overriddenValues.put(OverrideKey.APP.toString(), appToUse);
             overrideComment.put(Constants.APP_OVERRIDE_COMMENT, Constants.DEFAULT_APP_OVERRIDE_COMMENT.toString());
             overriddenValues.put(Constants.STATUS, OverrideStatus.UPDATE.toString());
@@ -255,7 +270,7 @@ public class CDOReviewUploadCommand extends UploadCommand {
         //case when sla is overridden given that supplier is either not overridden or if overridden it is a valid supplier
         if (bdProposedSla != null && bdProposedSla != currentSla && (isEmptyString(bdProposedSupplier) ||
                 (bdProposedSupplier != currentSupplier && supplierView!=null))) {
-            Integer slaToUse = bdProposedSla;
+            Integer slaToUse = (Integer) bdProposedSla;
             overriddenValues.put(OverrideKey.SLA.toString(), slaToUse);
             overriddenValues.put(Constants.STATUS, OverrideStatus.UPDATE.toString());
         }
@@ -276,6 +291,5 @@ public class CDOReviewUploadCommand extends UploadCommand {
     private String convertToLineSeparatedComment(String firstString, String secondString) {
         return firstString.isEmpty() ? secondString : firstString + System.lineSeparator() + secondString;
     }
-
 
 }

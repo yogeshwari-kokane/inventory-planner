@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import fk.retail.ip.requirement.model.*;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.json.JSONException;
 import java.io.IOException;
@@ -37,19 +38,6 @@ import fk.retail.ip.requirement.internal.repository.RequirementApprovalTransitio
 import fk.retail.ip.requirement.internal.repository.RequirementEventLogRepository;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.internal.states.RequirementState;
-import fk.retail.ip.requirement.model.CalculateRequirementRequest;
-import fk.retail.ip.requirement.model.DownloadRequirementRequest;
-import fk.retail.ip.requirement.model.RaisePORequest;
-import fk.retail.ip.requirement.model.RequirementApprovalRequest;
-import fk.retail.ip.requirement.model.RequirementChangeMap;
-import fk.retail.ip.requirement.model.RequirementChangeRequest;
-import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
-import fk.retail.ip.requirement.model.RequirementSearchLineItem;
-import fk.retail.ip.requirement.model.RequirementSearchRequest;
-import fk.retail.ip.requirement.model.SearchResponse;
-import fk.retail.ip.requirement.model.TriggerRequirementRequest;
-import fk.retail.ip.requirement.model.UploadOverrideFailureLineItem;
-import fk.retail.ip.requirement.model.UploadResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
@@ -154,13 +142,13 @@ public class RequirementService {
         ObjectMapper mapper = new ObjectMapper();
 
         try {
-            List<RequirementDownloadLineItem> requirementDownloadLineItems = mapper.convertValue(parsedMappingList,
-                    new TypeReference<List<RequirementDownloadLineItem>>() {});
+            List<RequirementUploadLineItem> requirementUploadLineItems = mapper.convertValue(parsedMappingList,
+                    new TypeReference<List<RequirementUploadLineItem>>() {});
             List<Requirement> requirements;
             List<String> requirementIds = new ArrayList<>();
-            requirementDownloadLineItems.forEach(row ->
-                            requirementIds.add(row.getRequirementId())
-            );
+            requirementUploadLineItems.forEach(row -> {
+                requirementIds.add(row.getRequirementId());
+            });
 
             requirements = requirementRepository.findActiveRequirementForState(requirementIds, requirementState);
             log.info("number of requirements found for uploaded records : " + requirements.size());
@@ -173,12 +161,15 @@ public class RequirementService {
             } else {
                 RequirementState state = requirementStateFactory.getRequirementState(requirementState);
                 try {
-                    List<UploadOverrideFailureLineItem> uploadLineItems = state.upload(requirements, requirementDownloadLineItems, userId, requirementState);
-                    int successfulRowCount = requirementDownloadLineItems.size() - uploadLineItems.size();
+
+                    UploadOverrideResult uploadOverrideResult = state.upload(requirements, requirementUploadLineItems, userId, requirementState);
+
+                    List<UploadOverrideFailureLineItem> uploadOverrideFailureLineItems = uploadOverrideResult.getUploadOverrideFailureLineItemList();
+
                     UploadResponse uploadResponse = new UploadResponse();
-                    uploadResponse.setUploadOverrideFailureLineItems(uploadLineItems);
-                    uploadResponse.setSuccessfulRowCount(successfulRowCount);
-                    if (uploadLineItems.isEmpty()) {
+                    uploadResponse.setUploadOverrideFailureLineItems(uploadOverrideFailureLineItems);
+                    uploadResponse.setSuccessfulRowCount(uploadOverrideResult.getSuccessfulRowCount());
+                    if (uploadOverrideFailureLineItems.isEmpty()) {
                         uploadResponse.setStatus(OverrideStatus.SUCCESS.toString());
                     } else {
                         uploadResponse.setStatus(OverrideStatus.FAILURE.toString());

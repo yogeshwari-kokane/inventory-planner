@@ -13,6 +13,7 @@ import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
 import fk.retail.ip.requirement.internal.repository.RequirementEventLogRepository;
 import fk.retail.ip.requirement.internal.repository.TestHelper;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
+import fk.retail.ip.requirement.model.RequirementUploadLineItem;
 import fk.retail.ip.requirement.model.UploadOverrideFailureLineItem;
 import fk.retail.ip.ssl.model.SupplierSelectionResponse;
 import org.apache.commons.collections4.map.MultiKeyMap;
@@ -57,25 +58,25 @@ public class BizFinReviewUploadCommandTest {
 
     @Test
     public void uploadTest() throws IOException {
-        List<RequirementDownloadLineItem> requirementDownloadLineItems = TestHelper.getBizfinReviewDownloadLineItem();
+        List<RequirementUploadLineItem> requirementUploadLineItems = TestHelper.getBizfinReviewUploadLineItem();
         List<Requirement> requirements = getRequirements();
-        Map<String, String> fsnVerticalMap = getFsnVerticalMap();
-        MultiKeyMap<String,SupplierSelectionResponse> fsnWhSupplierMap = getFsnWhSupplierMap();
         List<UploadOverrideFailureLineItem> uploadOverrideFailureLineItems = bizFinReviewUploadCommand
-                .execute(requirementDownloadLineItems, requirements, "", RequirementApprovalState.BIZFIN_REVIEW.toString());
+                .execute(requirementUploadLineItems, requirements, "",
+                        RequirementApprovalState.BIZFIN_REVIEW.toString()).getUploadOverrideFailureLineItemList();
 
         Mockito.verify(requirementEventLogRepository).persist(argumentCaptor.capture());
 
         Map<String, Requirement> requirementMap = requirements.stream().collect
                 (Collectors.toMap(Requirement::getId, Function.identity()));
 
-        Assert.assertEquals(1, uploadOverrideFailureLineItems.size());
+        Assert.assertEquals(2, uploadOverrideFailureLineItems.size());
         Assert.assertEquals(20, (int)requirementMap.get("1").getQuantity());
         Assert.assertEquals("{\"quantityOverrideComment\":\"test_bizfin\"}", requirementMap.get("1").getOverrideComment());
         Assert.assertEquals(100, (int)requirementMap.get("2").getQuantity());
         Assert.assertEquals("{\"quantityOverrideComment\":\"test_bizfin\"}", requirementMap.get("3").getOverrideComment());
         Assert.assertEquals(100, (int)requirementMap.get("3").getQuantity());
         Assert.assertEquals(100, (int)requirementMap.get("4").getQuantity());
+        Assert.assertEquals(100, (int)requirementMap.get("5").getQuantity());
 
         Assert.assertEquals(OverrideKey.QUANTITY.toString(), argumentCaptor.getValue().get(0).getAttribute());
         Assert.assertEquals("100.0", argumentCaptor.getValue().get(0).getOldValue());
@@ -172,14 +173,25 @@ public class BizFinReviewUploadCommandTest {
         requirement.setId("4");
         requirements.add(requirement);
 
+        requirement = TestHelper.getRequirement(
+                "fsn_1",
+                "dummy_warehouse_2",
+                RequirementApprovalState.BIZFIN_REVIEW.toString(),
+                true,
+                snapshot1,
+                100,
+                "DEF",
+                10,
+                9,
+                "USD",
+                4,
+                "",
+                "Daily planning"
+        );
+        requirement.setId("5");
+        requirements.add(requirement);
+
         return requirements;
     }
 
-    Map<String,String> getFsnVerticalMap() {
-        return null;
-    }
-
-    MultiKeyMap<String,SupplierSelectionResponse> getFsnWhSupplierMap() {
-        return  null;
-    }
 }

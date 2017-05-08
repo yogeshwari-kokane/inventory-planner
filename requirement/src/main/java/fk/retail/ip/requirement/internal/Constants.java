@@ -39,6 +39,9 @@ public interface Constants {
     String SUPPLIER_NOT_FOUND = "Supplier not found";
     String SLA_QUANTITY_IS_NOT_GREATER_THAN_ZERO = "Suggested SLA should be greater than zero";
     String APP_QUANTITY_IS_NOT_GREATER_THAN_ZERO = "Suggested price should be greater than zero";
+    String QUANTITY_IS_NOT_INTEGER = "Suggested quantity should be an integer";
+    String SLA_IS_NOT_INTEGER = "Suggested sla should be an integer";
+    String APP_IS_NOT_VALID = "Suggested app is not valid";
 
     String REQUIREMENT_NOT_FOUND_FOR_GIVEN_REQUIREMENT_ID = "Requirement not found for given requirement Id";
     String INVALID_QUANTITY_WITHOUT_COMMENT = "Invalid quantity without reason";
