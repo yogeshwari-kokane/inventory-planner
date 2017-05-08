@@ -6,11 +6,12 @@ import fk.retail.ip.requirement.config.TestDbModule;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.entities.RequirementSnapshot;
 import fk.sp.common.extensions.jpa.TransactionalJpaRepositoryTest;
-
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.IntStream;
-import java.util.stream.LongStream;
-import org.apache.commons.lang.ArrayUtils;
 import org.jukito.JukitoRunner;
 import org.jukito.UseModules;
 import org.junit.After;
