@@ -11,6 +11,7 @@ import fk.retail.ip.requirement.config.RequirementModule;
 import fk.retail.ip.ssl.config.SslClientModule;
 import fk.retail.ip.zulu.config.ZuluModule;
 import fk.retail.ip.fdp.config.FdpModule;
+import fk.retail.ip.d42.config.D42ClientModule;
 import fk.sp.common.extensions.RequestContextFilter;
 import fk.sp.common.extensions.config.CustomEnumModule;
 import fk.sp.common.extensions.dropwizard.jersey.JerseyClientModule;
@@ -42,7 +43,7 @@ public class ManagerApplication extends Application<ManagerConfiguration> {
         Properties jpaProperties = new Properties();
         jpaProperties.put(JpaWithSpringModule.HIBERNATE_EJB_NAMING_STRATEGY,
                 "fk.retail.ip.manager.config.AnnotationRespectfulNamingStrategy");
-        jpaProperties.put("hibernate.jdbc.batch_size",30);
+        jpaProperties.put("hibernate.jdbc.batch_size",150);
         jpaProperties.put("hibernate.order_inserts", "true");
         jpaProperties.put("hibernate.order_updates", "true");
         jpaProperties.put("hibernate.jdbc.batch_versioned_data", "true");
@@ -55,6 +56,7 @@ public class ManagerApplication extends Application<ManagerConfiguration> {
                 .addModule(new SslClientModule())
                 .addModule(new FdpModule())
                 .addModule(new RestbusSenderModule())
+                .addModule(new D42ClientModule())
                 .addModule(new JpaWithSpringModule(
                         Sets.newHashSet(
                                 "fk.retail.ip",
