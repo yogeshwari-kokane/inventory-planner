@@ -6,6 +6,7 @@ import fk.retail.ip.requirement.internal.command.FdpRequirementIngestorImpl;
 import fk.retail.ip.requirement.internal.repository.*;
 import fk.retail.ip.requirement.model.*;
 import fk.retail.ip.requirement.resource.RequirementResource;
+import fk.retail.ip.requirement.resource.RequirementResourceV2;
 import fk.retail.ip.requirement.resource.TestResource;
 
 /**
@@ -17,6 +18,7 @@ public class RequirementModule extends AbstractModule {
     protected void configure() {
 
         bind(RequirementResource.class);
+        bind(RequirementResourceV2.class);
         bind(TestResource.class);
         bind(FsnBandRepository.class).to(JPAFsnBandRepository.class);
         bind(WeeklySaleRepository.class).to(JPAWeeklySaleRepository.class);
