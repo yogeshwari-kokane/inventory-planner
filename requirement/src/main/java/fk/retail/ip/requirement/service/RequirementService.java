@@ -5,29 +5,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import fk.retail.ip.requirement.model.*;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.json.JSONException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import javax.ws.rs.core.StreamingOutput;
 import fk.retail.ip.core.poi.SpreadSheetReader;
-import fk.retail.ip.proc.model.PushToProcResponse;
 import fk.retail.ip.d42.client.D42Client;
+import fk.retail.ip.proc.model.PushToProcResponse;
+import fk.retail.ip.requirement.config.EmailConfiguration;
 import fk.retail.ip.requirement.internal.Constants;
-import fk.retail.ip.requirement.internal.command.CalculateRequirementCommand;
-import fk.retail.ip.requirement.internal.command.FdpRequirementIngestorImpl;
-import fk.retail.ip.requirement.internal.command.PayloadCreationHelper;
-import fk.retail.ip.requirement.internal.command.PushToProcCommand;
-import fk.retail.ip.requirement.internal.command.SearchCommand;
-import fk.retail.ip.requirement.internal.command.SearchFilterCommand;
-import fk.retail.ip.requirement.internal.command.TriggerRequirementCommand;
+import fk.retail.ip.requirement.internal.command.*;
+import fk.retail.ip.requirement.internal.command.emailHelper.ApprovalEmailHelper;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.enums.FdpRequirementEventType;
 import fk.retail.ip.requirement.internal.enums.OverrideKey;
@@ -38,13 +22,22 @@ import fk.retail.ip.requirement.internal.repository.RequirementApprovalTransitio
 import fk.retail.ip.requirement.internal.repository.RequirementEventLogRepository;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.internal.states.RequirementState;
+import fk.retail.ip.requirement.model.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.json.JSONException;
+
+import javax.ws.rs.core.StreamingOutput;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * @author nidhigupta.m
@@ -68,6 +61,8 @@ public class RequirementService {
     private final D42Client d42Client;
     private final int PAGE_SIZE = 20;
     private final String BUCKET_NAME = "ip_requirements";
+    private final ApprovalEmailHelper appovalEmailHelper;
+    private final EmailConfiguration emailConfiguration;
 
     @Inject
     public RequirementService(RequirementRepository requirementRepository,
@@ -79,7 +74,11 @@ public class RequirementService {
                               FdpRequirementIngestorImpl fdpRequirementIngestor,
                               RequirementEventLogRepository requirementEventLogRepository,
                               Provider<TriggerRequirementCommand> triggerRequirementCommandProvider,
-                              PushToProcCommand pushToProcCommand, D42Client d42Client) {
+                              PushToProcCommand pushToProcCommand,
+                              D42Client d42Client,
+                              ApprovalEmailHelper appovalEmailHelper,
+                              EmailConfiguration emailConfiguration
+                              ) {
 
         this.requirementRepository = requirementRepository;
         this.requirementStateFactory = requirementStateFactory;
@@ -93,6 +92,8 @@ public class RequirementService {
         this.fdpRequirementIngestor = fdpRequirementIngestor;
         this.requirementEventLogRepository = requirementEventLogRepository;
         this.d42Client = d42Client;
+        this.appovalEmailHelper = appovalEmailHelper;
+        this.emailConfiguration = emailConfiguration;
     }
 
     public StreamingOutput downloadRequirement(DownloadRequirementRequest downloadRequirementRequest) {
@@ -203,6 +204,7 @@ public class RequirementService {
         String state = (String) request.getFilters().get("state");
         Function<Requirement, String> getter = Requirement::getState;
         List<Requirement> requirements;
+        String groupName = request.getFilters().containsKey("group") ? ((List)request.getFilters().get("group")).get(0).toString() : "";
         List<String> fsns = searchFilterCommand.getSearchFilterFsns(request.getFilters());
         requirements = requirementRepository.findRequirements(ids, state, fsns);
         log.info("Change state Request for {} number of requirements", requirements.size());
@@ -212,10 +214,13 @@ public class RequirementService {
                 userId,
                 forward,
                 getter,
+                groupName,
                 new ApprovalService.CopyOnStateChangeAction(requirementRepository,
                         requirementApprovalStateTransitionRepository,
                         fdpRequirementIngestor,
-                        requirementEventLogRepository
+                        requirementEventLogRepository,
+                        appovalEmailHelper,
+                        emailConfiguration
                 )
         );
         log.info("State changed for {} number of requirements", requirements.size());

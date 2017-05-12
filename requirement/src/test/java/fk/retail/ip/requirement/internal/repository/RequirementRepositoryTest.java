@@ -1,25 +1,20 @@
 package fk.retail.ip.requirement.internal.repository;
 
-import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import fk.retail.ip.requirement.config.TestDbModule;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.entities.RequirementSnapshot;
 import fk.sp.common.extensions.jpa.TransactionalJpaRepositoryTest;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.IntStream;
 import org.jukito.JukitoRunner;
 import org.jukito.UseModules;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @RunWith(JukitoRunner.class)
 @UseModules(TestDbModule.class)
@@ -132,7 +127,9 @@ public class RequirementRepositoryTest extends TransactionalJpaRepositoryTest {
 
     private Requirement getRequirement(int i) {
         String fsn = "fsn" + String.valueOf(i);
-        Requirement requirement = TestHelper.getRequirement(fsn, "dummy_warehouse", "proposed", true, null, 10, "supplier",
+
+        RequirementSnapshot requirementSnapshot = TestHelper.getRequirementSnapshot("",1,1,1,1,1);
+        Requirement requirement = TestHelper.getRequirement(fsn, "dummy_warehouse", "proposed", true, requirementSnapshot, 10, "supplier",
                 10, 11.0, "INR", 2, "comment", "daily", String.valueOf(i));
         requirement.setCurrent(true);
 
