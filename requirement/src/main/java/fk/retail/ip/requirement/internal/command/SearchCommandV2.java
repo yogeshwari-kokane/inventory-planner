@@ -26,14 +26,14 @@ public class SearchCommandV2 extends RequirementSearchDataAggregatorV2{
 
     @Inject
     public SearchCommandV2(FsnBandRepository fsnBandRepository, WeeklySaleRepository weeklySaleRepository,
-                           LastAppSupplierRepository lastAppSupplierRepository, ProductInfoRepository productInfoRepository,
-                           ZuluClient zuluClient, RequirementRepository requirementRepository,
-                           WarehouseRepository warehouseRepository, GroupFsnRepository groupFsnRepository) {
-        super(fsnBandRepository, weeklySaleRepository,lastAppSupplierRepository, productInfoRepository, zuluClient,
-                requirementRepository, warehouseRepository, groupFsnRepository);
+                           ProductInfoRepository productInfoRepository, ZuluClient zuluClient,
+                           RequirementRepository requirementRepository, WarehouseRepository warehouseRepository,
+                           GroupFsnRepository groupFsnRepository, GroupRepository groupRepository) {
+        super(fsnBandRepository, weeklySaleRepository, productInfoRepository, zuluClient,
+                requirementRepository, warehouseRepository, groupFsnRepository, groupRepository);
     }
 
-    public Map<String, SearchResponseV2> execute(List<Requirement> requirements, String state) {
+    public Map<String, SearchResponseV2> execute(List<Requirement> requirements, String state, String groupName) {
         log.info("Search Request for {} number of requirements", requirements.size());
         List<RequirementSearchV2LineItem> requirementSearchLineItems = requirements.stream()
                 .map(RequirementSearchV2LineItem::new).collect(toList());
@@ -62,9 +62,15 @@ public class SearchCommandV2 extends RequirementSearchDataAggregatorV2{
             log.info("No requirements found for search.");
             return fsnToSearchResponse;
         }
+        log.info("Start: get product data for fsns");
         fetchProductData(fsnToSearchResponse);
+        log.info("Finish: get product data for fsns");
+        log.info("Start: get fsn band data for fsns");
         fetchFsnBandData(fsnToSearchResponse);
-        fetchGroupData(fsnToSearchResponse);
+        log.info("Finish: get fsn band data for fsns");
+        log.info("Start: get group data for fsns");
+        fetchGroupData(fsnToSearchResponse, groupName);
+        log.info("Finish: get group data for fsns");
         return fsnToSearchResponse;
     }
 

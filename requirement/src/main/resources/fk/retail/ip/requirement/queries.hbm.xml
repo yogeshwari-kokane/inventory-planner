@@ -467,6 +467,20 @@
         </query>
     </named-query>
 
+    <named-query name="Group.findByGroupNames">
+        <query>
+            <![CDATA[
+            SELECT g
+            FROM Group g
+            WHERE
+                g.name IN :groupNames
+                  ]]>
+        </query>
+    </named-query>
+
+
+
+
 
 
 

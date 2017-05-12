@@ -14,4 +14,5 @@ public interface GroupFsnRepository extends JpaGenericRepository<GroupFsn, Long>
     List<String> getAllFsns();
 
     List<GroupFsn> findByGroupIds(Set<Long> groupIds);
+
 }

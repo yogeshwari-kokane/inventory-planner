@@ -31,6 +31,7 @@ public class RequirementModule extends AbstractModule {
         bind(ProductInfoRepository.class).to(JPAProductInfoRepository.class);
         bind(WarehouseRepository.class).to(JPAWarehouseRepository.class);
         bind(WarehouseInventoryRepository.class).to(JPAWarehouseInventoryRepository.class);
+        bind(GroupRepository.class).to(GroupRepositoryImpl.class);
         bind(ForecastRepository.class).to(JPAForecastRepository.class);
         bind(ProcPurchaseOrderRepository.class).to(ProcPurchaseOrderRepositoryImpl.class);
         bind(WarehouseSupplierSlaRepository.class).to(WarehouseSupplierSlaRepositoryImpl.class);

@@ -18,6 +18,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalField;
 import java.time.temporal.WeekFields;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -38,11 +39,12 @@ public class RequirementSearchDataAggregatorV2 {
     private final WarehouseRepository warehouseRepository;
     private final ZuluClient zuluClient;
     private final GroupFsnRepository groupFsnRepository;
+    private final GroupRepository groupRepository;
 
     public RequirementSearchDataAggregatorV2(FsnBandRepository fsnBandRepository, WeeklySaleRepository weeklySaleRepository,
                                            ProductInfoRepository productInfoRepository, ZuluClient zuluClient,
                                            RequirementRepository requirementRepository, WarehouseRepository warehouseRepository,
-                                           GroupFsnRepository groupFsnRepository) {
+                                           GroupFsnRepository groupFsnRepository, GroupRepository groupRepository) {
 
         this.fsnBandRepository = fsnBandRepository;
         this.weeklySaleRepository = weeklySaleRepository;
@@ -51,6 +53,7 @@ public class RequirementSearchDataAggregatorV2 {
         this.requirementRepository = requirementRepository;
         this.warehouseRepository = warehouseRepository;
         this.groupFsnRepository = groupFsnRepository;
+        this.groupRepository = groupRepository;
 
     }
 
@@ -68,8 +71,21 @@ public class RequirementSearchDataAggregatorV2 {
         }
     }
 
-    protected void fetchGroupData(Map<String, SearchResponseV2> fsnToSearchResponse) {
+    protected void fetchGroupData(Map<String, SearchResponseV2> fsnToSearchResponse, String groupName) {
         log.info("Fetching group data from db for search requirements");
+        if(groupName!=null && !isEmptyString(groupName)) {
+            Set<String> groupNames = new HashSet<>();
+            groupNames.add(groupName);
+            List<Group> groupList = groupRepository.findByGroupNames(groupNames);
+            Long groupId = groupList.get(0).getId();
+            for (Map.Entry<String, SearchResponseV2> entry : fsnToSearchResponse.entrySet()) {
+                SearchResponseV2 searchResponse = entry.getValue();
+                searchResponse.setGroupName(groupName);
+                searchResponse.setGroupId(groupId);
+            }
+            return;
+        }
+
         Set<String> fsns = fsnToSearchResponse.keySet();
         List<GroupFsn> groupFsnList = groupFsnRepository.findByFsns(fsns);
         groupFsnList.stream().forEach(gf -> {
@@ -92,7 +108,9 @@ public class RequirementSearchDataAggregatorV2 {
 
     protected void fetchSalesBucketData(Set<String> fsns, List<RequirementSearchV2LineItem> requirementSearchLineItems) {
         log.info("Fetching sales Bucket Data for search requirements");
+        log.info("Start: get sales bucket data for fsns");
         List<WeeklySale> sales = weeklySaleRepository.fetchWeeklySalesForFsns(fsns);
+        log.info("Finish: get sales bucket data for fsns");
         MultiKeyMap<String, Integer> fsnWhWeekSalesMap = new MultiKeyMap();
         sales.forEach(s -> fsnWhWeekSalesMap.put(s.getFsn(), s.getWarehouse(), String.valueOf(s.getWeek()), s.getSaleQty()));
         LocalDate date = LocalDate.now();
@@ -107,7 +125,9 @@ public class RequirementSearchDataAggregatorV2 {
         Map<String, List<RequirementSearchV2LineItem>> warehouseToRequirement = requirementSearchLineItems.stream()
                 .collect(Collectors.groupingBy(RequirementSearchV2LineItem::getWarehouse));
         Set<String> whCodes = warehouseToRequirement.keySet();
+        log.info("Start: get warehouse data for fsns");
         List<Warehouse> warehouses = warehouseRepository.fetchWarehouseNameByCode(whCodes);
+        log.info("Finish: get warehouse data for fsns");
         Map<String, String> warehouseCodeToName = warehouses.stream()
                 .collect(Collectors.toMap(Warehouse::getCode, Warehouse::getName));
         requirementSearchLineItems.forEach(reqItem -> {
@@ -198,6 +218,10 @@ public class RequirementSearchDataAggregatorV2 {
         Set<String> fsnsCopy = Sets.newHashSet(fsns);
         fsnsCopy.removeAll(cachedFsns);
         return fsnsCopy;
+    }
+
+    protected boolean isEmptyString(String comment) {
+        return comment == null || comment.trim().isEmpty() ? true : false;
     }
 
 
