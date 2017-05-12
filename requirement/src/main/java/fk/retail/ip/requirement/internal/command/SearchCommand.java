@@ -43,8 +43,12 @@ public class SearchCommand extends RequirementSearchDataAggregator {
             return fsnToRequirement;
         }
         Set<String> fsns = fsnToRequirement.keySet();
+        log.info("Start: get product data for fsns");
         fetchProductData(fsnToRequirement);
+        log.info("Finish: get product data for fsns");
+        log.info("Start: get fsn band data for fsns");
         fetchFsnBandData(fsnToRequirement);
+        log.info("Finish: get fsn band data for fsns");
         fetchSalesBucketData(fsns, requirementSearchLineItems);
         return fsnToRequirement;
     }
