@@ -186,7 +186,7 @@ public class RequirementSearchDataAggregatorV2 {
                 searchResponse.setFsp(fsp);
                 searchResponse.setBrand(brand);
 
-                ProductInfo productInfo = new ProductInfo();
+                /*ProductInfo productInfo = new ProductInfo();
                 productInfo.setFsn(fsn);
                 productInfo.setBrand(brand);
                 productInfo.setCategory(category);
@@ -194,7 +194,7 @@ public class RequirementSearchDataAggregatorV2 {
                 productInfo.setSuperCategory(superCategory);
                 productInfo.setTitle(title);
                 productInfo.setVertical(vertical);
-                productInfoRepository.persist(productInfo);
+                productInfoRepository.persist(productInfo);*/
             } catch (Exception e) {
                 log.error("Error in fetching data from zulu " + e);
             }} );
