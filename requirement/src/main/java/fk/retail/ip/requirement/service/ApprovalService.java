@@ -124,7 +124,7 @@ public class ApprovalService<E> {
             List<RequirementChangeRequest> requirementChangeRequestList = Lists.newArrayList();
             List<Requirement> allEnabledRequirements = requirementRepository.find(fsns, true);
             EventType eventType = EventType.APPROVAL;
-            String nextState = requirementToTargetStateMap.get(requirements.get(0));
+            String nextState = requirementToTargetStateMap.get(requirements.get(0).getId());
             for (Requirement requirement : requirements) {
                 String toState = requirementToTargetStateMap.get(requirement.getId());
                 boolean isIPCReviewState = RequirementApprovalState.IPC_REVIEW.toString().equals(toState);
