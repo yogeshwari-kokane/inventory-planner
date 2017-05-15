@@ -12,7 +12,6 @@ import fk.retail.ip.email.internal.repository.EmailDetailsRepository;
 import fk.retail.ip.email.model.*;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +27,7 @@ public class ApprovalEmailHelper extends SendEmail {
     }
 
     @Override
-    public void send(Map<EmailParams, String> params, String state, boolean forward){
+    public void send(Map<EmailParams, String> params, String state, boolean forward, StencilConfigModel stencilConfigModel){
 
         if (params.get(ApprovalEmailParams.GROUPNAME).isEmpty()) {
             log.info("no group chosen hence not sending email");
@@ -36,7 +35,11 @@ public class ApprovalEmailHelper extends SendEmail {
         }
 
         ConnektPayload connektPayload = new ConnektPayload();
-        String stencilId = getStencilId(state, forward);
+        String stencilId = getStencilId(state, forward, stencilConfigModel);
+        if (stencilId == null || stencilId.isEmpty()) {
+            log.info("no stencil found in the config file");
+            return;
+        }
         connektPayload.setStencilId(stencilId);
 
         ApprovalChannelDataModel approvalChannelDataModel = new ApprovalChannelDataModel();
@@ -75,25 +78,13 @@ public class ApprovalEmailHelper extends SendEmail {
 
     }
 
-    private String getStencilId(String state, boolean forward) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            //Get the stencil id by parsing the stencil configuration file
-            File file = new File(getClass().getClassLoader().getResource(Constants.STENCIL_CONFIGURATION_FILE).getFile());
-            StencilConfigModel stencilStateMapping = objectMapper.
-                    readValue(file, StencilConfigModel.class);
-
-            String stencilId;
-            if (forward) {
-                stencilId = stencilStateMapping.getStateStencilMapping().get(state).get("forward");
-            } else {
-                stencilId = stencilStateMapping.getStateStencilMapping().get(state).get("backward");
-            }
-            return stencilId;
-
-        } catch(IOException ex) {
-            log.info("unable to parse ");
-            return null;
+    private String getStencilId(String state, boolean forward, StencilConfigModel stencilStateMapping) {
+        String stencilId;
+        if (forward) {
+            stencilId = stencilStateMapping.getStateStencilMapping().get(state).get("forward");
+        } else {
+            stencilId = stencilStateMapping.getStateStencilMapping().get(state).get("backward");
         }
+        return stencilId;
     }
 }

@@ -4,6 +4,7 @@ import fk.retail.ip.email.client.ConnektClient;
 import fk.retail.ip.email.internal.enums.EmailParams;
 import fk.retail.ip.email.internal.repository.EmailDetailsRepository;
 import fk.retail.ip.email.model.EmailDetails;
+import fk.retail.ip.email.model.StencilConfigModel;
 
 import java.util.Map;
 
@@ -19,7 +20,7 @@ public abstract class SendEmail {
         this.connektClient = connektClient;
     }
 
-    abstract void send(Map<EmailParams, String> params, String state, boolean forward);
+    abstract void send(Map<EmailParams, String> params, String state, boolean forward, StencilConfigModel stencilConfigModel);
 
     public EmailDetails getEmailDetails(String stencilId, String groupName) {
         EmailDetails emailDetails = emailDetailsRepository.getEmailDetails(stencilId, groupName);
