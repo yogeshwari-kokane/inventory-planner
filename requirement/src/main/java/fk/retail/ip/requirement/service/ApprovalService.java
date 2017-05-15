@@ -124,6 +124,7 @@ public class ApprovalService<E> {
             List<RequirementChangeRequest> requirementChangeRequestList = Lists.newArrayList();
             List<Requirement> allEnabledRequirements = requirementRepository.find(fsns, true);
             EventType eventType = EventType.APPROVAL;
+            String nextState = requirementToTargetStateMap.get(requirements.get(0));
             for (Requirement requirement : requirements) {
                 String toState = requirementToTargetStateMap.get(requirement.getId());
                 boolean isIPCReviewState = RequirementApprovalState.IPC_REVIEW.toString().equals(toState);
@@ -181,7 +182,7 @@ public class ApprovalService<E> {
                 requirementChangeRequest.setRequirementChangeMaps(requirementChangeMaps);
                 requirementChangeRequestList.add(requirementChangeRequest);
             }
-            appovalEmailHelper.send(createStencilParamsMap(groupName, userId, getCurrentTimestamp(), fromState), fromState, forward, stencilConfigModel);
+            appovalEmailHelper.send(createStencilParamsMap(groupName, userId, getCurrentTimestamp(), nextState), fromState, forward, stencilConfigModel);
             log.info("Updating Projections tables for Requirements");
             requirementRepository.updateProjections(requirements, groupToTargetState);
             //Push APPROVE and CANCEL events to fdp
