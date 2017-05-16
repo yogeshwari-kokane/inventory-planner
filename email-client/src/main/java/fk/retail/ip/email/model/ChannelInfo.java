@@ -11,6 +11,5 @@ import java.util.List;
 public class ChannelInfo {
     String type;
     List<Person> to;
-    Person from;
-    String cc;
+    List<Person> cc;
 }

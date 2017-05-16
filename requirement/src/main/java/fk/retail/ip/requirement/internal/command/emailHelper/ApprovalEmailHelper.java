@@ -64,13 +64,18 @@ public class ApprovalEmailHelper extends SendEmail {
                     new TypeReference<List<Person>>(){});
             channelInfo.setTo(toList);
             Person from = objectMapper.readValue(emailDetailsList.getFrom(), Person.class);
-            channelInfo.setFrom(from);
+            //channelInfo.setFrom(from);
+            if (emailDetailsList.getCcList() != null && !emailDetailsList.getCcList().isEmpty()) {
+                List<Person> ccList = objectMapper.readValue(emailDetailsList.getCcList(),
+                        new TypeReference<List<Person>>(){});
+                channelInfo.setCc(ccList);
+            }
+
         } catch(IOException ex) {
             log.info("unable to parse the json value of emailing list");
             return;
         }
 
-        channelInfo.setCc(emailDetailsList.getCcList());
 
         connektPayload.setChannelInfo(channelInfo);
         connektPayload.setContextId(Constants.APPROVAL_CONTEXT_ID);
