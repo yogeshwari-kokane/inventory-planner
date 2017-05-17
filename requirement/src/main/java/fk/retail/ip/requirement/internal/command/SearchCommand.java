@@ -29,9 +29,7 @@ public class SearchCommand extends RequirementSearchDataAggregator {
 
     public Map<String, List<RequirementSearchLineItem>> execute(List<Requirement> requirements, String state) {
         log.info("Search Request for {} number of requirements", requirements.size());
-        log.info("line1");
         List<RequirementSearchLineItem> requirementSearchLineItems = requirements.stream().map(RequirementSearchLineItem::new).collect(toList());
-        log.info("line2");
         if(state.equals(RequirementApprovalState.BIZFIN_REVIEW.toString())) {
             MultiKeyMap<String, Integer> fsnWhQuantity = fetchCdoQuantity(requirements);
             requirementSearchLineItems.forEach(reqItem

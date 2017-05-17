@@ -102,9 +102,7 @@ public class RequirementSearchDataAggregatorV2 {
     protected void fetchFsnBandData(Map<String, SearchResponseV2> fsnToSearchResponse) {
         log.info("Fetching Fsn Band data for search requirements");
         Set<String> fsns = fsnToSearchResponse.keySet();
-        log.info("start: fetch fsn band data");
         List<FsnBand> bands = fsnBandRepository.fetchBandDataForFSNs(fsns);
-        log.info("finish: fetch fsn band data");
         bands.stream().forEach(b -> {
             SearchResponseV2 searchResponse = new SearchResponseV2();
             searchResponse.setPvBand(b.getPvBand());
@@ -114,9 +112,7 @@ public class RequirementSearchDataAggregatorV2 {
 
     protected void fetchSalesBucketData(Set<String> fsns, List<RequirementSearchV2LineItem> requirementSearchLineItems) {
         log.info("Fetching sales Bucket Data for search requirements");
-        log.info("start: fetch sales data");
         List<WeeklySale> sales = weeklySaleRepository.fetchWeeklySalesForFsns(fsns);
-        log.info("finish: fetch sales data");
         MultiKeyMap<String, Integer> fsnWhWeekSalesMap = new MultiKeyMap();
         sales.forEach(s -> fsnWhWeekSalesMap.put(s.getFsn(), s.getWarehouse(), String.valueOf(s.getWeek()), s.getSaleQty()));
         LocalDate date = LocalDate.now();
@@ -132,9 +128,7 @@ public class RequirementSearchDataAggregatorV2 {
         Map<String, List<RequirementSearchV2LineItem>> warehouseToRequirement = requirementSearchLineItems.stream()
                 .collect(Collectors.groupingBy(RequirementSearchV2LineItem::getWarehouse));
         Set<String> whCodes = warehouseToRequirement.keySet();
-        log.info("start: fetch warehouse name");
         List<Warehouse> warehouses = warehouseRepository.fetchWarehouseNameByCode(whCodes);
-        log.info("finish: fetch warehouse name");
         Map<String, String> warehouseCodeToName = warehouses.stream()
                 .collect(Collectors.toMap(Warehouse::getCode, Warehouse::getName));
         requirementSearchLineItems.forEach(reqItem -> {
