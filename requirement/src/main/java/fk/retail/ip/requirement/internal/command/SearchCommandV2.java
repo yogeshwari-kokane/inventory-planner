@@ -35,8 +35,10 @@ public class SearchCommandV2 extends RequirementSearchDataAggregatorV2{
 
     public Map<String, SearchResponseV2> execute(List<Requirement> requirements, String state, String groupName) {
         log.info("Search Request for {} number of requirements", requirements.size());
+        log.info("line1");
         List<RequirementSearchV2LineItem> requirementSearchLineItems = requirements.stream()
                 .map(RequirementSearchV2LineItem::new).collect(toList());
+        log.info("line2");
         if(state.equals(RequirementApprovalState.BIZFIN_REVIEW.toString())) {
             MultiKeyMap<String, Integer> fsnWhQuantity = fetchCdoQuantity(requirements);
             requirementSearchLineItems.forEach(reqItem
@@ -45,8 +47,10 @@ public class SearchCommandV2 extends RequirementSearchDataAggregatorV2{
             });
         }
 
+        log.info("line3");
         Map<String, List<RequirementSearchV2LineItem>> fsnToRequirement = requirementSearchLineItems.stream()
                 .collect(Collectors.groupingBy(RequirementSearchV2LineItem::getFsn));
+        log.info("line4");
         Set<String> fsns = fsnToRequirement.keySet();
         fetchSalesBucketData(fsns, requirementSearchLineItems);
         fetchWarehouseName(requirementSearchLineItems);
