@@ -4,6 +4,8 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import fk.retail.ip.requirement.internal.repository.GroupFsnRepository;
 import fk.retail.ip.requirement.internal.repository.ProductInfoRepository;
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -11,6 +13,7 @@ import java.util.stream.Collectors;
 /**
  * Created by yogeshwari.k on 10/05/17.
  */
+@Slf4j
 public class SearchFilterCommandV2 {
 
     private final ProductInfoRepository productInfoRepository;
@@ -25,16 +28,22 @@ public class SearchFilterCommandV2 {
     public List<String> getSearchFilterFsns(Map<String, Object> filters) {
         List<String> allFsns;
         if(filterOnGroup(filters)) {
+            log.info("start: fetch group fsns");
             allFsns = getGroupFsns(filters);
+            log.info("finish: fetch group fsns");
         }
         else {
+            log.info("start: fetch all fsns");
             allFsns = groupFsnRepository.getAllFsns();
+            log.info("finish: fetch all fsns");
         }
         List<String> fsns = (List<String>) filters.get("fsns");
         getFsnsIntersection(allFsns,fsns);
 
         if(filterOnCategory(filters)) {
+            log.info("start: fetch product fsns");
             List<String> productInfoFsns = getProductInfoFsns(filters);
+            log.info("finish: fetch product fsns");
             getFsnsIntersection(allFsns, productInfoFsns);
         }
 

@@ -40,10 +40,16 @@ public class RequirementServiceV2 {
         String group = (String) request.getFilters().get("group");
         List<String> fsns = searchFilterCommand.getSearchFilterFsns(request.getFilters());
         if(fsns == null || fsns.isEmpty()) return new SearchResponseV2.GroupedResponse(0, pageNo, pageSize);
+        log.info("start: fetch state fsns");
         List <String> stateFsns = requirementRepository.findFsnsByStateFsns(state, fsns, pageNo, pageSize);
+        log.info("finish: fetch state fsns");
         if(stateFsns == null || stateFsns.isEmpty()) return new SearchResponseV2.GroupedResponse(0, pageNo, pageSize);
+        log.info("start: fetch state fsns count");
         Long totalFsns = requirementRepository.findStateFsnsCount(state, fsns);
+        log.info("finish: fetch state fsns count");
+        log.info("start: fetch requirements");
         List<Requirement> requirements = requirementRepository.findCurrentRequirementsByStateFsns(state, stateFsns);
+        log.info("finish: fetch requirements");
         log.info("Search Request for {} number of requirements", requirements.size());
         Map<String, SearchResponseV2> fsnToSearchItemsMap =  searchCommandProvider.get().execute(requirements, state, group);
         List<SearchResponseV2> searchResponses = fsnToSearchItemsMap.entrySet().stream().map(s -> s.getValue()).collect(Collectors.toList());

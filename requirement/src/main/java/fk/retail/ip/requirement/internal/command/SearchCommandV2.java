@@ -62,7 +62,9 @@ public class SearchCommandV2 extends RequirementSearchDataAggregatorV2{
             log.info("No requirements found for search.");
             return fsnToSearchResponse;
         }
+        log.info("start: fetch product data");
         fetchProductData(fsnToSearchResponse);
+        log.info("finish: fetch product data");
         fetchFsnBandData(fsnToSearchResponse);
         fetchGroupData(fsnToSearchResponse, groupName);
         return fsnToSearchResponse;
