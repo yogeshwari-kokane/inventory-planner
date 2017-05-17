@@ -108,9 +108,7 @@ public class RequirementSearchDataAggregatorV2 {
 
     protected void fetchSalesBucketData(Set<String> fsns, List<RequirementSearchV2LineItem> requirementSearchLineItems) {
         log.info("Fetching sales Bucket Data for search requirements");
-        log.info("Start: get sales bucket data for fsns");
         List<WeeklySale> sales = weeklySaleRepository.fetchWeeklySalesForFsns(fsns);
-        log.info("Finish: get sales bucket data for fsns");
         MultiKeyMap<String, Integer> fsnWhWeekSalesMap = new MultiKeyMap();
         sales.forEach(s -> fsnWhWeekSalesMap.put(s.getFsn(), s.getWarehouse(), String.valueOf(s.getWeek()), s.getSaleQty()));
         LocalDate date = LocalDate.now();
@@ -122,12 +120,11 @@ public class RequirementSearchDataAggregatorV2 {
     }
 
     protected void fetchWarehouseName(List<RequirementSearchV2LineItem> requirementSearchLineItems) {
+        log.info("Fetching warehouse name for search requirements");
         Map<String, List<RequirementSearchV2LineItem>> warehouseToRequirement = requirementSearchLineItems.stream()
                 .collect(Collectors.groupingBy(RequirementSearchV2LineItem::getWarehouse));
         Set<String> whCodes = warehouseToRequirement.keySet();
-        log.info("Start: get warehouse data for fsns");
         List<Warehouse> warehouses = warehouseRepository.fetchWarehouseNameByCode(whCodes);
-        log.info("Finish: get warehouse data for fsns");
         Map<String, String> warehouseCodeToName = warehouses.stream()
                 .collect(Collectors.toMap(Warehouse::getCode, Warehouse::getName));
         requirementSearchLineItems.forEach(reqItem -> {
@@ -186,7 +183,7 @@ public class RequirementSearchDataAggregatorV2 {
                 searchResponse.setFsp(fsp);
                 searchResponse.setBrand(brand);
 
-                /*ProductInfo productInfo = new ProductInfo();
+                ProductInfo productInfo = new ProductInfo();
                 productInfo.setFsn(fsn);
                 productInfo.setBrand(brand);
                 productInfo.setCategory(category);
@@ -194,7 +191,7 @@ public class RequirementSearchDataAggregatorV2 {
                 productInfo.setSuperCategory(superCategory);
                 productInfo.setTitle(title);
                 productInfo.setVertical(vertical);
-                productInfoRepository.persist(productInfo);*/
+                productInfoRepository.persist(productInfo);
             } catch (Exception e) {
                 log.error("Error in fetching data from zulu " + e);
             }} );

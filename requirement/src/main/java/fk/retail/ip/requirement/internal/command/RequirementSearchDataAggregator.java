@@ -79,9 +79,7 @@ public class RequirementSearchDataAggregator {
 
     protected void fetchSalesBucketData(Set<String> fsns, List<RequirementSearchLineItem> requirementSearchLineItems) {
         log.info("Fetching sales Bucket Data for search requirements");
-        log.info("Start: get sales bucket data for fsns");
         List<WeeklySale> sales = weeklySaleRepository.fetchWeeklySalesForFsns(fsns);
-        log.info("Finish: get sales bucket data for fsns");
         MultiKeyMap<String, Integer> fsnWhWeekSalesMap = new MultiKeyMap();
         sales.forEach(s -> fsnWhWeekSalesMap.put(s.getFsn(), s.getWarehouse(), String.valueOf(s.getWeek()), s.getSaleQty()));
         LocalDate date = LocalDate.now();

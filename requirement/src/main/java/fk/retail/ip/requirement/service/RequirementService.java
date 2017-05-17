@@ -266,17 +266,13 @@ public class RequirementService {
         String state = (String) request.getFilters().get("state");
         List<String> fsns = searchFilterCommand.getSearchFilterFsns(request.getFilters());
         if(fsns == null || fsns.isEmpty()) return new SearchResponse.GroupedResponse(0, PAGE_SIZE);
-        log.info("Start: get projection ids");
         projectionIds = requirementRepository.findProjectionIds(fsns, state);
-        log.info("Finish: get projection ids");
         log.info("Search Request for {} number of ProjectionIds", projectionIds.size());
         if(projectionIds==null || projectionIds.isEmpty()) return new SearchResponse.GroupedResponse(0, PAGE_SIZE);
         startIndex = (pageNo-1)*PAGE_SIZE;
         endIndex = (projectionIds.size() >= pageNo*PAGE_SIZE) ? (pageNo*PAGE_SIZE) : projectionIds.size();
         batchProjectionIds = projectionIds.subList(startIndex, endIndex);
-        log.info("Start: get requirements for projection ids");
         requirements = requirementRepository.findRequirements(batchProjectionIds, state, Lists.newArrayList());
-        log.info("Finish: get requirements for projection ids");
         log.info("Search Request for {} number of requirements", requirements.size());
         Map<String, List<RequirementSearchLineItem>> fsnToSearchItemsMap =  searchCommandProvider.get().execute(requirements, state);
         log.info("Search Request for {} number of fsns", fsnToSearchItemsMap.size());
