@@ -395,19 +395,6 @@
         </query>
     </named-query>
 
-    <named-query name="findCurrentRequirementsByStateFsns">
-        <query>
-            <![CDATA[
-            SELECT r
-            FROM Requirement r
-            WHERE
-                r.fsn IN :fsns AND
-                r.state = :state AND
-                r.current = 1
-            ]]>
-        </query>
-    </named-query>
-
     <named-query name="ProcPurchaseOrder.fetchVerticalByFsn">
         <query>
             <![CDATA[
