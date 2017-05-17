@@ -1,46 +1,29 @@
 package fk.retail.ip.requirement.resource;
 
-import com.google.inject.Inject;
-import com.google.inject.persist.Transactional;
-
 import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Metered;
 import com.codahale.metrics.annotation.Timed;
-
+import com.google.inject.Inject;
+import com.google.inject.persist.Transactional;
+import fk.retail.ip.proc.model.PushToProcResponse;
+import fk.retail.ip.requirement.model.*;
+import fk.retail.ip.requirement.service.RequirementService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.json.JSONException;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-
 import javax.validation.Valid;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
-
-import fk.retail.ip.proc.model.PushToProcResponse;
-import fk.retail.ip.requirement.model.CalculateRequirementRequest;
-import fk.retail.ip.requirement.model.DownloadRequirementRequest;
-import fk.retail.ip.requirement.model.RaisePORequest;
-import fk.retail.ip.requirement.model.RequirementApprovalRequest;
-import fk.retail.ip.requirement.model.RequirementSearchRequest;
-import fk.retail.ip.requirement.model.SearchResponse;
-import fk.retail.ip.requirement.model.TriggerRequirementRequest;
-import fk.retail.ip.requirement.model.UploadResponse;
-import fk.retail.ip.requirement.service.RequirementService;
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
 
 /**
  * Created by nidhigupta.m on 26/01/17.
@@ -123,6 +106,7 @@ public class RequirementResource {
         }
     }
 
+
     @PUT
     @Path("/state")
     @Produces(MediaType.APPLICATION_JSON)
@@ -156,7 +140,6 @@ public class RequirementResource {
     public SearchResponse.GroupedResponse search(RequirementSearchRequest request) throws JSONException {
         return requirementService.search(request);
     }
-
 
 
 }

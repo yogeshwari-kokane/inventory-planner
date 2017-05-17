@@ -4,8 +4,6 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import fk.retail.ip.requirement.internal.repository.GroupFsnRepository;
 import fk.retail.ip.requirement.internal.repository.ProductInfoRepository;
-import lombok.extern.slf4j.Slf4j;
-
 import java.util.List;
 import java.util.Map;
 
@@ -13,7 +11,6 @@ import java.util.Map;
  * Created by nidhigupta.m on 22/03/17.
  */
 
-@Slf4j
 public class SearchFilterCommand {
 
     private final ProductInfoRepository productInfoRepository;

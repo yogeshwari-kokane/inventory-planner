@@ -2,12 +2,8 @@ package fk.retail.ip.requirement.internal.command;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
-import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.repository.GroupFsnRepository;
 import fk.retail.ip.requirement.internal.repository.ProductInfoRepository;
-import fk.retail.ip.requirement.internal.repository.RequirementRepository;
-import lombok.extern.slf4j.Slf4j;
-
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -15,7 +11,6 @@ import java.util.stream.Collectors;
 /**
  * Created by yogeshwari.k on 10/05/17.
  */
-@Slf4j
 public class SearchFilterCommandV2 {
 
     private final ProductInfoRepository productInfoRepository;

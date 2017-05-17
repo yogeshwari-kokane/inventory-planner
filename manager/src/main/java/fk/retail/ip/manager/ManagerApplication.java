@@ -5,6 +5,7 @@ import com.fasterxml.jackson.datatype.jdk7.Jdk7Module;
 import com.google.common.collect.Sets;
 import com.google.inject.Stage;
 import com.hubspot.dropwizard.guice.GuiceBundle;
+import fk.retail.ip.email.internal.module.EmailModule;
 import fk.retail.ip.manager.config.ManagerConfiguration;
 import fk.retail.ip.manager.config.ManagerModule;
 import fk.retail.ip.requirement.config.RequirementModule;
@@ -57,6 +58,7 @@ public class ManagerApplication extends Application<ManagerConfiguration> {
                 .addModule(new FdpModule())
                 .addModule(new RestbusSenderModule())
                 .addModule(new D42ClientModule())
+                .addModule(new EmailModule())
                 .addModule(new JpaWithSpringModule(
                         Sets.newHashSet(
                                 "fk.retail.ip",

@@ -1,18 +1,17 @@
 package fk.retail.ip.requirement.internal.command;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.google.common.collect.Table;
+import com.google.common.collect.*;
 import com.google.inject.Inject;
 import fk.retail.ip.requirement.internal.Constants;
 import fk.retail.ip.requirement.internal.context.ForecastContext;
 import fk.retail.ip.requirement.internal.context.OnHandQuantityContext;
 import fk.retail.ip.requirement.internal.context.PolicyContext;
 import fk.retail.ip.requirement.internal.entities.*;
-import fk.retail.ip.requirement.internal.enums.*;
+import fk.retail.ip.requirement.internal.enums.EventType;
+import fk.retail.ip.requirement.internal.enums.FdpRequirementEventType;
+import fk.retail.ip.requirement.internal.enums.OverrideKey;
+import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
 import fk.retail.ip.requirement.internal.repository.*;
 import fk.retail.ip.requirement.model.RequirementChangeMap;
 import fk.retail.ip.requirement.model.RequirementChangeRequest;
@@ -20,10 +19,13 @@ import fk.retail.ip.ssl.client.SslClient;
 import fk.retail.ip.ssl.model.SupplierSelectionRequest;
 import fk.retail.ip.ssl.model.SupplierSelectionResponse;
 import fk.retail.ip.ssl.model.SupplierView;
-import java.util.*;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.joda.time.DateTime;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class CalculateRequirementCommand {
@@ -70,7 +72,6 @@ public class CalculateRequirementCommand {
             FdpRequirementIngestorImpl fdpRequirementIngestor,
             RequirementEventLogRepository requirementEventLogRepository
     ) {
-
         this.warehouseRepository = warehouseRepository;
         this.groupFsnRepository = groupFsnRepository;
         this.policyRepository = policyRepository;
