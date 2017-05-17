@@ -28,16 +28,12 @@ public class SearchFilterCommandV2 {
     }
 
     public List<String> getSearchFilterFsns(Map<String, Object> filters) {
-        log.info("Start: get all fsns query");
         List<String> allFsns = groupFsnRepository.getAllFsns();
-        log.info("Finish: get all fsns query");
         List<String> fsns = (List<String>) filters.get("fsns");
         getFsnsIntersection(allFsns,fsns);
 
         if(filterOnCategory(filters)) {
-            log.info("Start: get product info fsns query");
             List<String> productInfoFsns = getProductInfoFsns(filters);
-            log.info("Finish: get product info fsns query");
             getFsnsIntersection(allFsns, productInfoFsns);
         }
 
@@ -71,9 +67,7 @@ public class SearchFilterCommandV2 {
         String group = (String) filters.get("group");
         List<String> groupFsns = Lists.newArrayList();
         if(group != null && !group.isEmpty()) {
-            log.info("Start: get group fsns query");
             groupFsns.addAll(groupFsnRepository.getFsns(group));
-            log.info("Finish: get group fsns query");
         }
         return  groupFsns;
     }
