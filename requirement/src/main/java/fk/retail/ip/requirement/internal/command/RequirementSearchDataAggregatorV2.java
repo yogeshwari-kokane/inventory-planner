@@ -76,9 +76,7 @@ public class RequirementSearchDataAggregatorV2 {
         if(groupName!=null && !isEmptyString(groupName)) {
             Set<String> groupNames = new HashSet<>();
             groupNames.add(groupName);
-            log.info("start: fetch group data");
             List<Group> groupList = groupRepository.findByGroupNames(groupNames);
-            log.info("finish: fetch group data");
             Long groupId = groupList.get(0).getId();
             for (Map.Entry<String, SearchResponseV2> entry : fsnToSearchResponse.entrySet()) {
                 SearchResponseV2 searchResponse = entry.getValue();
@@ -89,9 +87,7 @@ public class RequirementSearchDataAggregatorV2 {
         }
 
         Set<String> fsns = fsnToSearchResponse.keySet();
-        log.info("start: fetch group data");
         List<GroupFsn> groupFsnList = groupFsnRepository.findByFsns(fsns);
-        log.info("finish: fetch group data");
         groupFsnList.stream().forEach(gf -> {
             SearchResponseV2 searchResponse = fsnToSearchResponse.get(gf.getFsn());
             searchResponse.setGroupId(gf.getGroup().getId());
