@@ -474,6 +474,9 @@
             FROM Group g
             WHERE
                 g.name IN :groupNames
+                ]]>
+        </query>
+    </named-query>
 
     <named-query name="findEmailDetailsByStencilId">
         <query>
