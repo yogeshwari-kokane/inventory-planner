@@ -42,11 +42,12 @@ public class RequirementServiceV2 {
         if(fsns == null || fsns.isEmpty()) return new SearchResponseV2.GroupedResponse(0, pageNo, pageSize);
         List <String> stateFsns = requirementRepository.findFsnsByStateFsns(state, fsns, pageNo, pageSize);
         if(stateFsns == null || stateFsns.isEmpty()) return new SearchResponseV2.GroupedResponse(0, pageNo, pageSize);
+        Long totalFsns = requirementRepository.findStateFsnsCount(state, fsns);
         List<Requirement> requirements = requirementRepository.findCurrentRequirementsByStateFsns(state, stateFsns);
         log.info("Search Request for {} number of requirements", requirements.size());
         Map<String, SearchResponseV2> fsnToSearchItemsMap =  searchCommandProvider.get().execute(requirements, state, group);
         List<SearchResponseV2> searchResponses = fsnToSearchItemsMap.entrySet().stream().map(s -> s.getValue()).collect(Collectors.toList());
-        SearchResponseV2.GroupedResponse groupedResponse = new SearchResponseV2.GroupedResponse(stateFsns.size(), pageNo, pageSize);
+        SearchResponseV2.GroupedResponse groupedResponse = new SearchResponseV2.GroupedResponse(totalFsns, pageNo, pageSize);
         groupedResponse.setGroupedRequirements(searchResponses);
         return groupedResponse;
     }

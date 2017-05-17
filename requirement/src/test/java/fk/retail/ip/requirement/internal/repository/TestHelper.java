@@ -134,6 +134,13 @@ public class TestHelper {
         return lastAppSupplier;
     }
 
+    public static Group getGroup(String name, boolean enabled) {
+        Group group = new Group();
+        group.setName(name);
+        group.setEnabled(enabled);
+        return group;
+    }
+
     public static WeeklySale getWeeklySale(String fsn, String wh, int week, int saleQuantity) {
         WeeklySale weeklySale = new WeeklySale();
         weeklySale.setFsn(fsn);

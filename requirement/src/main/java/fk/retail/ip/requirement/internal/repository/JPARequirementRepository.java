@@ -67,6 +67,13 @@ public class JPARequirementRepository extends SimpleJpaGenericRepository<Require
         if(fsns.isEmpty()) {
             return  new ArrayList<>();
         }
+        /*Map<String, Object> params = new HashMap<>();
+        params.put("state", state);
+        params.put("fsns", fsns);
+        Page<String> page = findAllByNamedQuery("findByStateFsns", params ,PageRequest.builder().pageNumber(pageNumber).pageSize(pageSize).build());
+        List<String> stateFsns = page.getContent().stream().filter(requirement -> requirement.getFsn())
+                .collect(Collectors.toList());
+        */
         TypedQuery<String> query = getEntityManager().createNamedQuery("findByStateFsns", String.class);
         query.setParameter("state", state);
         query.setParameter("fsns", fsns);
@@ -86,6 +93,15 @@ public class JPARequirementRepository extends SimpleJpaGenericRepository<Require
         query.setParameter("fsns", fsns);
         List<Requirement> requirements = query.getResultList();
         return requirements;
+    }
+
+    @Override
+    public Long findStateFsnsCount(String state, List<String> fsns) {
+        TypedQuery<Object> query = getEntityManager().createNamedQuery("findStateFsnsCount", Object.class);
+        query.setParameter("state", state);
+        query.setParameter("fsns", fsns);
+        Long totalFsns = (Long) query.getSingleResult();
+        return totalFsns;
     }
 
     @Override

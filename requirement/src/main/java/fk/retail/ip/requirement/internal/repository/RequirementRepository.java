@@ -27,6 +27,8 @@ public interface RequirementRepository extends JpaGenericRepository<Requirement,
 
     List<Requirement> findCurrentRequirementsByStateFsns (String state, List<String> fsns);
 
+    Long findStateFsnsCount (String state, List<String> fsns);
+
     List<Requirement> findEnabledRequirementsByStateFsn(String state, Collection<String> fsns);
 
    List<Requirement> findRequirements(List<Long> projectionIds, String requirementState, List<String> fsns, int pageNumber, int pageSize);
