@@ -89,7 +89,9 @@ public class RequirementSearchDataAggregatorV2 {
         }
 
         Set<String> fsns = fsnToSearchResponse.keySet();
+        log.info("start: fetch group data");
         List<GroupFsn> groupFsnList = groupFsnRepository.findByFsns(fsns);
+        log.info("finish: fetch group data");
         groupFsnList.stream().forEach(gf -> {
             SearchResponseV2 searchResponse = fsnToSearchResponse.get(gf.getFsn());
             searchResponse.setGroupId(gf.getGroup().getId());
