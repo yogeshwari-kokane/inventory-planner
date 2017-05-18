@@ -35,6 +35,10 @@ public class SearchCommandV2 extends RequirementSearchDataAggregatorV2{
 
     public Map<String, SearchResponseV2> execute(List<Requirement> requirements, String state, String groupName) {
         log.info("Search Request for {} number of requirements", requirements.size());
+        if (requirements.isEmpty()) {
+            log.info("No requirements found for search.");
+            return new HashMap<>();
+        }
         List<RequirementSearchV2LineItem> requirementSearchLineItems = requirements.stream()
                 .map(RequirementSearchV2LineItem::new).collect(toList());
         if(state.equals(RequirementApprovalState.BIZFIN_REVIEW.toString())) {
@@ -56,11 +60,6 @@ public class SearchCommandV2 extends RequirementSearchDataAggregatorV2{
             SearchResponseV2 searchResponseV2 = new SearchResponseV2(requirementSearchV2LineItemList);
             searchResponseV2.setCurrentState(state);
             fsnToSearchResponse.put(fsn, searchResponseV2);
-        }
-
-        if (requirements.isEmpty()) {
-            log.info("No requirements found for search.");
-            return fsnToSearchResponse;
         }
 
         fetchProductData(fsnToSearchResponse);

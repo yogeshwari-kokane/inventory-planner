@@ -11,6 +11,7 @@ import fk.retail.ip.requirement.internal.entities.Group;
 import fk.sp.common.extensions.jpa.SimpleJpaGenericRepository;
 import org.apache.commons.collections4.CollectionUtils;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -24,7 +25,7 @@ public class GroupRepositoryImpl extends SimpleJpaGenericRepository<Group, Long>
     }
 
     @Override
-    public List<Group> findByGroupNames(Set<String> groupNames) {
+    public List<Group> findByGroupNames(Collection<String> groupNames) {
         if (CollectionUtils.isEmpty(groupNames)) {
             return Lists.newArrayList();
         }

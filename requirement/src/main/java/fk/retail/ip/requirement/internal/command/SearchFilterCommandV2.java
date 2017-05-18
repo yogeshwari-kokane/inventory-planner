@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import fk.retail.ip.requirement.internal.repository.GroupFsnRepository;
 import fk.retail.ip.requirement.internal.repository.ProductInfoRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,7 @@ public class SearchFilterCommandV2 {
     public List<String> getSearchFilterFsns(Map<String, Object> filters) {
         List<String> allFsns;
         if(filterOnGroup(filters)) {
-            allFsns = getGroupFsns(filters);
+            allFsns = getGroupFsns(filters.get("group").toString());
         }
         else {
             allFsns = groupFsnRepository.getAllFsns();
@@ -46,32 +47,27 @@ public class SearchFilterCommandV2 {
 
     private boolean filterOnCategory(Map<String, Object> filters) {
 
-        return ((filters.containsKey("vertical") && !filters.get("vertical").toString().isEmpty())  ||
-                (filters.containsKey("category") && !filters.get("category").toString().isEmpty()) ||
-                (filters.containsKey("superCategory") && !filters.get("superCategory").toString().isEmpty()) ||
-                (filters.containsKey("businessUnit") && !filters.get("businessUnit").toString().isEmpty()));
+        return (StringUtils.isNotBlank((String)filters.get("vertical"))  ||
+                StringUtils.isNotBlank((String)filters.get("category")) ||
+                StringUtils.isNotBlank((String)filters.get("superCategory")) ||
+                StringUtils.isNotBlank((String)filters.get("businessUnit")));
 
     }
 
     private List<String> getProductInfoFsns(Map<String, Object> filters) {
-        String vertical = (filters.containsKey("vertical") && !filters.get("vertical").toString().isEmpty())?
+        String vertical = (StringUtils.isNotBlank((String)filters.get("vertical")))?
                 filters.get("vertical").toString():null;
-        String category = (filters.containsKey("category") && !filters.get("category").toString().isEmpty())?
+        String category = (StringUtils.isNotBlank((String)filters.get("category")))?
                 filters.get("category").toString():null;
-        String superCategory = (filters.containsKey("superCategory") && !filters.get("superCategory").toString().isEmpty())?
+        String superCategory = (StringUtils.isNotBlank((String)filters.get("superCategory")))?
                 filters.get("superCategory").toString():null;
-        String businessUnit = (filters.containsKey("businessUnit") && !filters.get("businessUnit").toString().isEmpty())?
+        String businessUnit = (StringUtils.isNotBlank((String)filters.get("businessUnit")))?
                 filters.get("businessUnit").toString():null;
         return productInfoRepository.getFsns(vertical, category, superCategory, businessUnit);
     }
 
-    private  List<String> getGroupFsns(Map<String, Object> filters) {
-        String group = (String) filters.get("group");
-        List<String> groupFsns = Lists.newArrayList();
-        if(group != null && !group.isEmpty()) {
-            groupFsns.addAll(groupFsnRepository.getFsns(group));
-        }
-        return  groupFsns;
+    private  List<String> getGroupFsns(String group) {
+        return groupFsnRepository.getFsns(group);
     }
 
     private boolean filterOnGroup(Map<String, Object> filters) {

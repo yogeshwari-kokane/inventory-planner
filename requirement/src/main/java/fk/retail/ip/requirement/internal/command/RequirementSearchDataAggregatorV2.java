@@ -12,16 +12,14 @@ import fk.retail.ip.zulu.client.ZuluClient;
 import fk.retail.ip.zulu.internal.entities.RetailProductAttributeResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.map.MultiKeyMap;
+import org.apache.commons.lang.StringUtils;
 import org.json.JSONObject;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalField;
 import java.time.temporal.WeekFields;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -73,10 +71,8 @@ public class RequirementSearchDataAggregatorV2 {
 
     protected void fetchGroupData(Map<String, SearchResponseV2> fsnToSearchResponse, String groupName) {
         log.info("Fetching group data from db for search requirements");
-        if(groupName!=null && !isEmptyString(groupName)) {
-            Set<String> groupNames = new HashSet<>();
-            groupNames.add(groupName);
-            List<Group> groupList = groupRepository.findByGroupNames(groupNames);
+        if(StringUtils.isNotBlank(groupName)) {
+            List<Group> groupList = groupRepository.findByGroupNames(Arrays.asList(groupName));
             Long groupId = groupList.get(0).getId();
             for (Map.Entry<String, SearchResponseV2> entry : fsnToSearchResponse.entrySet()) {
                 SearchResponseV2 searchResponse = entry.getValue();
@@ -216,10 +212,5 @@ public class RequirementSearchDataAggregatorV2 {
         fsnsCopy.removeAll(cachedFsns);
         return fsnsCopy;
     }
-
-    protected boolean isEmptyString(String comment) {
-        return comment == null || comment.trim().isEmpty() ? true : false;
-    }
-
 
 }

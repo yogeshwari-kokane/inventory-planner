@@ -20,6 +20,8 @@ public class RequirementServiceV2 {
     private final RequirementRepository requirementRepository;
     private final SearchFilterCommandV2 searchFilterCommand;
     private final Provider<SearchCommandV2> searchCommandProvider;
+    private final int defaultPageSize = 20;
+    private final int defaultPageNo = 1;
 
     @Inject
     public RequirementServiceV2(RequirementRepository requirementRepository,
@@ -33,9 +35,10 @@ public class RequirementServiceV2 {
 
     public SearchResponseV2.GroupedResponse searchV2(RequirementSearchRequestV2 request) throws JSONException {
         log.info("Search Requirement request received " + request);
-        Integer pageNo = request.getFilters().get("page")!=null ? Integer.parseInt(request.getFilters().get("page").toString()): 1;
+        Integer pageNo = request.getFilters().get("page")!=null ?
+                Integer.parseInt(request.getFilters().get("page").toString()): defaultPageNo;
         Integer pageSize = request.getFilters().get("page_size")!=null ?
-                Integer.parseInt(request.getFilters().get("page_size").toString()):20;
+                Integer.parseInt(request.getFilters().get("page_size").toString()):defaultPageSize;
         String state = (String) request.getFilters().get("state");
         String group = (String) request.getFilters().get("group");
         List<String> fsns = searchFilterCommand.getSearchFilterFsns(request.getFilters());
