@@ -73,8 +73,8 @@ public class SearchFilterCommandV2 {
     }
 
     private boolean filterOnGroup(Map<String, Object> filters) {
-        String group = (String) filters.get("group");
-        if(group != null && !group.isEmpty()) {
+        String group = filters.get("group").toString();
+        if(StringUtils.isNotBlank(group)) {
             return true;
         }
         return false;
