@@ -67,7 +67,9 @@ public class SearchFilterCommandV2 {
     }
 
     private  List<String> getGroupFsns(String group) {
-        return groupFsnRepository.getFsns(group);
+        List<String> groupFsns = Lists.newArrayList();
+        groupFsns.addAll(groupFsnRepository.getFsns(group));
+        return groupFsns;
     }
 
     private boolean filterOnGroup(Map<String, Object> filters) {
