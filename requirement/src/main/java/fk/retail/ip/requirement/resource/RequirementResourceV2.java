@@ -16,7 +16,7 @@ import javax.ws.rs.core.MediaType;
  * Created by yogeshwari.k on 09/05/17.
  */
 @Transactional
-@Path("/v2")
+@Path("/v2/requirement")
 @Slf4j
 public class RequirementResourceV2 {
 
