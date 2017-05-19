@@ -65,6 +65,8 @@ public class RequirementServiceV2 {
         List<String> fsns;
         Map<String, Object> filters = downloadRequirementRequest.getFilters();
         String requirementState = filters.get("state").toString();
+        //TODO: remove this
+        List<String> states = RequirementApprovalStateV2.getOldState(requirementState);
         boolean all = downloadRequirementRequest.isAll();
         boolean isLastAppSupplierRequired = downloadRequirementRequest.isLastAppSupplierRequired();
         if (all) {
@@ -73,9 +75,9 @@ public class RequirementServiceV2 {
         else {
             fsns = downloadRequirementRequest.getFsns();
         }
-        List<Requirement> requirements = requirementRepository.findCurrentRequirementsByStateFsns(requirementState, fsns);
+        List<Requirement> requirements = requirementRepository.findCurrentRequirementsByStateFsns(states, fsns);
         requirements = requirements.stream().filter(requirement -> !requirement.getWarehouse().equals("all")).collect(Collectors.toList());
-        RequirementState state = requirementStateFactory.getRequirementState(requirementState);
+        RequirementState state = requirementStateFactory.getRequirementState(states.get(0));
         return state.download(requirements, isLastAppSupplierRequired);
     }
 
