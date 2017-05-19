@@ -10,6 +10,7 @@ import fk.retail.ip.requirement.internal.enums.RequirementApprovalAction;
 import fk.retail.ip.requirement.internal.factory.RequirementStateFactory;
 import fk.retail.ip.requirement.internal.repository.RequirementApprovalTransitionRepository;
 import fk.retail.ip.requirement.internal.repository.RequirementEventLogRepository;
+import fk.retail.ip.requirement.internal.enums.RequirementApprovalStateV2;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.internal.states.RequirementState;
 import fk.retail.ip.requirement.model.*;
@@ -66,16 +67,18 @@ public class RequirementServiceV2 {
         log.info("Search Requirement request received " + request);
         int pageNo = request.getPage();
         int pageSize = request.getPageSize();
-        String state = (String) request.getFilters().get("state");
+        String requirementState = (String) request.getFilters().get("state");
+        //TODO: remove this
+        List<String> states = RequirementApprovalStateV2.getOldState(requirementState);
         String group = (String) request.getFilters().get("group");
         List<String> fsns = searchFilterCommand.getSearchFilterFsns(request.getFilters());
         if(fsns == null || fsns.isEmpty()) return new SearchResponseV2.GroupedResponse(0, pageNo, pageSize);
-        List <String> stateFsns = requirementRepository.findFsnsByStateFsns(state, fsns, pageNo, pageSize);
+        List <String> stateFsns = requirementRepository.findFsnsByStateFsns(states, fsns, pageNo, pageSize);
         if(stateFsns == null || stateFsns.isEmpty()) return new SearchResponseV2.GroupedResponse(0, pageNo, pageSize);
-        Long totalFsns = requirementRepository.findStateFsnsCount(state, fsns);
-        List<Requirement> requirements = requirementRepository.findCurrentRequirementsByStateFsns(state, stateFsns);
+        Long totalFsns = requirementRepository.findStateFsnsCount(states, fsns);
+        List<Requirement> requirements = requirementRepository.findCurrentRequirementsByStateFsns(states, stateFsns);
         log.info("Search Request for {} number of requirements", requirements.size());
-        Map<String, SearchResponseV2> fsnToSearchItemsMap =  searchCommandProvider.get().execute(requirements, state, group);
+        Map<String, SearchResponseV2> fsnToSearchItemsMap =  searchCommandProvider.get().execute(requirements, requirementState, group);
         List<SearchResponseV2> searchResponses = fsnToSearchItemsMap.entrySet().stream().map(s -> s.getValue()).collect(Collectors.toList());
         SearchResponseV2.GroupedResponse groupedResponse = new SearchResponseV2.GroupedResponse(totalFsns, pageNo, pageSize);
         groupedResponse.setGroupedRequirements(searchResponses);
@@ -83,15 +86,22 @@ public class RequirementServiceV2 {
     }
 
     public StreamingOutput downloadRequirement(DownloadRequirementRequest2 downloadRequirementRequest) {
-        List<String> fsns = downloadRequirementRequest.getFsns();
+        List<String> fsns;
         Map<String, Object> filters = downloadRequirementRequest.getFilters();
         String requirementState = filters.get("state").toString();
+        //TODO: remove this
+        List<String> states = RequirementApprovalStateV2.getOldState(requirementState);
+        boolean all = downloadRequirementRequest.isAll();
         boolean isLastAppSupplierRequired = downloadRequirementRequest.isLastAppSupplierRequired();
-        List<String> filteredFsns = searchFilterCommand.getSearchFilterFsns(filters);
-        getFsnsIntersection(filteredFsns, fsns);
-        List<Requirement> requirements = requirementRepository.findCurrentRequirementsByStateFsns(requirementState, filteredFsns);
+        if (all) {
+            fsns = searchFilterCommand.getSearchFilterFsns(filters);
+        }
+        else {
+            fsns = downloadRequirementRequest.getFsns();
+        }
+        List<Requirement> requirements = requirementRepository.findCurrentRequirementsByStateFsns(states, fsns);
         requirements = requirements.stream().filter(requirement -> !requirement.getWarehouse().equals("all")).collect(Collectors.toList());
-        RequirementState state = requirementStateFactory.getRequirementState(requirementState);
+        RequirementState state = requirementStateFactory.getRequirementState(states.get(0));
         return state.download(requirements, isLastAppSupplierRequired);
     }
 
