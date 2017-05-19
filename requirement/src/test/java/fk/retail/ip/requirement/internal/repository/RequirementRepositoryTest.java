@@ -134,7 +134,7 @@ public class RequirementRepositoryTest extends TransactionalJpaRepositoryTest {
             requirementRepository.persist(getRequirement(i));
             fsns.add("fsn" + String.valueOf(i));
         });
-        List<Requirement> requirements = requirementRepository.findCurrentRequirementsByStateFsns("proposed", fsns);
+        List<Requirement> requirements = requirementRepository.findCurrentRequirementsByStateFsns(Arrays.asList("proposed"), fsns);
         Assert.assertEquals(20, requirements.size());
 
     }
@@ -146,7 +146,7 @@ public class RequirementRepositoryTest extends TransactionalJpaRepositoryTest {
             requirementRepository.persist(getRequirement(i));
             fsns.add("fsn" + String.valueOf(i));
         });
-        List<String> stateFsns = requirementRepository.findFsnsByStateFsns("proposed", fsns, 1, 10);
+        List<String> stateFsns = requirementRepository.findFsnsByStateFsns(Arrays.asList("proposed"), fsns, 1, 10);
         Assert.assertEquals(10, stateFsns.size());
     }
 
@@ -157,7 +157,7 @@ public class RequirementRepositoryTest extends TransactionalJpaRepositoryTest {
             requirementRepository.persist(getRequirement(i));
             fsns.add("fsn" + String.valueOf(i));
         });
-        Long totalFsns = requirementRepository.findStateFsnsCount("proposed", fsns);
+        Long totalFsns = requirementRepository.findStateFsnsCount(Arrays.asList("proposed"), fsns);
         Assert.assertEquals((long)20, (long)totalFsns);
     }
 

@@ -389,7 +389,7 @@
             FROM Requirement r
             WHERE
                 r.fsn IN :fsns AND
-                r.state = :state AND
+                r.state IN :states AND
                 r.current = 1
             ]]>
         </query>
@@ -472,7 +472,7 @@
             FROM Requirement r
             WHERE
                 r.fsn IN :fsns AND
-                r.state = :state AND
+                r.state IN :states AND
                 r.current = 1
                 ]]>
         </query>
