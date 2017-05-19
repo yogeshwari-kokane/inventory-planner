@@ -59,22 +59,22 @@ public class RequirementServiceV2 {
     }
 
     public StreamingOutput downloadRequirement(DownloadRequirementRequest2 downloadRequirementRequest) {
-        List<String> fsns = downloadRequirementRequest.getFsns();
+        List<String> fsns;
         Map<String, Object> filters = downloadRequirementRequest.getFilters();
         String requirementState = filters.get("state").toString();
+        boolean all = downloadRequirementRequest.isAll();
         boolean isLastAppSupplierRequired = downloadRequirementRequest.isLastAppSupplierRequired();
-        List<String> filteredFsns = searchFilterCommand.getSearchFilterFsns(filters);
-        getFsnsIntersection(filteredFsns, fsns);
-        List<Requirement> requirements = requirementRepository.findCurrentRequirementsByStateFsns(requirementState, filteredFsns);
+        if (all) {
+            fsns = searchFilterCommand.getSearchFilterFsns(filters);
+        }
+        else {
+            fsns = downloadRequirementRequest.getFsns();
+        }
+        List<Requirement> requirements = requirementRepository.findCurrentRequirementsByStateFsns(requirementState, fsns);
         requirements = requirements.stream().filter(requirement -> !requirement.getWarehouse().equals("all")).collect(Collectors.toList());
         RequirementState state = requirementStateFactory.getRequirementState(requirementState);
         return state.download(requirements, isLastAppSupplierRequired);
     }
 
-    private void getFsnsIntersection(List<String> fsns, List<String> otherFsns) {
-        if (otherFsns != null && !otherFsns.isEmpty()) {
-            fsns.retainAll(otherFsns);
-        }
-    }
 
 }
