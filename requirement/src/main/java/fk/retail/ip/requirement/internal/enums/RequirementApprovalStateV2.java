@@ -46,5 +46,17 @@ public enum RequirementApprovalStateV2 {
         return null;
     }
 
+    public  static String getNewState(String state) {
+        for (RequirementApprovalStateV2 approvalState : RequirementApprovalStateV2.values()) {
+            List<String> oldStates = approvalState.oldState;
+            for (String s : oldStates) {
+                if (s.equalsIgnoreCase(state)) {
+                    return approvalState.state;
+                }
+            }
+        }
+        return null;
+    }
+
 
 }
