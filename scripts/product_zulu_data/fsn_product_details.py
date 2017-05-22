@@ -138,6 +138,8 @@ def get_fsn_product_data (fsn_list):
 
                             if 'brand' in view:
                                 brand = view['brand']
+                                if brand != None:
+                                  brand = brand.encode('utf-8')
                     else :
                         entityId = ''
 
