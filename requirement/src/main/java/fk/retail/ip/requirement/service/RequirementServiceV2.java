@@ -9,6 +9,7 @@ import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.enums.RequirementApprovalAction;
 import fk.retail.ip.requirement.internal.factory.RequirementStateFactory;
 import fk.retail.ip.requirement.internal.repository.RequirementApprovalTransitionRepository;
+import fk.retail.ip.requirement.internal.repository.RequirementApprovalTransitionRepositoryV2;
 import fk.retail.ip.requirement.internal.repository.RequirementEventLogRepository;
 import fk.retail.ip.requirement.internal.enums.RequirementApprovalStateV2;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
@@ -32,8 +33,8 @@ public class RequirementServiceV2 {
     private final SearchFilterCommandV2 searchFilterCommand;
     private final Provider<SearchCommandV2> searchCommandProvider;
     private final RequirementStateFactory requirementStateFactory;
-    private final ApprovalService approvalService;
-    private final RequirementApprovalTransitionRepository requirementApprovalStateTransitionRepository;
+    private final ApprovalServiceV2 approvalService;
+    private final RequirementApprovalTransitionRepositoryV2 requirementApprovalStateTransitionRepository;
     private final FdpRequirementIngestorImpl fdpRequirementIngestor;
     private final RequirementEventLogRepository requirementEventLogRepository;
     private final ApprovalEmailHelper appovalEmailHelper;
@@ -44,8 +45,8 @@ public class RequirementServiceV2 {
                               Provider<SearchCommandV2> searchCommandProvider,
                               SearchFilterCommandV2 searchFilterCommand,
                               RequirementStateFactory requirementStateFactory,
-                              ApprovalService approvalService,
-                                RequirementApprovalTransitionRepository requirementApprovalStateTransitionRepository,
+                              ApprovalServiceV2 approvalService,
+                                RequirementApprovalTransitionRepositoryV2 requirementApprovalStateTransitionRepository,
                                 FdpRequirementIngestorImpl fdpRequirementIngestor,
                                 RequirementEventLogRepository requirementEventLogRepository,
                                 ApprovalEmailHelper appovalEmailHelper,
@@ -107,16 +108,23 @@ public class RequirementServiceV2 {
 
     public String changeState(RequirementApprovalRequestV2 request, String userId) throws JSONException {
         log.info("Approval request received for " + request);
-        RequirementApprovalAction action = RequirementApprovalAction.valueOf(request.getFilters().get("projection_action").toString());
-        boolean forward = action.isForward();
-        List<String> fsns = request.getFsns();
+        List<String> fsns;
+        Map<String, Object> filters = request.getFilters();
+        boolean forward = (boolean) filters.get("forward");
         String state = (String) request.getFilters().get("state");
+        //TODO: remove this
+        List<String> states = RequirementApprovalStateV2.getOldState(state);
+        boolean all = request.isAll();
+        if (all) {
+            fsns = searchFilterCommand.getSearchFilterFsns(filters);
+        }
+        else {
+            fsns = request.getFsns();
+        }
         Function<Requirement, String> getter = Requirement::getState;
         List<Requirement> requirements;
-        String groupName = request.getFilters().containsKey("group") ? (request.getFilters().get("group")).toString() : "";
-        List<String> filteredFsns = searchFilterCommand.getSearchFilterFsns(request.getFilters());
-        getFsnsIntersection(filteredFsns, fsns);
-        requirements = requirementRepository.findCurrentRequirementsByStateFsns(state, filteredFsns);
+        String groupName = request.getFilters().containsKey("group") ? (filters.get("group")).toString() : "";
+        requirements = requirementRepository.findCurrentRequirementsByStateFsns(states, fsns);
         log.info("Change state Request for {} number of requirements", requirements.size());
         approvalService.changeState(
                 requirements,
@@ -125,7 +133,7 @@ public class RequirementServiceV2 {
                 forward,
                 getter,
                 groupName,
-                new ApprovalService.CopyOnStateChangeAction(requirementRepository,
+                new ApprovalServiceV2.CopyOnStateChangeAction(requirementRepository,
                         requirementApprovalStateTransitionRepository,
                         fdpRequirementIngestor,
                         requirementEventLogRepository,
@@ -134,13 +142,6 @@ public class RequirementServiceV2 {
         );
         log.info("State changed for {} number of requirements", requirements.size());
         return "{\"msg\":\"Moved " + requirements.size() + " requirements to new state.\"}";
-    }
-
-
-    private void getFsnsIntersection(List<String> fsns, List<String> otherFsns) {
-        if (otherFsns != null && !otherFsns.isEmpty()) {
-            fsns.retainAll(otherFsns);
-        }
     }
 
 }

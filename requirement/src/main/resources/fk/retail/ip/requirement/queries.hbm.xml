@@ -454,6 +454,18 @@
         </query>
     </named-query>
 
+    <named-query name="RequirementApprovalTransitionV2.getApprovalStateTransition">
+        <query>
+            <![CDATA[
+            SELECT t
+            FROM RequirementApprovalTransitionV2 t
+            WHERE
+                t.fromState = :fromState and
+                t.forward = :forward
+                  ]]>
+        </query>
+    </named-query>
+
     <named-query name="Group.findByGroupNames">
         <query>
             <![CDATA[
