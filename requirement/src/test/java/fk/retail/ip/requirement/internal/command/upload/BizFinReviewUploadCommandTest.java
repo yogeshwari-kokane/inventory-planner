@@ -12,11 +12,8 @@ import fk.retail.ip.requirement.internal.enums.OverrideKey;
 import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
 import fk.retail.ip.requirement.internal.repository.RequirementEventLogRepository;
 import fk.retail.ip.requirement.internal.repository.TestHelper;
-import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
 import fk.retail.ip.requirement.model.RequirementUploadLineItem;
 import fk.retail.ip.requirement.model.UploadOverrideFailureLineItem;
-import fk.retail.ip.ssl.model.SupplierSelectionResponse;
-import org.apache.commons.collections4.map.MultiKeyMap;
 import org.jukito.JukitoRunner;
 import org.jukito.UseModules;
 import org.junit.Assert;
@@ -193,5 +190,4 @@ public class BizFinReviewUploadCommandTest {
 
         return requirements;
     }
-
 }

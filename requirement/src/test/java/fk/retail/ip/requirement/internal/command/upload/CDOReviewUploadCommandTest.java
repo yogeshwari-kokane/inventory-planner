@@ -3,7 +3,6 @@ package fk.retail.ip.requirement.internal.command.upload;
 import com.google.common.collect.Lists;
 import fk.retail.ip.requirement.config.TestModule;
 import fk.retail.ip.requirement.internal.Constants;
-import fk.retail.ip.requirement.internal.command.CalculateRequirementCommand;
 import fk.retail.ip.requirement.internal.command.FdpRequirementIngestorImpl;
 import fk.retail.ip.requirement.internal.command.RequirementHelper;
 import fk.retail.ip.requirement.internal.entities.Requirement;
@@ -14,22 +13,20 @@ import fk.retail.ip.requirement.internal.enums.OverrideKey;
 import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
 import fk.retail.ip.requirement.internal.repository.RequirementEventLogRepository;
 import fk.retail.ip.requirement.internal.repository.TestHelper;
-import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
 import fk.retail.ip.requirement.model.RequirementUploadLineItem;
 import fk.retail.ip.requirement.model.UploadOverrideFailureLineItem;
 import fk.retail.ip.ssl.model.SupplierSelectionResponse;
 import fk.retail.ip.ssl.model.SupplierView;
 import org.apache.commons.collections4.map.MultiKeyMap;
-import org.junit.Assert;
 import org.jukito.JukitoRunner;
 import org.jukito.UseModules;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.*;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -153,7 +150,6 @@ public class CDOReviewUploadCommandTest {
         Assert.assertEquals(7, argumentCaptor.getValue().size());
 
     }
-
 
     private List<Requirement> getRequirements() {
 

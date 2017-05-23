@@ -442,6 +442,20 @@
         </query>
     </named-query>
 
+    <named-query name="findEmailDetailsByStencilId">
+        <query>
+            <![CDATA[
+            SELECT t
+            FROM EmailDetails t
+            WHERE
+                t.stencilId = :stencilId AND
+                t.group = :groupName
+                  ]]>
+        </query>
+    </named-query>
+
+    findEmailDetailsByStencilId
+
 
 
 

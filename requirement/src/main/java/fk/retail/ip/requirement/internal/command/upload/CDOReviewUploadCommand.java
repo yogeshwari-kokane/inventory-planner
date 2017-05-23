@@ -1,34 +1,22 @@
 package fk.retail.ip.requirement.internal.command.upload;
 
-import com.google.common.collect.Lists;
 import com.google.inject.Inject;
-import com.google.inject.Provider;
 import fk.retail.ip.requirement.internal.Constants;
-import fk.retail.ip.requirement.internal.command.CalculateRequirementCommand;
 import fk.retail.ip.requirement.internal.command.FdpRequirementIngestorImpl;
 import fk.retail.ip.requirement.internal.command.RequirementHelper;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.enums.OverrideKey;
 import fk.retail.ip.requirement.internal.enums.OverrideStatus;
-import fk.retail.ip.requirement.internal.repository.ProductInfoRepository;
-import fk.retail.ip.requirement.internal.entities.RequirementEventLog;
-import fk.retail.ip.requirement.internal.enums.OverrideKey;
-import fk.retail.ip.requirement.internal.enums.OverrideStatus;
 import fk.retail.ip.requirement.internal.repository.RequirementEventLogRepository;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
-import fk.retail.ip.requirement.internal.repository.WarehouseSupplierSlaRepository;
-import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
-import fk.retail.ip.ssl.client.SslClient;
-import fk.retail.ip.ssl.model.SupplierSelectionRequest;
+import fk.retail.ip.requirement.model.RequirementUploadLineItem;
 import fk.retail.ip.ssl.model.SupplierSelectionResponse;
 import fk.retail.ip.ssl.model.SupplierView;
-import fk.retail.ip.requirement.model.RequirementUploadLineItem;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.map.MultiKeyMap;
 import org.json.JSONObject;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
