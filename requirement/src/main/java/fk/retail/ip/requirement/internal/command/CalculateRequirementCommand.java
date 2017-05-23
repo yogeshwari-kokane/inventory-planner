@@ -257,7 +257,6 @@ public class CalculateRequirementCommand {
                 requirement.setInternational(!supplier.isLocal());
                 requirement.setSslId(supplierResponse.getEntityId());
                 //Add SUPPLIER_ASSIGNED and APP_ASSIGNED events to fdp request
-                log.info("Adding SUPPLIER_ASSIGNED and APP_ASSIGNED events to fdp request");
                 requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.SUPPLIER.toString(), null, supplier.getSourceId(), FdpRequirementEventType.SUPPLIER_ASSIGNED.toString(), "Supplier assigned", "system"));
                 requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.APP.toString(), null, String.valueOf(supplier.getApp()), FdpRequirementEventType.APP_ASSIGNED.toString(), "App assigned", "system"));
                 requirementChangeRequest.setRequirement(requirement);
