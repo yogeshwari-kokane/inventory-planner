@@ -37,7 +37,6 @@ public class CaseSizeApplicator extends PolicyApplicator {
                     double oldQuantity = requirement.getQuantity();
                     requirement.setQuantity(roundedQuantity);
                     //Add CONTROL_POLICY_QUANTITY_OVERRIDE events to fdp request
-                    log.info("Adding CONTROL_POLICY_QUANTITY_OVERRIDE(CaseSize) events to fdp request");
                     createRequirementChangeRequest(oldQuantity, requirement, requirementChangeRequestList);
                 });
             } else {

@@ -53,7 +53,6 @@ public class RopRocApplicator extends PolicyApplicator {
                 double demand = convertDaysToQuantity(rocDays, forecast);
                 requirement.setQuantity(demand - onHandQuantity);
                 //Add ORDER_POLICY_QUANTITY events to fdp request
-                log.info("Adding ORDER_POLICY_QUANTITY events to fdp request");
                 RequirementChangeRequest requirementChangeRequest = new RequirementChangeRequest();
                 List<RequirementChangeMap> requirementChangeMaps = Lists.newArrayList();
                 requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.QUANTITY.toString(), null, String.valueOf(requirement.getQuantity()), FdpRequirementEventType.ORDER_POLICY_QUANTITY.toString(), "ROP ROC policies applied", "system"));

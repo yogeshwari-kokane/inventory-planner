@@ -111,8 +111,6 @@ public abstract class UploadCommand {
 
                         case UPDATE:
                                 //Add IPC_QUANTITY_OVERRIDE, CDO_QUANTITY_OVERRIDE, CDO_APP_OVERRIDE, CDO_SLA_OVERRIDE, CDO_SUPPLIER_OVERRIDE events to fdp request
-                                log.info("Adding IPC_QUANTITY_OVERRIDE, CDO_QUANTITY_OVERRIDE, CDO_APP_OVERRIDE, " +
-                                        "CDO_SLA_OVERRIDE, CDO_SUPPLIER_OVERRIDE events to fdp request");
                                 RequirementChangeRequest requirementChangeRequest = new RequirementChangeRequest();
                                 List<RequirementChangeMap> requirementChangeMaps = Lists.newArrayList();
 
