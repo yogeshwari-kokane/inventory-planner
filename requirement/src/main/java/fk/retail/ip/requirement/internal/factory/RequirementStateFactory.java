@@ -37,6 +37,7 @@ public class RequirementStateFactory {
 
         }
         switch (requirementApprovalState) {
+            //TODO: remove PRE_PROPOSED
             case PRE_PROPOSED:
                 return preProposedRequirementState;
             case PROPOSED:

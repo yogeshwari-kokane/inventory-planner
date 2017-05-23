@@ -34,6 +34,7 @@ public class RequirementModule extends AbstractModule {
         bind(ProcPurchaseOrderRepository.class).to(ProcPurchaseOrderRepositoryImpl.class);
         bind(WarehouseSupplierSlaRepository.class).to(WarehouseSupplierSlaRepositoryImpl.class);
         bind(RequirementApprovalTransitionRepository.class).to(JPARequirementApprovalTransitionRepository.class);
+        bind(RequirementApprovalTransitionRepositoryV2.class).to(JPARequirementApprovalTransitionRepositoryV2.class);
         bind(RequirementEventLogRepository.class).to(JPARequirementEventLogRepository.class);
         //TODO:remove
         bind(ProjectionRepository.class).to(ProjectionRepositoryImpl.class);

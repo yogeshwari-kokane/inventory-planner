@@ -2,9 +2,13 @@ package fk.retail.ip.requirement.service;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import fk.retail.ip.requirement.config.EmailConfiguration;
 import fk.retail.ip.requirement.internal.command.*;
+import fk.retail.ip.requirement.internal.command.emailHelper.ApprovalEmailHelper;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.factory.RequirementStateFactory;
+import fk.retail.ip.requirement.internal.repository.RequirementApprovalTransitionRepositoryV2;
+import fk.retail.ip.requirement.internal.repository.RequirementEventLogRepository;
 import fk.retail.ip.requirement.internal.enums.RequirementApprovalStateV2;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.internal.states.RequirementState;
@@ -14,6 +18,7 @@ import org.json.JSONException;
 
 import javax.ws.rs.core.StreamingOutput;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -26,17 +31,35 @@ public class RequirementServiceV2 {
     private final SearchFilterCommandV2 searchFilterCommand;
     private final Provider<SearchCommandV2> searchCommandProvider;
     private final RequirementStateFactory requirementStateFactory;
+    private final ApprovalServiceV2 approvalService;
+    private final RequirementApprovalTransitionRepositoryV2 requirementApprovalStateTransitionRepository;
+    private final FdpRequirementIngestorImpl fdpRequirementIngestor;
+    private final RequirementEventLogRepository requirementEventLogRepository;
+    private final ApprovalEmailHelper appovalEmailHelper;
+    private final EmailConfiguration emailConfiguration;
 
     @Inject
     public RequirementServiceV2(RequirementRepository requirementRepository,
                               Provider<SearchCommandV2> searchCommandProvider,
                               SearchFilterCommandV2 searchFilterCommand,
-                                RequirementStateFactory requirementStateFactory) {
+                              RequirementStateFactory requirementStateFactory,
+                              ApprovalServiceV2 approvalService,
+                                RequirementApprovalTransitionRepositoryV2 requirementApprovalStateTransitionRepository,
+                                FdpRequirementIngestorImpl fdpRequirementIngestor,
+                                RequirementEventLogRepository requirementEventLogRepository,
+                                ApprovalEmailHelper appovalEmailHelper,
+                                EmailConfiguration emailConfiguration) {
 
         this.requirementRepository = requirementRepository;
         this.searchFilterCommand = searchFilterCommand;
         this.searchCommandProvider = searchCommandProvider;
         this.requirementStateFactory = requirementStateFactory;
+        this.approvalService = approvalService;
+        this.requirementApprovalStateTransitionRepository = requirementApprovalStateTransitionRepository;
+        this.fdpRequirementIngestor = fdpRequirementIngestor;
+        this.requirementEventLogRepository = requirementEventLogRepository;
+        this.appovalEmailHelper = appovalEmailHelper;
+        this.emailConfiguration = emailConfiguration;
     }
 
     public SearchResponseV2.GroupedResponse searchV2(RequirementSearchRequestV2 request) throws JSONException {
@@ -81,5 +104,42 @@ public class RequirementServiceV2 {
         return state.download(requirements, isLastAppSupplierRequired);
     }
 
+    public String changeState(RequirementApprovalRequestV2 request, String userId) throws JSONException {
+        log.info("Approval request received for " + request);
+        List<String> fsns;
+        Map<String, Object> filters = request.getFilters();
+        boolean forward = (boolean) filters.get("forward");
+        String state = (String) request.getFilters().get("state");
+        //TODO: remove this
+        List<String> states = RequirementApprovalStateV2.getOldState(state);
+        boolean all = request.isAll();
+        if (all) {
+            fsns = searchFilterCommand.getSearchFilterFsns(filters);
+        }
+        else {
+            fsns = request.getFsns();
+        }
+        Function<Requirement, String> getter = Requirement::getState;
+        List<Requirement> requirements;
+        String groupName = request.getFilters().containsKey("group") ? (filters.get("group")).toString() : "";
+        requirements = requirementRepository.findCurrentRequirementsByStateFsns(states, fsns);
+        log.info("Change state Request for {} number of requirements", requirements.size());
+        approvalService.changeState(
+                requirements,
+                state,
+                userId,
+                forward,
+                getter,
+                groupName,
+                new ApprovalServiceV2.CopyOnStateChangeAction(requirementRepository,
+                        requirementApprovalStateTransitionRepository,
+                        fdpRequirementIngestor,
+                        requirementEventLogRepository,
+                        appovalEmailHelper,
+                        emailConfiguration)
+        );
+        log.info("State changed for {} number of requirements", requirements.size());
+        return "{\"msg\":\"Moved " + requirements.size() + " requirements to new state.\"}";
+    }
 
 }

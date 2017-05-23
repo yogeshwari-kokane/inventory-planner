@@ -13,11 +13,10 @@ import fk.retail.ip.requirement.internal.command.PayloadCreationHelper;
 import fk.retail.ip.requirement.internal.command.emailHelper.ApprovalEmailHelper;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.entities.RequirementApprovalTransition;
-import fk.retail.ip.requirement.internal.enums.EventType;
-import fk.retail.ip.requirement.internal.enums.FdpRequirementEventType;
-import fk.retail.ip.requirement.internal.enums.OverrideKey;
-import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
+import fk.retail.ip.requirement.internal.entities.RequirementApprovalTransitionV2;
+import fk.retail.ip.requirement.internal.enums.*;
 import fk.retail.ip.requirement.internal.repository.RequirementApprovalTransitionRepository;
+import fk.retail.ip.requirement.internal.repository.RequirementApprovalTransitionRepositoryV2;
 import fk.retail.ip.requirement.internal.repository.RequirementEventLogRepository;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.model.RequirementChangeMap;
@@ -35,16 +34,14 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- *
- * @author Pragalathan M<pragalathan.m@flipkart.com>
+ * Created by yogeshwari.k on 19/05/17.
  */
-
 @Slf4j
-public class ApprovalService<E> {
+public class ApprovalServiceV2<E> {
 
     private StencilConfigModel stencilConfigModel;
 
-    public ApprovalService() {
+    public ApprovalServiceV2() {
         String approvalEmailConfigurations  = "/stencil-configurations.json";
         try {
             InputStreamReader inputStreamReader = new InputStreamReader
@@ -71,7 +68,7 @@ public class ApprovalService<E> {
 
     private void validate(List<E> items, String fromState, Function<E, String> getter) {
         for (E item : items) {
-            String currentState = getter.apply(item);
+            String currentState = RequirementApprovalStateV2.getNewState(getter.apply(item));
             if (!currentState.equals(fromState)) {
                 /*TODO: add id here*/
                 throw new IllegalStateException("Entity[id=" + item + "] is not in " + fromState + " state");
@@ -92,7 +89,7 @@ public class ApprovalService<E> {
     public static class CopyOnStateChangeAction implements StageChangeAction<Requirement> {
 
         private RequirementRepository requirementRepository;
-        private RequirementApprovalTransitionRepository requirementApprovalStateTransitionRepository;
+        private RequirementApprovalTransitionRepositoryV2 requirementApprovalStateTransitionRepository;
         private FdpRequirementIngestorImpl fdpRequirementIngestor;
         private RequirementEventLogRepository requirementEventLogRepository;
         private ApprovalEmailHelper appovalEmailHelper;
@@ -100,7 +97,7 @@ public class ApprovalService<E> {
 
         public CopyOnStateChangeAction(
                 RequirementRepository requirementRepository,
-                RequirementApprovalTransitionRepository requirementApprovalStateTransitionRepository,
+                RequirementApprovalTransitionRepositoryV2 requirementApprovalStateTransitionRepository,
                 FdpRequirementIngestorImpl fdpRequirementIngestor,
                 RequirementEventLogRepository requirementEventLogRepository,
                 ApprovalEmailHelper appovalEmailHelper,
@@ -124,9 +121,10 @@ public class ApprovalService<E> {
             List<RequirementChangeRequest> requirementChangeRequestList = Lists.newArrayList();
             List<Requirement> allEnabledRequirements = requirementRepository.find(fsns, true);
             EventType eventType = EventType.APPROVAL;
-            String nextState = requirementToTargetStateMap.get(requirements.get(0).getId());
             for (Requirement requirement : requirements) {
-                String toState = requirementToTargetStateMap.get(requirement.getId());
+                //TODO: remove getOldState call
+                String newToState = requirementToTargetStateMap.get(requirement.getId());
+                String toState = !newToState.equals("proposed")? RequirementApprovalStateV2.getOldState(newToState).get(0) : newToState;
                 boolean isIPCReviewState = RequirementApprovalState.IPC_REVIEW.toString().equals(toState);
                 boolean isBizFinReviewState = RequirementApprovalState.BIZFIN_REVIEW.toString().equals(toState);
                 String cdoState = RequirementApprovalState.CDO_REVIEW.toString();
@@ -134,9 +132,13 @@ public class ApprovalService<E> {
                 RequirementChangeRequest requirementChangeRequest = new RequirementChangeRequest();
                 List<RequirementChangeMap> requirementChangeMaps = Lists.newArrayList();
                 if (forward) {
+                    //TODO: remove this (used for backward compatibility)
+                    if (fromState.equals("proposed")) {
+                        populateVerifiedState(allEnabledRequirements, requirement, userId, requirementChangeRequestList);
+                    }
                     //Add APPROVE events to fdp request
                     log.info("Adding APPROVE events to fdp request");
-                    requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.STATE.toString(), fromState, toState, FdpRequirementEventType.APPROVE.toString(), "Moved to next state", userId));
+                    requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.STATE.toString(), RequirementApprovalStateV2.getOldState(fromState).get(0), toState, FdpRequirementEventType.APPROVE.toString(), "Moved to next state", userId));
                     if (toStateEntity.isPresent()) {
                         if(!isBizFinReviewState)
                             toStateEntity.get().setQuantity(requirement.getQuantity());
@@ -170,7 +172,7 @@ public class ApprovalService<E> {
                 } else {
                     //Add CANCEL events to fdp request
                     log.info("Adding CANCEL events to fdp request");
-                    requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.STATE.toString(), fromState, toState, FdpRequirementEventType.CANCEL.toString(), "Moved to previous state", userId));
+                    requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.STATE.toString(), RequirementApprovalStateV2.getOldState(fromState).get(0), toState, FdpRequirementEventType.CANCEL.toString(), "Moved to previous state", userId));
                     toStateEntity.ifPresent(e -> { // this will always be present
                         e.setCurrent(true);
                         requirement.setCurrent(false);
@@ -192,10 +194,38 @@ public class ApprovalService<E> {
             eventLogger.insertEvent(requirementChangeRequestList, eventType);
         }
 
+        private void populateVerifiedState(List<Requirement> allEnabledRequirements, Requirement requirement, String userId,
+                                           List<RequirementChangeRequest> requirementChangeRequestList) {
+            String toState = "verified";
+            String fromState = "proposed";
+            Optional<Requirement> toStateEntity = allEnabledRequirements.stream().filter(e -> e.getFsn().equals(requirement.getFsn()) && e.getWarehouse().equals(requirement.getWarehouse()) && e.getState().equals(toState)).findFirst();
+            RequirementChangeRequest requirementChangeRequest = new RequirementChangeRequest();
+            List<RequirementChangeMap> requirementChangeMaps = Lists.newArrayList();
+            //Add APPROVE events to fdp request
+            log.info("Adding APPROVE events to fdp request");
+            requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.STATE.toString(), fromState, toState, FdpRequirementEventType.APPROVE.toString(), "Moved to next state", userId));
+            if (toStateEntity.isPresent()) {
+                toStateEntity.get().setSupplier(requirement.getSupplier());
+                toStateEntity.get().setApp(requirement.getApp());
+                toStateEntity.get().setSla(requirement.getSla());
+                toStateEntity.get().setCreatedBy(userId);
+                toStateEntity.get().setCurrent(false);
+                requirementChangeRequest.setRequirement(toStateEntity.get());
+            } else {
+                Requirement newEntity = new Requirement(requirement);
+                newEntity.setState(toState);
+                newEntity.setCreatedBy(userId);
+                newEntity.setCurrent(false);
+                requirementRepository.persist(newEntity);
+                requirementChangeRequest.setRequirement(newEntity);
+            }
+            requirementChangeRequest.setRequirementChangeMaps(requirementChangeMaps);
+            requirementChangeRequestList.add(requirementChangeRequest);
+        }
 
         private Map<Long, String> getGroupToTargetStateMap(String fromState, boolean forward) {
-            List<RequirementApprovalTransition> transitionList = requirementApprovalStateTransitionRepository.getApprovalTransition(fromState, forward);
-            return transitionList.stream().collect(Collectors.toMap(RequirementApprovalTransition::getGroupId, RequirementApprovalTransition::getToState));
+            List<RequirementApprovalTransitionV2> transitionList = requirementApprovalStateTransitionRepository.getApprovalTransition(fromState, forward);
+            return transitionList.stream().collect(Collectors.toMap(RequirementApprovalTransitionV2::getGroupId, RequirementApprovalTransitionV2::getToState));
         }
 
         private Map<String,String> getRequirementToTargetStateMap(Map<Long, String> groupToTargetState, List<Requirement> requirements) {
@@ -241,4 +271,5 @@ public class ApprovalService<E> {
         }
 
     }
+
 }

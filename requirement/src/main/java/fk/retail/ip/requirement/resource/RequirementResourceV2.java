@@ -5,15 +5,12 @@ import com.codahale.metrics.annotation.Metered;
 import com.codahale.metrics.annotation.Timed;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
-import fk.retail.ip.requirement.model.DownloadRequirementRequest2;
-import fk.retail.ip.requirement.model.RequirementSearchRequestV2;
-import fk.retail.ip.requirement.model.SearchResponseV2;
+import fk.retail.ip.requirement.model.*;
 import fk.retail.ip.requirement.service.RequirementServiceV2;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONException;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+
+import javax.ws.rs.*;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -54,6 +51,19 @@ public class RequirementResourceV2 {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename = projection.xlsx")
                 .build();
 
+    }
+
+    @PUT
+    @Path("/state")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Timed(name="changeStateTimer")
+    @Metered(name="changeStateMeter")
+    @ExceptionMetered(name="changeStateExceptionMeter")
+    public String changeState(RequirementApprovalRequestV2 request, @HeaderParam("X-Proxy-User") String userId) throws JSONException {
+        if (userId == null) {
+            userId = "dummyUser";
+        }
+        return requirementService.changeState(request, userId);
     }
 
 }
