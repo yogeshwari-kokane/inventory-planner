@@ -144,6 +144,7 @@ public class ApprovalService<E> {
                             toStateEntity.get().setQuantity(cdoStateEntity.get().getQuantity());
                         }
                         toStateEntity.get().setSupplier(requirement.getSupplier());
+                        toStateEntity.get().setMrp(requirement.getMrp());
                         toStateEntity.get().setApp(requirement.getApp());
                         toStateEntity.get().setSla(requirement.getSla());
                         toStateEntity.get().setCreatedBy(userId);
