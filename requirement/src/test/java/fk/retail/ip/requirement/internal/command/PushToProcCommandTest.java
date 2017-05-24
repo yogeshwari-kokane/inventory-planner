@@ -7,6 +7,8 @@ import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.entities.RequirementSnapshot;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.internal.repository.TestHelper;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
 import org.jukito.JukitoRunner;
 import org.jukito.UseModules;
 import org.junit.Assert;
@@ -16,6 +18,7 @@ import org.junit.runner.RunWith;
 import org.mockito.*;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -48,6 +51,24 @@ public class PushToProcCommandTest {
         String userId = "user1";
         int pushedRequirements = pushToProcCommand.pushToProc(requirements,userId);
         Assert.assertEquals(1, pushedRequirements);
+    }
+
+    @Test
+    public void testGetRequiredByDate() {
+        RequirementSnapshot requirementSnapshot = TestHelper.getRequirementSnapshot("[1,2,3]",10,10,10,10,10);
+        Requirement requirement = TestHelper.getRequirement("fsn1","wh1","ipc_finalized",true,requirementSnapshot,50,"supplier1",100,110,"INR",5,"comment1","DAILY PLANNING");
+        Date requiredByDate = pushToProcCommand.getRequiredByDate(requirement);
+        DateTime currentDate = new DateTime();
+        int expectedDiff = requirement.getSla();
+        if (currentDate.getDayOfWeek() == DateTimeConstants.SATURDAY) {
+            expectedDiff = expectedDiff + 2;
+        }
+        if (currentDate.getDayOfWeek() == DateTimeConstants.SUNDAY) {
+            expectedDiff = expectedDiff + 1;
+        }
+        Date currentDate1 = currentDate.toDate();
+        int actualDiff = requiredByDate.getDate() - currentDate1.getDate();
+        Assert.assertEquals(expectedDiff, actualDiff);
     }
 
     private List<Requirement> getRequirements()
