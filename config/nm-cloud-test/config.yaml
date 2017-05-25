@@ -35,9 +35,9 @@ rotationManagementConfig:
 logging:
   level: DEBUG
   loggers:
-    "org.hibernate.ejb.HibernatePersistence": DEBUG
+    "org.hibernate.ejb.HibernatePersistence": INFO
     "org.hibernate.SQL": DEBUG
-    "org.hibernate.type": DEBUG
+    "org.hibernate.type": INFO
     "com.flipkart.mmq.Dispatcher": INFO
   appenders:
   - type: file-size-rolled
