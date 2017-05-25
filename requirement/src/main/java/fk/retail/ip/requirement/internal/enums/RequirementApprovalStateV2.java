@@ -8,20 +8,17 @@ import java.util.List;
  */
 public enum RequirementApprovalStateV2 {
 
-    PROPOSED(Arrays.asList("verified", "proposed"), "proposed"),
-    CDO_REVIEW(Arrays.asList("approved"), "cdo_review"),
-    BIZFIN_REVIEW(Arrays.asList("bd_approved"), "bizfin_review"),
-    IPC_REVIEW(Arrays.asList("bizfin_approved"), "ipc_review"),
-    IPC_FINALISED(Arrays.asList("ipc_finalized"), "ipc_finalized"),
-    PUSHED_TO_PROC(Arrays.asList("closed"), "closed"),
-    ERROR(Arrays.asList("error"), "error");
+    PROPOSED("proposed"),
+    CDO_REVIEW("cdo_review"),
+    BIZFIN_REVIEW("bizfin_review"),
+    IPC_REVIEW("ipc_review"),
+    IPC_FINALISED("ipc_finalized"),
+    PUSHED_TO_PROC("closed"),
+    ERROR("error");
 
-
-    private List<String> oldState;
     private String state;
 
-    RequirementApprovalStateV2(List<String> oldState, String state) {
-        this.oldState = oldState;
+    RequirementApprovalStateV2(String state) {
         this.state = state;
     }
 
@@ -36,27 +33,5 @@ public enum RequirementApprovalStateV2 {
         }
         return null;
     }
-
-    public static List<String> getOldState(String state) {
-        for (RequirementApprovalStateV2 approvalState : RequirementApprovalStateV2.values()) {
-            if (approvalState.state.equalsIgnoreCase(state)) {
-                return approvalState.oldState;
-            }
-        }
-        return null;
-    }
-
-    public  static String getNewState(String state) {
-        for (RequirementApprovalStateV2 approvalState : RequirementApprovalStateV2.values()) {
-            List<String> oldStates = approvalState.oldState;
-            for (String s : oldStates) {
-                if (s.equalsIgnoreCase(state)) {
-                    return approvalState.state;
-                }
-            }
-        }
-        return null;
-    }
-
 
 }

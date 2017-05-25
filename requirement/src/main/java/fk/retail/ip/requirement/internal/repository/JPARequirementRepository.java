@@ -63,9 +63,9 @@ public class JPARequirementRepository extends SimpleJpaGenericRepository<Require
     }
 
     @Override
-    public List<String> findFsnsByStateFsns(List<String> states, List<String> fsns, int pageNumber, int pageSize) {
+    public List<String> findFsnsByStateFsns(String state, List<String> fsns, int pageNumber, int pageSize) {
         TypedQuery<String> query = getEntityManager().createNamedQuery("findByStateFsns", String.class);
-        query.setParameter("states", states);
+        query.setParameter("state", state);
         query.setParameter("fsns", fsns);
         query.setFirstResult((pageNumber-1) * pageSize);
         query.setMaxResults(pageSize);
@@ -74,18 +74,18 @@ public class JPARequirementRepository extends SimpleJpaGenericRepository<Require
     }
 
     @Override
-    public List<Requirement> findCurrentRequirementsByStateFsns(List<String> states, List<String> fsns) {
+    public List<Requirement> findCurrentRequirementsByStateFsns(String state, List<String> fsns) {
         if(fsns.isEmpty()) {
             return  new ArrayList<>();
         }
-        TypedQuery<Requirement> query = getCriteriaQueryForStateFsn(states, fsns);
+        TypedQuery<Requirement> query = getCriteriaQueryForStateFsn(state, fsns);
         return query.getResultList();
     }
 
     @Override
-    public Long findStateFsnsCount(List<String> states, List<String> fsns) {
+    public Long findStateFsnsCount(String state, List<String> fsns) {
         TypedQuery<Object> query = getEntityManager().createNamedQuery("findStateFsnsCount", Object.class);
-        query.setParameter("states", states);
+        query.setParameter("state", state);
         query.setParameter("fsns", fsns);
         Long totalFsns = (Long) query.getSingleResult();
         return totalFsns;
@@ -121,7 +121,7 @@ public class JPARequirementRepository extends SimpleJpaGenericRepository<Require
         return requirements;
     }
 
-    private TypedQuery<Requirement> getCriteriaQueryForStateFsn(List<String> requirementState, List<String> fsns) {
+    private TypedQuery<Requirement> getCriteriaQueryForStateFsn(String requirementState, List<String> fsns) {
         EntityManager entityManager = getEntityManager();
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Requirement> criteriaQuery = criteriaBuilder.createQuery(Requirement.class);
@@ -131,7 +131,7 @@ public class JPARequirementRepository extends SimpleJpaGenericRepository<Require
         List<Predicate> predicates = Lists.newArrayList();
         Predicate predicate = criteriaBuilder.equal(requirementRoot.get("current"), 1);
         predicates.add(predicate);
-        predicate = criteriaBuilder.isTrue(requirementRoot.get("state").in(requirementState));
+        predicate = criteriaBuilder.equal(requirementRoot.get("state"), requirementState);
         predicates.add(predicate);
         predicate = criteriaBuilder.isTrue(requirementRoot.get("fsn").in(fsns));
         predicates.add(predicate);

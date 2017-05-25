@@ -66,4 +66,11 @@ public class RequirementResourceV2 {
         return requirementService.changeState(request, userId);
     }
 
+    @POST
+    @Path("/push_to_proc")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String pushToProc(RaisePORequestV2 request, @HeaderParam("X-Proxy-User") String userId) throws JSONException {
+        return requirementService.pushToProc(request, userId);
+    }
+
 }

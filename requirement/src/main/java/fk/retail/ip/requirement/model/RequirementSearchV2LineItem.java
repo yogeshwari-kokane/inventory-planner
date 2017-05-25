@@ -1,8 +1,10 @@
 package fk.retail.ip.requirement.model;
 
+import com.amazonaws.util.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.google.common.collect.Lists;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import lombok.Data;
 import lombok.Getter;
@@ -24,7 +26,7 @@ public class RequirementSearchV2LineItem {
     private List<Integer> weeklySales;
     private Integer inventory;
     private Integer qoh;
-    private String forecast;
+    private List<Double> forecast;
     private double totalValue;
     private Integer intransitQty;
     private Integer qty;
@@ -55,7 +57,7 @@ public class RequirementSearchV2LineItem {
             this.intransitQty = (iwitQuantity != null ? iwitQuantity : 0);
             this.intransitQty += (pendingPOQty != null ? pendingPOQty : 0);
             this.intransitQty += (openReqQty != null ? openReqQty : 0);
-            this.forecast = req.getRequirementSnapshot().getForecast();
+            this.forecast = getForecast(req.getRequirementSnapshot().getForecast());
         }
         this.qty = (int) req.getQuantity();
         this.supplier = req.getSupplier();
@@ -70,4 +72,18 @@ public class RequirementSearchV2LineItem {
         this.poId = req.getPoId();
         this.overrideReason = req.getOverrideComment();
     }
+
+    private List<Double> getForecast(String forecast) {
+        List<Double> forecastList = Lists.newArrayList();
+        forecast = forecast.replace("[", "");
+        forecast = forecast.replace("]", "");
+        if(forecast!=null) {
+            String[] forecastArray = forecast.split(",");
+            for (String s : forecastArray) {
+                forecastList.add(Double.valueOf(s));
+            }
+        }
+        return forecastList;
+    }
+
 }

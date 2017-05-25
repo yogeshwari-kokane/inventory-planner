@@ -68,7 +68,7 @@ public class ApprovalServiceV2<E> {
 
     private void validate(List<E> items, String fromState, Function<E, String> getter) {
         for (E item : items) {
-            String currentState = RequirementApprovalStateV2.getNewState(getter.apply(item));
+            String currentState = getter.apply(item);
             if (!currentState.equals(fromState)) {
                 /*TODO: add id here*/
                 throw new IllegalStateException("Entity[id=" + item + "] is not in " + fromState + " state");
@@ -122,9 +122,7 @@ public class ApprovalServiceV2<E> {
             List<Requirement> allEnabledRequirements = requirementRepository.find(fsns, true);
             EventType eventType = EventType.APPROVAL;
             for (Requirement requirement : requirements) {
-                //TODO: remove getOldState call
-                String newToState = requirementToTargetStateMap.get(requirement.getId());
-                String toState = !newToState.equals("proposed")? RequirementApprovalStateV2.getOldState(newToState).get(0) : newToState;
+                String toState = requirementToTargetStateMap.get(requirement.getId());
                 boolean isIPCReviewState = RequirementApprovalState.IPC_REVIEW.toString().equals(toState);
                 boolean isBizFinReviewState = RequirementApprovalState.BIZFIN_REVIEW.toString().equals(toState);
                 String cdoState = RequirementApprovalState.CDO_REVIEW.toString();
@@ -132,13 +130,9 @@ public class ApprovalServiceV2<E> {
                 RequirementChangeRequest requirementChangeRequest = new RequirementChangeRequest();
                 List<RequirementChangeMap> requirementChangeMaps = Lists.newArrayList();
                 if (forward) {
-                    //TODO: remove this (used for backward compatibility)
-                    if (fromState.equals("proposed")) {
-                        populateVerifiedState(allEnabledRequirements, requirement, userId, requirementChangeRequestList);
-                    }
                     //Add APPROVE events to fdp request
                     log.info("Adding APPROVE events to fdp request");
-                    requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.STATE.toString(), RequirementApprovalStateV2.getOldState(fromState).get(0), toState, FdpRequirementEventType.APPROVE.toString(), "Moved to next state", userId));
+                    requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.STATE.toString(), fromState, toState, FdpRequirementEventType.APPROVE.toString(), "Moved to next state", userId));
                     if (toStateEntity.isPresent()) {
                         if(!isBizFinReviewState)
                             toStateEntity.get().setQuantity(requirement.getQuantity());
@@ -172,7 +166,7 @@ public class ApprovalServiceV2<E> {
                 } else {
                     //Add CANCEL events to fdp request
                     log.info("Adding CANCEL events to fdp request");
-                    requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.STATE.toString(), RequirementApprovalStateV2.getOldState(fromState).get(0), toState, FdpRequirementEventType.CANCEL.toString(), "Moved to previous state", userId));
+                    requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.STATE.toString(), fromState, toState, FdpRequirementEventType.CANCEL.toString(), "Moved to previous state", userId));
                     toStateEntity.ifPresent(e -> { // this will always be present
                         e.setCurrent(true);
                         requirement.setCurrent(false);
@@ -192,35 +186,6 @@ public class ApprovalServiceV2<E> {
             fdpRequirementIngestor.pushToFdp(requirementChangeRequestList);
             EventLogger eventLogger = new EventLogger(requirementEventLogRepository);
             eventLogger.insertEvent(requirementChangeRequestList, eventType);
-        }
-
-        private void populateVerifiedState(List<Requirement> allEnabledRequirements, Requirement requirement, String userId,
-                                           List<RequirementChangeRequest> requirementChangeRequestList) {
-            String toState = "verified";
-            String fromState = "proposed";
-            Optional<Requirement> toStateEntity = allEnabledRequirements.stream().filter(e -> e.getFsn().equals(requirement.getFsn()) && e.getWarehouse().equals(requirement.getWarehouse()) && e.getState().equals(toState)).findFirst();
-            RequirementChangeRequest requirementChangeRequest = new RequirementChangeRequest();
-            List<RequirementChangeMap> requirementChangeMaps = Lists.newArrayList();
-            //Add APPROVE events to fdp request
-            log.info("Adding APPROVE events to fdp request");
-            requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.STATE.toString(), fromState, toState, FdpRequirementEventType.APPROVE.toString(), "Moved to next state", userId));
-            if (toStateEntity.isPresent()) {
-                toStateEntity.get().setSupplier(requirement.getSupplier());
-                toStateEntity.get().setApp(requirement.getApp());
-                toStateEntity.get().setSla(requirement.getSla());
-                toStateEntity.get().setCreatedBy(userId);
-                toStateEntity.get().setCurrent(false);
-                requirementChangeRequest.setRequirement(toStateEntity.get());
-            } else {
-                Requirement newEntity = new Requirement(requirement);
-                newEntity.setState(toState);
-                newEntity.setCreatedBy(userId);
-                newEntity.setCurrent(false);
-                requirementRepository.persist(newEntity);
-                requirementChangeRequest.setRequirement(newEntity);
-            }
-            requirementChangeRequest.setRequirementChangeMaps(requirementChangeMaps);
-            requirementChangeRequestList.add(requirementChangeRequest);
         }
 
         private Map<Long, String> getGroupToTargetStateMap(String fromState, boolean forward) {

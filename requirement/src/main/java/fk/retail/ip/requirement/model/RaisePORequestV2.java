@@ -9,13 +9,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by yogeshwari.k on 19/05/17.
+ * Created by yogeshwari.k on 25/05/17.
  */
 @Getter
 @Setter
 @ToString
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class RequirementApprovalRequestV2 {
+public class RaisePORequestV2 {
 
     private List<String> fsns;
     private boolean forward;

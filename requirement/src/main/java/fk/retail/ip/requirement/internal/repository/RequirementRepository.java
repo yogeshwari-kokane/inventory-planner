@@ -23,14 +23,12 @@ public interface RequirementRepository extends JpaGenericRepository<Requirement,
 
     List<Requirement> findAllCurrentRequirements(String state);
 
-    //TODO: pass state as string instead of list<string>
-    List<String> findFsnsByStateFsns(List<String> states, List<String> fsns, int pageNumber, int pageSize);
+    List<String> findFsnsByStateFsns(String state, List<String> fsns, int pageNumber, int pageSize);
+
+    List<Requirement> findCurrentRequirementsByStateFsns (String state, List<String> fsns);
 
     //TODO: pass state as string instead of list<string>
-    List<Requirement> findCurrentRequirementsByStateFsns (List<String> state, List<String> fsns);
-
-    //TODO: pass state as string instead of list<string>
-    Long findStateFsnsCount (List<String> states, List<String> fsns);
+    Long findStateFsnsCount (String state, List<String> fsns);
 
     List<Requirement> findEnabledRequirementsByStateFsn(String state, Collection<String> fsns);
 
