@@ -24,7 +24,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 //todo: cleanup
-@Table(name = "projection_states")
+@Table(name = "projection_states_test")
 //@Table(name = "REQUIREMENT")
 public class Requirement {
 
