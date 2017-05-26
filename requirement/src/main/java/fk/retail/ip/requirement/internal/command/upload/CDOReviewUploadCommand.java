@@ -77,10 +77,12 @@ public class CDOReviewUploadCommand extends UploadCommand {
         }
         else if (!isEmptyString(bdProposedSupplier)) {
                 //validate the overridden supplier with supplier selection response
+            if(!bdProposedSupplier.equals(currentSupplier)) {
                 supplierView = validateOverriddenSupplierFound(bdProposedSupplier, requirement, fsnWhSupplierMap);
                 if (supplierView == null) {     //overridden supplier not found in supplier selection response
                     validationComment = convertToLineSeparatedComment(validationComment, Constants.SUPPLIER_NOT_FOUND.toString());
                 }
+            }
         }
 
         validationResponse = validateSlaOverride(bdProposedSla);
@@ -155,7 +157,7 @@ public class CDOReviewUploadCommand extends UploadCommand {
         if (isEmptyString(bdProposedSupplier)) {
             return Optional.empty();
         }
-        if (bdProposedSupplier != currentSupplier && isEmptyString(supplierOverrideComment)) {
+        if (!bdProposedSupplier.equals(currentSupplier) && isEmptyString(supplierOverrideComment)) {
             validationComment = Constants.SUPPLIER_OVERRIDE_COMMENT_IS_MISSING;
             return Optional.of(validationComment);
         }

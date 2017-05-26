@@ -109,7 +109,8 @@ public class RequirementHelper {
                 String overridenSupplier = row.getCdoSupplierOverride();
                 String supplierOverrideReason = row.getCdoSupplierOverrideReason();
                 String currentSupplier = row.getSupplier();
-                if (overridenSupplier != currentSupplier && !isEmptyString(overridenSupplier) && !isEmptyString(supplierOverrideReason)) {
+
+                if (overridenSupplier!=null && !overridenSupplier.equals(currentSupplier) && !isEmptyString(overridenSupplier) && !isEmptyString(supplierOverrideReason)) {
                     requirements.add(requirementMap.get(requirementId));
                 }
             }
@@ -118,6 +119,7 @@ public class RequirementHelper {
     }
 
     public MultiKeyMap<String,SupplierSelectionResponse> getSSLResponseMap (List<Requirement> requirements) throws ExecutionException, InterruptedException {
+        log.info("Supplier Override request received for "+ requirements.size() + "number of events");
         ExecutorService executor = Executors.newFixedThreadPool(5);
         List<SupplierSelectionRequest> requests = createSupplierSelectionRequest(requirements);
         List<SupplierSelectionResponse> supplierSelectionResponses = Lists.newArrayList();

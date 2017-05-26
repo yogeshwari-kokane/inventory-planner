@@ -43,7 +43,9 @@ public class GetSupplierDetailsCommand extends BaseSslCommand<List<SupplierSelec
                 .request(MediaType.APPLICATION_JSON_TYPE)
                 .accept(MediaType.APPLICATION_JSON_TYPE)
                 .post(Entity.json(serializeToByteArray(request)));
+        log.info("Response received from supplier selection: "+response.getStatus());
         if (response.getStatus() != 200) {
+            log.info("Failed Response received from supplier selection: "+response.getStatus());
             List<SupplierSelectionResponse> emptyResult = Lists.newArrayList();
             return emptyResult;
         }
