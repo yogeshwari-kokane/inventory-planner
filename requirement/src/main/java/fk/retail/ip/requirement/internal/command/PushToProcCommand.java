@@ -66,11 +66,11 @@ public class PushToProcCommand {
         return null;
     }
 
-    private Date getRequiredByDate(Requirement requirement) {
+    public Date getRequiredByDate(Requirement requirement) {
         // set required by date based on holiday calendar
         DateTime dt = new DateTime();
         if(requirement.getSla()!=null)
-            dt.plusDays(requirement.getSla());
+            dt = dt.plusDays(requirement.getSla());
         DateTime adjustedDate = dt;
         if (dt.getDayOfWeek() == DateTimeConstants.SATURDAY) {
             adjustedDate = dt.plusDays(2);

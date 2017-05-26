@@ -109,6 +109,7 @@ public class RequirementHelper {
                 String overridenSupplier = row.getCdoSupplierOverride();
                 String supplierOverrideReason = row.getCdoSupplierOverrideReason();
                 String currentSupplier = row.getSupplier();
+
                 if (overridenSupplier!=null && !overridenSupplier.equals(currentSupplier) && !isEmptyString(overridenSupplier) && !isEmptyString(supplierOverrideReason)) {
                     requirements.add(requirementMap.get(requirementId));
                 }
