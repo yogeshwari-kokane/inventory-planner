@@ -155,7 +155,7 @@ public class CDOReviewUploadCommand extends UploadCommand {
         if (isEmptyString(bdProposedSupplier)) {
             return Optional.empty();
         }
-        if (bdProposedSupplier != currentSupplier && isEmptyString(supplierOverrideComment)) {
+        if (!bdProposedSupplier.equals(currentSupplier) && isEmptyString(supplierOverrideComment)) {
             validationComment = Constants.SUPPLIER_OVERRIDE_COMMENT_IS_MISSING;
             return Optional.of(validationComment);
         }
