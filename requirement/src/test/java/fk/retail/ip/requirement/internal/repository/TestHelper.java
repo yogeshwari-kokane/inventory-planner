@@ -6,8 +6,9 @@ import java.util.*;
 
 import fk.retail.ip.requirement.internal.entities.Forecast;
 import fk.retail.ip.requirement.internal.entities.FsnBand;
-import fk.retail.ip.requirement.internal.entities.Group;
-import fk.retail.ip.requirement.internal.entities.GroupFsn;
+import fk.retail.ip.requirement.internal.entities.FsnSales;
+import fk.retail.ip.core.entities.IPGroup;
+import fk.retail.ip.core.entities.GroupFsn;
 import fk.retail.ip.requirement.internal.entities.IwtRequest;
 import fk.retail.ip.requirement.internal.entities.IwtRequestItem;
 import fk.retail.ip.requirement.internal.entities.LastAppSupplier;
@@ -24,6 +25,8 @@ import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
 import fk.retail.ip.requirement.model.RequirementUploadLineItem;
 import fk.retail.ip.zulu.internal.entities.EntityView;
 import fk.retail.ip.zulu.internal.entities.RetailProductAttributeResponse;
+
+import org.apache.commons.lang.time.DateUtils;
 
 public class TestHelper {
 
@@ -43,7 +46,7 @@ public class TestHelper {
         return iwtRequest;
     }
 
-    public static GroupFsn getGroupFsn(String fsn, Group group) {
+    public static GroupFsn getGroupFsn(String fsn, IPGroup group) {
         GroupFsn groupFsn = new GroupFsn();
         groupFsn.setFsn(fsn);
         groupFsn.setGroup(group);
@@ -51,28 +54,69 @@ public class TestHelper {
         return groupFsn;
     }
 
-    public static Group getGroup(String groupName) {
-        Group group = new Group();
+    public static GroupFsn getGroupFsnWithoutDate(String fsn, IPGroup group) {
+        GroupFsn groupFsn = new GroupFsn();
+        groupFsn.setFsn(fsn);
+        groupFsn.setGroup(group);
+        return groupFsn;
+    }
+
+    public static IPGroup getGroup(String groupName) {
+        IPGroup group = new IPGroup();
         group.setName(groupName);
         group.setEnabled(true);
         group.setCreatedAt(new Date());
+        group.setSegmentationEnabled(true);
         return group;
     }
 
-    public static Group getEnabledGroup(String name) {
-        Group group = new Group();
+    public static IPGroup getUnsegmentedGroup(String groupName) {
+        IPGroup group = new IPGroup();
+        group.setName(groupName);
+        group.setEnabled(true);
+        group.setCreatedAt(new Date());
+        group.setSegmentationEnabled(false);
+        return group;
+    }
+
+    public static IPGroup getEnabledGroup(String name) {
+        IPGroup group = new IPGroup();
         group.setName(name);
         group.setEnabled(true);
         group.setCreatedAt(new Date());
         return group;
     }
 
-    public static Group getDisabledGroup(String name) {
-        Group group = new Group();
+    public static IPGroup getDisabledGroup(String name) {
+        IPGroup group = new IPGroup();
         group.setName(name);
         group.setEnabled(false);
         group.setCreatedAt(new Date());
         return group;
+    }
+
+    public static FsnSales getFsnSales(String fsn, int time, int qty) {
+        FsnSales fsnSales =  new FsnSales();
+        fsnSales.setFsn(fsn);
+        fsnSales.setSalesQuantity(qty);
+        fsnSales.setSalesTime(time);
+        return fsnSales;
+    }
+
+    public static ProductInfo getProductDetail(String fsn) {
+        ProductInfo productInfo = new ProductInfo();
+        productInfo.setFsn(fsn);
+        productInfo.setBusinessUnit("dummy_bu");
+        productInfo.setCategory("dummy_category");
+        productInfo.setBrand("dummy_brand");
+        productInfo.setFsp(1);
+        productInfo.setTitle("dummy_title");
+        productInfo.setSuperCategory("dummy_super_category");
+        productInfo.setVertical("dummy_vertical");
+        productInfo.setLastPoDate(DateUtils.addDays(new Date(),-7));
+        productInfo.setPvBand(2);
+        productInfo.setSalesBand(3);
+        return  productInfo;
     }
 
 
@@ -83,7 +127,7 @@ public class TestHelper {
         return openRequirementAndPurchaseOrder;
     }
 
-    public static Policy getPolicy(String fsn, Group group) {
+    public static Policy getPolicy(String fsn, IPGroup group) {
         Policy policy = new Policy();
         policy.setFsn(fsn);
         policy.setGroup(group);

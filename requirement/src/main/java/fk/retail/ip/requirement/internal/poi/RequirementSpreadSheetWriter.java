@@ -1,6 +1,6 @@
 package fk.retail.ip.requirement.internal.poi;
 
-import fk.retail.ip.core.enums.RequirementExcelHeaders;
+import fk.retail.ip.requirement.internal.enums.RequirementExcelHeaders;
 import fk.retail.ip.core.poi.SpreadSheetWriter;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;

@@ -1,6 +1,8 @@
 package fk.retail.ip.requirement.internal.entities;
 
 import javax.persistence.Entity;
+
+import fk.retail.ip.core.entities.ReadOnlyEntity;
 import lombok.Data;
 
 /**
@@ -9,7 +11,7 @@ import lombok.Data;
 
 @Entity
 @Data
-public class Warehouse extends ReadOnlyEntity{
+public class Warehouse extends ReadOnlyEntity {
 
     private String code;
     private String name;

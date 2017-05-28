@@ -23,10 +23,10 @@ import java.util.stream.Collectors;
 
 import fk.retail.ip.requirement.config.TriggerRequirementConfiguration;
 import fk.retail.ip.requirement.internal.Constants;
-import fk.retail.ip.requirement.internal.entities.GroupFsn;
+import fk.retail.ip.core.entities.GroupFsn;
 import fk.retail.ip.requirement.internal.entities.Policy;
 import fk.retail.ip.requirement.internal.enums.PolicyType;
-import fk.retail.ip.requirement.internal.repository.GroupFsnRepository;
+import fk.retail.ip.core.repository.GroupFsnRepository;
 import fk.retail.ip.requirement.internal.repository.PolicyRepository;
 import fk.retail.ip.requirement.model.CalculateRequirementRequest;
 import fk.sp.common.extensions.jpa.Page;

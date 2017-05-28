@@ -1,8 +1,7 @@
 package fk.retail.ip.requirement.internal.command;
 
-import com.google.common.collect.Lists;
 import com.google.inject.Inject;
-import fk.retail.ip.requirement.internal.command.download.GenerateExcelCommand;
+import fk.retail.ip.core.poi.GenerateExcelCommand;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
 import fk.retail.ip.requirement.internal.repository.*;

@@ -1,4 +1,4 @@
-package fk.retail.ip.requirement.internal.entities;
+package fk.retail.ip.core.entities;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,11 +12,16 @@ import lombok.Data;
 @Entity
 //todo:cleanup
 @Table(name = "ip_groups")
-public class Group extends ReadOnlyEntity {
+public class IPGroup extends ReadOnlyEntity {
 
+    //todo:cleanup
     @Column(name = "group_name")
     private String name;
 
     @Column(name = "is_enabled")
     private boolean enabled;
+
+    private String rule;
+
+    private boolean segmentationEnabled;
 }

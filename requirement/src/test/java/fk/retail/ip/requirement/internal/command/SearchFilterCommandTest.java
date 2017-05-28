@@ -3,7 +3,7 @@ package fk.retail.ip.requirement.internal.command;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import fk.retail.ip.requirement.config.TestModule;
-import fk.retail.ip.requirement.internal.repository.GroupFsnRepository;
+import fk.retail.ip.core.repository.GroupFsnRepository;
 import fk.retail.ip.requirement.internal.repository.ProductInfoRepository;
 import java.util.Arrays;
 import java.util.List;

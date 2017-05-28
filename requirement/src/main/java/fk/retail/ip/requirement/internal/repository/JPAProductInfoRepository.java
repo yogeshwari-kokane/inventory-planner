@@ -2,22 +2,20 @@ package fk.retail.ip.requirement.internal.repository;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
-
-import org.apache.commons.collections4.CollectionUtils;
-
 import fk.retail.ip.requirement.internal.entities.ProductInfo;
-import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.sp.common.extensions.jpa.SimpleJpaGenericRepository;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import org.apache.commons.collections4.CollectionUtils;
 
 /**
  * Created by agarwal.vaibhav on 18/02/17.
@@ -67,6 +65,12 @@ public class JPAProductInfoRepository extends SimpleJpaGenericRepository<Product
         TypedQuery<ProductInfo> query = entityManager.createQuery(select);
         List<ProductInfo> productInfos = query.getResultList();
         return productInfos.stream().map(ProductInfo::getFsn).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> getFsns(String query) {
+        Query nativeQuery = getEntityManager().createNativeQuery("select p.fsn from product_detail as p left outer join fsn_sales_data as s on p.fsn = s.fsn  where " + query);
+        return nativeQuery.getResultList();
     }
 
 }

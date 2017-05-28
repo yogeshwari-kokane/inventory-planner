@@ -1,5 +1,6 @@
 package fk.retail.ip.requirement.internal.command.download;
 
+import fk.retail.ip.core.poi.GenerateExcelCommand;
 import fk.retail.ip.requirement.internal.command.RequirementDataAggregator;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.repository.*;

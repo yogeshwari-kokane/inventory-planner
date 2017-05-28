@@ -5,6 +5,7 @@ version = '1.0'
 
 dependencies {
     compile project(':requirement')
+    compile project(':segmentation-service')
     compile project(':core')
     compile project(':zulu-client')
     compile project(':fdp-client')

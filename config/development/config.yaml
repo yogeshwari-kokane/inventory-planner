@@ -101,6 +101,15 @@ clientConfiguration:
   gzipEnabledForRequests: false
   chunkedEncodingEnabled: false
 
+
+sslClientConfiguration:
+  url: http://10.85.52.106
+  viewPath: "/supplier_selection"
+
+groupSegmentationConfiguration:
+  url: http://localhost:32000/v1/group
+  queueName: retail_ip_group_segmentation
+
 triggerRequirementConfiguration:
   url: http://10.85.53.212/v1/requirement
   projectionQueueName: retail_rp_internal_projection

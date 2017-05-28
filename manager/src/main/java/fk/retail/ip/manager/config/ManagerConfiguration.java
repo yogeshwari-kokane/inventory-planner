@@ -6,8 +6,11 @@ import fk.retail.ip.fdp.config.FdpConfiguration;
 import fk.retail.ip.proc.config.ProcClientConfiguration;
 import fk.retail.ip.requirement.config.EmailConfiguration;
 import fk.retail.ip.requirement.config.TriggerRequirementConfiguration;
+import fk.retail.ip.d42.config.D42Configuration;
+import fk.retail.ip.segmentation.config.GroupSegmentationConfiguration;
 import fk.retail.ip.ssl.config.SslClientConfiguration;
 import fk.retail.ip.zulu.config.ZuluConfiguration;
+import fk.retail.ip.fdp.config.FdpConfiguration;
 import fk.sp.common.extensions.dropwizard.db.HasDataSourceFactory;
 import flipkart.retail.server.admin.config.RotationManagementConfig;
 import io.dropwizard.Configuration;
@@ -50,6 +53,9 @@ public class ManagerConfiguration extends Configuration implements HasDataSource
     @Valid
     @NotNull
     private JerseyClientConfiguration clientConfiguration;
+
+    @NotNull
+    private GroupSegmentationConfiguration groupSegmentationConfiguration;
 
     @Override
     public DataSourceFactory getDatabaseConfiguration() {

@@ -5,6 +5,8 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import fk.retail.ip.core.entities.ReadOnlyEntity;
 import lombok.Data;
 
 @Entity

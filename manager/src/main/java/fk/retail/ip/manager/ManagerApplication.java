@@ -3,12 +3,16 @@ package fk.retail.ip.manager;
 import com.codahale.metrics.JmxReporter;
 import com.fasterxml.jackson.datatype.jdk7.Jdk7Module;
 import com.google.common.collect.Sets;
+import com.google.inject.Injector;
 import com.google.inject.Stage;
 import com.hubspot.dropwizard.guice.GuiceBundle;
 import fk.retail.ip.email.internal.module.EmailModule;
 import fk.retail.ip.manager.config.ManagerConfiguration;
 import fk.retail.ip.manager.config.ManagerModule;
 import fk.retail.ip.requirement.config.RequirementModule;
+import fk.retail.ip.segmentation.config.SegmentationModule;
+import fk.retail.ip.segmentation.job.GroupSegmentationAlertJob;
+import fk.retail.ip.segmentation.job.GroupSegmentationJob;
 import fk.retail.ip.ssl.config.SslClientModule;
 import fk.retail.ip.zulu.config.ZuluModule;
 import fk.retail.ip.fdp.config.FdpModule;
@@ -33,6 +37,16 @@ import java.util.EnumSet;
 import java.util.Properties;
 import java.util.TimeZone;
 import javax.servlet.DispatcherType;
+import org.quartz.JobDetail;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.SchedulerFactory;
+import org.quartz.Trigger;
+import org.quartz.impl.StdSchedulerFactory;
+
+import static org.quartz.CronScheduleBuilder.cronSchedule;
+import static org.quartz.JobBuilder.newJob;
+import static org.quartz.TriggerBuilder.newTrigger;
 
 public class ManagerApplication extends Application<ManagerConfiguration> {
 
@@ -59,6 +73,7 @@ public class ManagerApplication extends Application<ManagerConfiguration> {
                 .addModule(new RestbusSenderModule())
                 .addModule(new D42ClientModule())
                 .addModule(new EmailModule())
+                .addModule(new SegmentationModule())
                 .addModule(new JpaWithSpringModule(
                         Sets.newHashSet(
                                 "fk.retail.ip",
@@ -115,11 +130,30 @@ public class ManagerApplication extends Application<ManagerConfiguration> {
         JmxReporter reporter = JmxReporter.forRegistry(environment.metrics()).build();
         reporter.start();
 
+        scheduleJobs();
     }
 
     public static void main(String[] args) throws Exception {
         ManagerApplication managerApplication = new ManagerApplication();
         managerApplication.run(args);
 
+    }
+
+    private void scheduleJobs() throws SchedulerException {
+        Injector injector = this.guiceBundle.getInjector();
+        SchedulerFactory schedFact = new StdSchedulerFactory();
+        Scheduler sched = schedFact.getScheduler();
+        sched.setJobFactory(injector.getInstance(GuiceJobFactory.class));
+        sched.start();
+
+        JobDetail segmentationJob = newJob(GroupSegmentationJob.class).withIdentity("groupSegmentationJob","segmentationService").build();
+        Trigger segmentationTrigger = newTrigger().withIdentity("groupSegmentationTrigger","segmentationService").startNow().withSchedule(cronSchedule("0 33 12 * * ?")).build();
+
+        JobDetail segmentationAlertJob = newJob(GroupSegmentationAlertJob.class).withIdentity("groupSegmentationAlertJob","segmentationService").build();
+        Trigger segmentationAlertTrigger = newTrigger().withIdentity("groupSegmentationAlertTrigger","segmentationService").startNow().withSchedule(cronSchedule("0 57 11 * * ?")).build();
+
+
+       // sched.scheduleJob(segmentationJob, segmentationTrigger);
+       // sched.scheduleJob(segmentationAlertJob, segmentationAlertTrigger);
     }
 }

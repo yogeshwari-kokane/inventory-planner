@@ -72,3 +72,33 @@ CREATE TABLE `requirement_approval_state_transition` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `group_fromstate_action` (`group_id`,`from_state`,`action`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+//changes for Segmentation service
+
+alter table ip_groups add column rule VARCHAR(1000);
+alter table ip_groups add column segmentation_enabled boolean;
+
+
+alter table product_detail add column business_unit VARCHAR(100);
+alter table product_detail add column pv_band int(2);
+alter table product_detail add column sales_band int(2);
+alter table product_detail add column atp int(11);
+alter table product_detail add column qoh int(11);
+alter table product_detail add column last_po_date timestamp  NULL;
+alter table product_detail add column publisher varchar(20);
+
+
+
+CREATE TABLE `fsn_sales_data` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `fsn` varchar(20) DEFAULT NULL,
+  `sales_time` int(11) DEFAULT NULL,
+  `sales_quantity` int(11) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `warehouse` varchar(20) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `fsn_time` (`fsn`,`sales_time`),
+  KEY `composite` (`sales_quantity`,`sales_time`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;

@@ -5,6 +5,9 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+
+import fk.retail.ip.core.entities.AbstractEntity;
+import fk.retail.ip.core.entities.IPGroup;
 import lombok.Data;
 
 @Data
@@ -15,7 +18,7 @@ public class Policy extends AbstractEntity {
     String fsn;
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "group_id")
-    Group group;
+    IPGroup group;
     @Column(name = "policy_values")
     String value;
 }

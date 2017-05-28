@@ -13,4 +13,6 @@ public interface ProductInfoRepository extends JpaGenericRepository<ProductInfo,
     List<ProductInfo> getProductInfo(Set<String> fsns);
 
     List<String> getFsns(String vertical, String category, String superCategory, String businessUnit);
+
+    List<String> getFsns(String query);
 }

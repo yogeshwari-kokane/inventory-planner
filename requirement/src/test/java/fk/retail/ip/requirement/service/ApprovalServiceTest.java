@@ -1,11 +1,33 @@
 package fk.retail.ip.requirement.service;
 
+import org.jukito.JukitoRunner;
+import org.jukito.UseModules;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.function.Function;
+
+import fk.retail.ip.core.entities.IPGroup;
 import fk.retail.ip.requirement.config.EmailConfiguration;
 import fk.retail.ip.requirement.config.TestDbModule;
 import fk.retail.ip.requirement.internal.Constants;
 import fk.retail.ip.requirement.internal.command.FdpRequirementIngestorImpl;
 import fk.retail.ip.requirement.internal.command.emailHelper.ApprovalEmailHelper;
-import fk.retail.ip.requirement.internal.entities.*;
+import fk.retail.ip.requirement.internal.entities.Requirement;
+import fk.retail.ip.requirement.internal.entities.RequirementApprovalTransition;
+import fk.retail.ip.requirement.internal.entities.RequirementEventLog;
+import fk.retail.ip.requirement.internal.entities.RequirementSnapshot;
 import fk.retail.ip.requirement.internal.enums.EventType;
 import fk.retail.ip.requirement.internal.enums.OverrideKey;
 import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
@@ -14,18 +36,6 @@ import fk.retail.ip.requirement.internal.repository.RequirementEventLogRepositor
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.internal.repository.TestHelper;
 import fk.sp.common.extensions.jpa.TransactionalJpaRepositoryTest;
-import org.jukito.JukitoRunner;
-import org.jukito.UseModules;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.*;
-
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.function.Function;
 
 /**
  * @author Pragalathan M<pragalathan.m@flipkart.com>
@@ -184,7 +194,7 @@ public class ApprovalServiceTest extends TransactionalJpaRepositoryTest {
         requirement.setWarehouse("dummy_warehouse");
         requirement.setCreatedAt(new Date());
         requirement.setUpdatedAt(new Date());
-        Group group = TestHelper.getGroup("test_group");
+        IPGroup group = TestHelper.getGroup("test_group");
         group.setId(256l);
         RequirementSnapshot requirementSnapshot = new RequirementSnapshot();
         requirementSnapshot.setGroup(group);
