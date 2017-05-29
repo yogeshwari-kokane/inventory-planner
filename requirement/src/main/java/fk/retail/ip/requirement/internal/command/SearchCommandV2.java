@@ -1,6 +1,8 @@
 package fk.retail.ip.requirement.internal.command;
 
 import com.google.inject.Inject;
+import fk.retail.ip.core.repository.GroupFsnRepository;
+import fk.retail.ip.core.repository.GroupRepository;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
 import fk.retail.ip.requirement.internal.repository.*;

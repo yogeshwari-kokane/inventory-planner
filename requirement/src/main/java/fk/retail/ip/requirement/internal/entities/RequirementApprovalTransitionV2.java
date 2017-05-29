@@ -1,5 +1,6 @@
 package fk.retail.ip.requirement.internal.entities;
 
+import fk.retail.ip.core.entities.ReadOnlyEntity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

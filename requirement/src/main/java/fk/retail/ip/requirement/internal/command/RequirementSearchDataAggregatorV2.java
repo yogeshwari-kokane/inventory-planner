@@ -2,6 +2,10 @@ package fk.retail.ip.requirement.internal.command;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import fk.retail.ip.core.entities.GroupFsn;
+import fk.retail.ip.core.entities.IPGroup;
+import fk.retail.ip.core.repository.GroupFsnRepository;
+import fk.retail.ip.core.repository.GroupRepository;
 import fk.retail.ip.requirement.internal.entities.*;
 import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
 import fk.retail.ip.requirement.internal.repository.*;
@@ -72,7 +76,7 @@ public class RequirementSearchDataAggregatorV2 {
     protected void fetchGroupData(Map<String, SearchResponseV2> fsnToSearchResponse, String groupName) {
         log.info("Fetching group data from db for search requirements");
         if(StringUtils.isNotBlank(groupName)) {
-            List<Group> groupList = groupRepository.findByGroupNames(Arrays.asList(groupName));
+            List<IPGroup> groupList = groupRepository.findByGroupNames(Arrays.asList(groupName));
             Long groupId = groupList.get(0).getId();
             for (Map.Entry<String, SearchResponseV2> entry : fsnToSearchResponse.entrySet()) {
                 SearchResponseV2 searchResponse = entry.getValue();

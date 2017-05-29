@@ -2,7 +2,7 @@ package fk.retail.ip.requirement.internal.command;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
-import fk.retail.ip.requirement.internal.repository.GroupFsnRepository;
+import fk.retail.ip.core.repository.GroupFsnRepository;
 import fk.retail.ip.requirement.internal.repository.ProductInfoRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;

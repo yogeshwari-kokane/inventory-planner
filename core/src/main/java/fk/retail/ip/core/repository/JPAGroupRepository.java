@@ -48,7 +48,7 @@ public class JPAGroupRepository extends SimpleJpaGenericRepository<IPGroup, Long
         if (CollectionUtils.isEmpty(groupNames)) {
             return Lists.newArrayList();
         }
-        TypedQuery<IPGroup> query = getEntityManager().createNamedQuery("Group.findByGroupNames",IPGroup.class);
+        TypedQuery<IPGroup> query = getEntityManager().createNamedQuery("IPGroup.findByGroupNames",IPGroup.class);
         query.setParameter("groupNames", groupNames);
         return query.getResultList();
     }
