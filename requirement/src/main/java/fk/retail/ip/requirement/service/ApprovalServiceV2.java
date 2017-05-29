@@ -179,8 +179,7 @@ public class ApprovalServiceV2<E> {
                 requirementChangeRequestList.add(requirementChangeRequest);
             }
             //appovalEmailHelper.send(createStencilParamsMap(groupName, userId, getCurrentTimestamp(), nextState), fromState, forward, stencilConfigModel);
-            log.info("Updating Projections tables for Requirements");
-            requirementRepository.updateProjections(requirements, groupToTargetState);
+
             //Push APPROVE and CANCEL events to fdp
             log.debug("Pushing APPROVE and CANCEL events to fdp");
             fdpRequirementIngestor.pushToFdp(requirementChangeRequestList);
