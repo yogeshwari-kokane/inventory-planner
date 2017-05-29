@@ -2,13 +2,15 @@ package fk.retail.ip.requirement.internal.entities;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
+
+import fk.retail.ip.core.entities.AbstractEntity;
 import lombok.Data;
 
 @Data
 @Entity
 @Table(name = "projections")
 @Deprecated
-public class Projection extends AbstractEntity{
+public class Projection extends AbstractEntity {
 
     String fsn;
     String currentState;

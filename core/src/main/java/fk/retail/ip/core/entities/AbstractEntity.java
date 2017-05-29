@@ -1,4 +1,4 @@
-package fk.retail.ip.requirement.internal.entities;
+package fk.retail.ip.core.entities;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

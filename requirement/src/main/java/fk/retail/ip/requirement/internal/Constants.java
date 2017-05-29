@@ -22,13 +22,15 @@ public interface Constants {
 
     //Error messages
     String INVALID_POLICY_TYPE = "Did not find matching policy type for: {}";
-    String GROUP_NOT_FOUND = "Group for this fsn is not present";
+    String GROUP_NOT_FOUND = "IPGroup for this fsn is not present";
     String FORECAST_NOT_FOUND = "Forecast for this fsn is not present";
     String VALID_POLICY_NOT_FOUND = "Valid %s policy for this fsn is not present";
     String UNABLE_TO_PARSE = "Unable to parse: {}";
     String NOT_APPLICABLE = "N/A";
     String ERROR_STATE = "error";
     String PUSHED_TO_PROC_FAILED = "Pushed to proc failed";
+    String INVALID_GROUP_ID = "Group id is invalid";
+    String GROUP_FSN_TEMPLATE = "/templates/GroupFsn.xlsx";
 
     String FSN_OR_WAREHOUSE_IS_MISSING = "FSN or Warehouse is missing";
     String QUANTITY_OVERRIDE_COMMENT_IS_MISSING = "Quantity override reason is missing";
@@ -58,6 +60,8 @@ public interface Constants {
     String APP_OVERRIDE_COMMENT = "appOverrideComment";
     String SUPPLIER_OVERRIDE_COMMENT = "supplierOverrideComment";
     String STATUS = "status";
+
+    String IS_GROUP_SEGMENTED_TODAY = "is_group_segmented_today";
 
     String DEFAULT_APP_OVERRIDE_COMMENT = "App overridden corresponding to supplier";
 

@@ -2,7 +2,45 @@ package fk.retail.ip.requirement.config;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.name.Names;
-import fk.retail.ip.requirement.internal.repository.*;
+
+import fk.retail.ip.core.repository.GroupFsnRepository;
+import fk.retail.ip.core.repository.GroupRepository;
+import fk.retail.ip.core.repository.JPAGroupFsnRepository;
+import fk.retail.ip.core.repository.JPAGroupRepository;
+import fk.retail.ip.requirement.internal.repository.ForecastRepository;
+import fk.retail.ip.requirement.internal.repository.FsnBandRepository;
+import fk.retail.ip.requirement.internal.repository.FsnSalesRepository;
+import fk.retail.ip.requirement.internal.repository.IwtRequestItemRepository;
+import fk.retail.ip.requirement.internal.repository.JPAForecastRepository;
+import fk.retail.ip.requirement.internal.repository.JPAFsnBandRepository;
+import fk.retail.ip.requirement.internal.repository.JPAFsnSalesRepository;
+import fk.retail.ip.requirement.internal.repository.JPALastAppSupplierRepository;
+import fk.retail.ip.requirement.internal.repository.JPAOpenRequirementAndPurchaseOrderRepository;
+import fk.retail.ip.requirement.internal.repository.JPAPolicyRepository;
+import fk.retail.ip.requirement.internal.repository.JPAProductInfoRepository;
+import fk.retail.ip.requirement.internal.repository.JPARequirementApprovalTransitionRepository;
+import fk.retail.ip.requirement.internal.repository.JPARequirementEventLogRepository;
+import fk.retail.ip.requirement.internal.repository.JPARequirementRepository;
+import fk.retail.ip.requirement.internal.repository.JPAWarehouseInventoryRepository;
+import fk.retail.ip.requirement.internal.repository.JPAWarehouseRepository;
+import fk.retail.ip.requirement.internal.repository.JPAWeeklySaleRepository;
+import fk.retail.ip.requirement.internal.repository.JpaIwtRequestItemRepository;
+import fk.retail.ip.requirement.internal.repository.LastAppSupplierRepository;
+import fk.retail.ip.requirement.internal.repository.OpenRequirementAndPurchaseOrderRepository;
+import fk.retail.ip.requirement.internal.repository.PolicyRepository;
+import fk.retail.ip.requirement.internal.repository.ProcPurchaseOrderRepository;
+import fk.retail.ip.requirement.internal.repository.ProcPurchaseOrderRepositoryImpl;
+import fk.retail.ip.requirement.internal.repository.ProductInfoRepository;
+import fk.retail.ip.requirement.internal.repository.ProjectionRepository;
+import fk.retail.ip.requirement.internal.repository.ProjectionRepositoryImpl;
+import fk.retail.ip.requirement.internal.repository.RequirementApprovalTransitionRepository;
+import fk.retail.ip.requirement.internal.repository.RequirementEventLogRepository;
+import fk.retail.ip.requirement.internal.repository.RequirementRepository;
+import fk.retail.ip.requirement.internal.repository.WarehouseInventoryRepository;
+import fk.retail.ip.requirement.internal.repository.WarehouseRepository;
+import fk.retail.ip.requirement.internal.repository.WarehouseSupplierSlaRepository;
+import fk.retail.ip.requirement.internal.repository.WarehouseSupplierSlaRepositoryImpl;
+import fk.retail.ip.requirement.internal.repository.WeeklySaleRepository;
 import fk.retail.ip.requirement.resource.RequirementResource;
 import fk.retail.ip.requirement.resource.RequirementResourceV2;
 import fk.retail.ip.requirement.resource.TestResource;
@@ -36,6 +74,8 @@ public class RequirementModule extends AbstractModule {
         bind(RequirementApprovalTransitionRepository.class).to(JPARequirementApprovalTransitionRepository.class);
         bind(RequirementApprovalTransitionRepositoryV2.class).to(JPARequirementApprovalTransitionRepositoryV2.class);
         bind(RequirementEventLogRepository.class).to(JPARequirementEventLogRepository.class);
+        bind(GroupRepository.class).to(JPAGroupRepository.class);
+        bind(FsnSalesRepository.class).to(JPAFsnSalesRepository.class);
         //TODO:remove
         bind(ProjectionRepository.class).to(ProjectionRepositoryImpl.class);
 

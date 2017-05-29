@@ -1,9 +1,12 @@
 package fk.retail.ip.requirement.internal.entities;
 
+import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import fk.retail.ip.core.entities.AbstractEntity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -20,10 +23,16 @@ import lombok.NoArgsConstructor;
 public class ProductInfo extends AbstractEntity {
     @NotNull
     private String fsn;
+    private String businessUnit;
     private String vertical;
     private String category;
     private String superCategory;
     private String title;
     private String brand;
-    private Integer fsp;
+    private int fsp;
+    private int pvBand;
+    private int salesBand;
+    private int atp;
+    private Date lastPoDate;
+    private String publisher;
 }

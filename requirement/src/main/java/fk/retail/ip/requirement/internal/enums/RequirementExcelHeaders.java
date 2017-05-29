@@ -1,4 +1,4 @@
-package fk.retail.ip.core.enums;
+package fk.retail.ip.requirement.internal.enums;
 
 import java.util.Arrays;
 import java.util.List;

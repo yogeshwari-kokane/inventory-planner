@@ -3,6 +3,7 @@ package fk.retail.ip.requirement.internal.repository;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import fk.retail.ip.requirement.config.TestDbModule;
+import fk.retail.ip.requirement.internal.entities.FsnSales;
 import fk.retail.ip.requirement.internal.entities.ProductInfo;
 import fk.sp.common.extensions.jpa.TransactionalJpaRepositoryTest;
 import java.util.List;
@@ -22,6 +23,9 @@ public class ProductInfoRepositoryTest extends TransactionalJpaRepositoryTest {
 
     @Inject
     ProductInfoRepository productInfoRepository;
+
+    @Inject
+    FsnSalesRepository fsnSalesRepository;
 
     @After
     public void resetAutoIncrement() {
@@ -51,6 +55,19 @@ public class ProductInfoRepositoryTest extends TransactionalJpaRepositoryTest {
         Assert.assertEquals("fsn2", fsns.get(1));
 
     }
+
+    @Test
+    public void testGetSegmentedFsns() {
+        FsnSales fsnSales = TestHelper.getFsnSales("fsn",90, 120);
+        ProductInfo productInfo = TestHelper.getProductDetail("fsn");
+        productInfoRepository.persist(productInfo);
+        fsnSalesRepository.persist(fsnSales);
+        String query = "vertical = 'dummy_vertical' and last_po_date > CURRENT_DATE - INTERVAL 15 DAY and sales_time = 90 and sales_quantity > 100 ";
+        List<String> fsns = productInfoRepository.getFsns(query);
+        Assert.assertEquals(1,fsns.size());
+        Assert.assertEquals("fsn", fsns.get(0));
+    }
+
 
     private ProductInfo getProductInfo(int i) {
        ProductInfo productInfo = new ProductInfo();

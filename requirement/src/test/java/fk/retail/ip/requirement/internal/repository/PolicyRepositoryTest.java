@@ -3,7 +3,7 @@ package fk.retail.ip.requirement.internal.repository;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import fk.retail.ip.requirement.config.TestDbModule;
-import fk.retail.ip.requirement.internal.entities.Group;
+import fk.retail.ip.core.entities.IPGroup;
 import fk.retail.ip.requirement.internal.entities.Policy;
 import fk.sp.common.extensions.jpa.TransactionalJpaRepositoryTest;
 import java.util.List;
@@ -22,7 +22,7 @@ public class PolicyRepositoryTest extends TransactionalJpaRepositoryTest {
 
     @Test
     public void testFetchByFsns() {
-        Group group = TestHelper.getEnabledGroup("Socks");
+        IPGroup group = TestHelper.getEnabledGroup("Socks");
         Policy policy1 = TestHelper.getPolicy("fsn1", group);
         Policy policy2 = TestHelper.getPolicy(null, group);
         policyRepository.persist(policy1);
@@ -35,7 +35,7 @@ public class PolicyRepositoryTest extends TransactionalJpaRepositoryTest {
 
     @Test
     public void testFetchByGroup() {
-        Group group = TestHelper.getEnabledGroup("Socks");
+        IPGroup group = TestHelper.getEnabledGroup("Socks");
         Policy policy1 = TestHelper.getPolicy("fsn1", group);
         Policy policy2 = TestHelper.getPolicy(null, group);
         policyRepository.persist(policy1);
@@ -45,6 +45,8 @@ public class PolicyRepositoryTest extends TransactionalJpaRepositoryTest {
         Assert.assertEquals(policy2, policies.get(0));
         Assert.assertEquals(group, policies.get(0).getGroup());
     }
+
+
 
 
 }

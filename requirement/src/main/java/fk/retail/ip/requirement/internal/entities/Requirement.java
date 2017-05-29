@@ -1,5 +1,7 @@
 package fk.retail.ip.requirement.internal.entities;
 
+import fk.retail.ip.core.entities.AbstractEntity;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

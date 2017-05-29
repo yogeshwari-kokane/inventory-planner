@@ -2,6 +2,7 @@ package fk.retail.ip.requirement.internal.command.download;
 
 import com.google.inject.Inject;
 
+import fk.retail.ip.core.poi.GenerateExcelCommand;
 import fk.retail.ip.requirement.internal.repository.*;
 import fk.retail.ip.zulu.client.ZuluClient;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;

@@ -1,6 +1,8 @@
 package fk.retail.ip.requirement.internal.entities;
 
 import javax.persistence.Entity;
+
+import fk.retail.ip.core.entities.ReadOnlyEntity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

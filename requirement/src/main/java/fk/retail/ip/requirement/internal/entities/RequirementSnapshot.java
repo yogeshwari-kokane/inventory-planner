@@ -7,6 +7,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import fk.retail.ip.core.entities.IPGroup;
+import fk.retail.ip.core.entities.ReadOnlyEntity;
 import lombok.Data;
 
 /**
@@ -34,6 +37,6 @@ public class RequirementSnapshot extends ReadOnlyEntity {
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "group_id")
-    private Group group;
+    private IPGroup group;
 
 }

@@ -128,6 +128,89 @@
         </query>
     </named-query>
 
+    <named-query name="IPGroup.getGroupsForSegmentation">
+        <query>
+            <![CDATA[
+            SELECT g
+            FROM IPGroup g
+            where
+            g.segmentationEnabled = 1
+                ]]>
+        </query>
+    </named-query>
+
+
+    <named-query name="IPGroup.getGroupsByName">
+        <query>
+            <![CDATA[
+            SELECT g
+            FROM IPGroup g
+            where
+            g.name = :name
+                ]]>
+        </query>
+    </named-query>
+
+
+    <named-query name="IPGroup.getStaticGroup">
+        <query>
+            <![CDATA[
+            SELECT g
+            FROM IPGroup g
+            where
+            g.segmentationEnabled = false
+                ]]>
+        </query>
+    </named-query>
+
+
+    <named-query name="IPGroup.getEnabledGroup">
+        <query>
+            <![CDATA[
+            SELECT g
+            FROM IPGroup g
+            where
+            g.enabled = true
+                ]]>
+        </query>
+    </named-query>
+
+
+    <named-query name="IPGroup.getLastGroupId">
+        <query>
+            <![CDATA[
+            SELECT max(g.id)
+            FROM IPGroup g
+                ]]>
+        </query>
+    </named-query>
+
+
+    <named-query name="GroupFsn.deleteByGroup">
+        <query>
+            <![CDATA[
+            delete
+            FROM GroupFsn g
+            WHERE
+                g.group.id = :id
+                ]]>
+        </query>
+    </named-query>
+
+
+    <named-query name="GroupFsn.getLastCreatedAt">
+        <query>
+            <![CDATA[
+            select createdAt
+            FROM GroupFsn g
+            WHERE
+                g.group.id = :id
+
+                ]]>
+        </query>
+    </named-query>
+
+
     <named-query name="findCurrentRequirementsByState.count">
         <query>
             <![CDATA[
@@ -355,7 +438,6 @@
             FROM GroupFsn gf
             WHERE
                 gf.group.enabled = true
-            ORDER BY gf.id
                 ]]>
         </query>
     </named-query>
@@ -466,11 +548,11 @@
         </query>
     </named-query>
 
-    <named-query name="Group.findByGroupNames">
+    <named-query name="IPGroup.findByGroupNames">
         <query>
             <![CDATA[
             SELECT g
-            FROM Group g
+            FROM IPGroup g
             WHERE
                 g.name IN :groupNames
                 ]]>
@@ -501,10 +583,5 @@
                   ]]>
         </query>
     </named-query>
-
-    findEmailDetailsByStencilId
-
-
-
 
 </entity-mappings>

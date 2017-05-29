@@ -1,11 +1,20 @@
 package fk.retail.ip.requirement.internal.command;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
+import fk.retail.ip.requirement.config.TestModule;
+import fk.retail.ip.requirement.config.TriggerRequirementConfiguration;
+import fk.retail.ip.core.entities.GroupFsn;
+import fk.retail.ip.core.entities.IPGroup;
+import fk.retail.ip.core.repository.GroupFsnRepository;
+import fk.retail.ip.requirement.internal.repository.PolicyRepository;
+import fk.retail.ip.requirement.internal.repository.TestHelper;
+import fk.sp.common.extensions.jpa.Page;
+import fk.sp.common.restbus.sender.RestbusMessageSender;
+import java.util.Date;
+import java.util.List;
 import org.jukito.JukitoRunner;
 import org.jukito.UseModules;
 import org.junit.Assert;
@@ -16,19 +25,6 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-
-import java.util.Date;
-import java.util.List;
-
-import fk.retail.ip.requirement.config.TestModule;
-import fk.retail.ip.requirement.config.TriggerRequirementConfiguration;
-import fk.retail.ip.requirement.internal.entities.Group;
-import fk.retail.ip.requirement.internal.entities.GroupFsn;
-import fk.retail.ip.requirement.internal.repository.GroupFsnRepository;
-import fk.retail.ip.requirement.internal.repository.PolicyRepository;
-import fk.retail.ip.requirement.internal.repository.TestHelper;
-import fk.sp.common.extensions.jpa.Page;
-import fk.sp.common.restbus.sender.RestbusMessageSender;
 
 @RunWith(JukitoRunner.class)
 @UseModules(TestModule.class)
@@ -47,7 +43,7 @@ public class TriggerRequirementCommandTest {
     ObjectMapper mapper;
     TriggerRequirementCommand triggerRequirementCommand;
 
-    List<Group> groups;
+    List<IPGroup> groups;
 
     @Before
     public void setup() {
@@ -62,7 +58,7 @@ public class TriggerRequirementCommandTest {
         List<GroupFsn> groupFsns = Lists.newArrayList();
         groups = Lists.newArrayList();
         for (int i = 1; i <= 3; i++) {
-            Group group = TestHelper.getEnabledGroup("group"+i);
+            IPGroup group = TestHelper.getEnabledGroup("group"+i);
             group.setId((long) i);
             groups.add(group);
         }

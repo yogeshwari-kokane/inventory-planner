@@ -4,6 +4,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import fk.retail.ip.core.entities.ReadOnlyEntity;
 import lombok.Data;
 
 /**

@@ -20,8 +20,8 @@ import fk.retail.ip.requirement.internal.context.ForecastContext;
 import fk.retail.ip.requirement.internal.context.OnHandQuantityContext;
 import fk.retail.ip.requirement.internal.context.PolicyContext;
 import fk.retail.ip.requirement.internal.entities.Forecast;
-import fk.retail.ip.requirement.internal.entities.Group;
-import fk.retail.ip.requirement.internal.entities.GroupFsn;
+import fk.retail.ip.core.entities.IPGroup;
+import fk.retail.ip.core.entities.GroupFsn;
 import fk.retail.ip.requirement.internal.entities.IwtRequestItem;
 import fk.retail.ip.requirement.internal.entities.OpenRequirementAndPurchaseOrder;
 import fk.retail.ip.requirement.internal.entities.Policy;
@@ -36,7 +36,7 @@ import fk.retail.ip.requirement.internal.enums.FdpRequirementEventType;
 import fk.retail.ip.requirement.internal.enums.OverrideKey;
 import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
 import fk.retail.ip.requirement.internal.repository.ForecastRepository;
-import fk.retail.ip.requirement.internal.repository.GroupFsnRepository;
+import fk.retail.ip.core.repository.GroupFsnRepository;
 import fk.retail.ip.requirement.internal.repository.IwtRequestItemRepository;
 import fk.retail.ip.requirement.internal.repository.OpenRequirementAndPurchaseOrderRepository;
 import fk.retail.ip.requirement.internal.repository.PolicyRepository;
@@ -76,7 +76,7 @@ public class CalculateRequirementCommand {
 
     private Set<String> fsns = Sets.newHashSet();
     private Map<String, String> warehouseCodeMap = Maps.newHashMap();
-    private Map<String, Group> fsnToGroupMap;
+    private Map<String, IPGroup> fsnToGroupMap;
     private PolicyContext policyContext;
     private ForecastContext forecastContext;
     private OnHandQuantityContext onHandQuantityContext;
@@ -304,12 +304,12 @@ public class CalculateRequirementCommand {
         return warehouses.stream().collect(Collectors.toMap(Warehouse::getName, Warehouse::getCode));
     }
 
-    private Map<String, Group> getFsnToGroupMap(Set<String> fsns) {
+    private Map<String, IPGroup> getFsnToGroupMap(Set<String> fsns) {
         List<GroupFsn> groupFsns = groupFsnRepository.findByFsns(fsns);
         return groupFsns.stream().collect(Collectors.toMap(GroupFsn::getFsn, GroupFsn::getGroup));
     }
 
-    private Requirement getRequirement(String fsn, String warehouse, Group group) {
+    private Requirement getRequirement(String fsn, String warehouse, IPGroup group) {
         Requirement requirement = new Requirement();
         requirement.setFsn(fsn);
         requirement.setWarehouse(warehouse);

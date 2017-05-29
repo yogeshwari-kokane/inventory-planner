@@ -9,11 +9,15 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
+import fk.retail.ip.core.MailSender;
+import fk.retail.ip.core.entities.GroupFsn;
+import fk.retail.ip.core.entities.IPGroup;
+import fk.retail.ip.core.repository.GroupFsnRepository;
 import fk.retail.ip.requirement.config.TestDbModule;
-import fk.retail.ip.requirement.internal.entities.Group;
-import fk.retail.ip.requirement.internal.entities.GroupFsn;
 import fk.sp.common.extensions.jpa.TransactionalJpaRepositoryTest;
 
 @RunWith(JukitoRunner.class)
@@ -25,7 +29,7 @@ public class GroupFsnRepositoryTest extends TransactionalJpaRepositoryTest {
 
     @Test
     public void testFindByFsns() {
-        Group group = TestHelper.getEnabledGroup("Test Group");
+        IPGroup group = TestHelper.getEnabledGroup("Test IPGroup");
         GroupFsn groupFsn = TestHelper.getGroupFsn("fsn1", group);
         groupFsnRepository.persist(groupFsn);
         List<GroupFsn> groupFsns = groupFsnRepository.findByFsns(Sets.newHashSet("fsn1"));
@@ -36,7 +40,7 @@ public class GroupFsnRepositoryTest extends TransactionalJpaRepositoryTest {
 
     @Test
     public void testGetFsnsByGroup() {
-        Group group = TestHelper.getEnabledGroup("Test_Group");
+        IPGroup group = TestHelper.getEnabledGroup("Test_Group");
         GroupFsn groupFsn = TestHelper.getGroupFsn("fsn1", group);
         GroupFsn groupFsn1 = TestHelper.getGroupFsn("fsn2", group);
         groupFsnRepository.persist(groupFsn);
@@ -47,9 +51,10 @@ public class GroupFsnRepositoryTest extends TransactionalJpaRepositoryTest {
         Assert.assertEquals("fsn2", fsns.get(1));
     }
 
+    @Test
     public void testGetAllFsns() {
-        Group group = TestHelper.getEnabledGroup("Test_Group");
-        Group disabledGroup = TestHelper.getDisabledGroup("Test_Group_Diabled");
+        IPGroup group = TestHelper.getEnabledGroup("Test_Group");
+        IPGroup disabledGroup = TestHelper.getDisabledGroup("Test_Group_Diabled");
         GroupFsn groupFsn = TestHelper.getGroupFsn("fsn1", group);
         GroupFsn groupFsn1 = TestHelper.getGroupFsn("fsn2", disabledGroup);
         groupFsnRepository.persist(groupFsn);
@@ -58,5 +63,23 @@ public class GroupFsnRepositoryTest extends TransactionalJpaRepositoryTest {
         Assert.assertEquals(1,fsns.size());
         Assert.assertEquals("fsn1", fsns.get(0));
 
+    }
+
+    @Test
+    public void testUpdateGroupFsn(){
+        IPGroup group = TestHelper.getGroup("group1");
+        groupFsnRepository.persist(new GroupFsn("fsn1", group, new Date()));
+        groupFsnRepository.persist(new GroupFsn("fsn2", group, new Date()));
+        groupFsnRepository.updateGroupFsns(group, Arrays.asList("fsn3"));
+        List<String> fsns = groupFsnRepository.getFsns("group1");
+        Assert.assertEquals(1, fsns.size());
+        Assert.assertEquals("fsn3", fsns.get(0));
+    }
+
+
+
+    @Test
+    public void testMail() throws Exception {
+        MailSender.sendMail("nidhigupta.m@flipkart.com", "nidhigupta.m@flipkart.com", "nidhigupta.m@flipkart.com", "localhost", "Failed Segmentation Groups","hello",null );
     }
 }
