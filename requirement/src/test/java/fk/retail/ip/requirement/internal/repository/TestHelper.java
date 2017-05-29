@@ -178,6 +178,13 @@ public class TestHelper {
         return lastAppSupplier;
     }
 
+    public static IPGroup getGroup(String name, boolean enabled) {
+        IPGroup group = new IPGroup();
+        group.setName(name);
+        group.setEnabled(enabled);
+        return group;
+    }
+
     public static WeeklySale getWeeklySale(String fsn, String wh, int week, int saleQuantity) {
         WeeklySale weeklySale = new WeeklySale();
         weeklySale.setFsn(fsn);

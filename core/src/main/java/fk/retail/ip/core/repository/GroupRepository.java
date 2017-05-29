@@ -1,5 +1,6 @@
 package fk.retail.ip.core.repository;
 
+import java.util.Collection;
 import java.util.List;
 
 import fk.retail.ip.core.entities.IPGroup;
@@ -19,4 +20,6 @@ public interface GroupRepository extends JpaGenericRepository<IPGroup, Long> {
     List<IPGroup> getEnabledGroups();
 
     List<IPGroup> getStaticGroups();
+
+    List<IPGroup> findByGroupNames(Collection<String> groupNames);
 }

@@ -13,11 +13,10 @@ import fk.retail.ip.requirement.internal.command.PayloadCreationHelper;
 import fk.retail.ip.requirement.internal.command.emailHelper.ApprovalEmailHelper;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.entities.RequirementApprovalTransition;
-import fk.retail.ip.requirement.internal.enums.EventType;
-import fk.retail.ip.requirement.internal.enums.FdpRequirementEventType;
-import fk.retail.ip.requirement.internal.enums.OverrideKey;
-import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
+import fk.retail.ip.requirement.internal.entities.RequirementApprovalTransitionV2;
+import fk.retail.ip.requirement.internal.enums.*;
 import fk.retail.ip.requirement.internal.repository.RequirementApprovalTransitionRepository;
+import fk.retail.ip.requirement.internal.repository.RequirementApprovalTransitionRepositoryV2;
 import fk.retail.ip.requirement.internal.repository.RequirementEventLogRepository;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
 import fk.retail.ip.requirement.model.RequirementChangeMap;
@@ -35,16 +34,14 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- *
- * @author Pragalathan M<pragalathan.m@flipkart.com>
+ * Created by yogeshwari.k on 19/05/17.
  */
-
 @Slf4j
-public class ApprovalService<E> {
+public class ApprovalServiceV2<E> {
 
     private StencilConfigModel stencilConfigModel;
 
-    public ApprovalService() {
+    public ApprovalServiceV2() {
         String approvalEmailConfigurations  = "/stencil-configurations.json";
         try {
             InputStreamReader inputStreamReader = new InputStreamReader
@@ -92,7 +89,7 @@ public class ApprovalService<E> {
     public static class CopyOnStateChangeAction implements StageChangeAction<Requirement> {
 
         private RequirementRepository requirementRepository;
-        private RequirementApprovalTransitionRepository requirementApprovalStateTransitionRepository;
+        private RequirementApprovalTransitionRepositoryV2 requirementApprovalStateTransitionRepository;
         private FdpRequirementIngestorImpl fdpRequirementIngestor;
         private RequirementEventLogRepository requirementEventLogRepository;
         private ApprovalEmailHelper appovalEmailHelper;
@@ -100,7 +97,7 @@ public class ApprovalService<E> {
 
         public CopyOnStateChangeAction(
                 RequirementRepository requirementRepository,
-                RequirementApprovalTransitionRepository requirementApprovalStateTransitionRepository,
+                RequirementApprovalTransitionRepositoryV2 requirementApprovalStateTransitionRepository,
                 FdpRequirementIngestorImpl fdpRequirementIngestor,
                 RequirementEventLogRepository requirementEventLogRepository,
                 ApprovalEmailHelper appovalEmailHelper,
@@ -124,7 +121,6 @@ public class ApprovalService<E> {
             List<RequirementChangeRequest> requirementChangeRequestList = Lists.newArrayList();
             List<Requirement> allEnabledRequirements = requirementRepository.find(fsns, true);
             EventType eventType = EventType.APPROVAL;
-            String nextState = requirementToTargetStateMap.get(requirements.get(0).getId());
             for (Requirement requirement : requirements) {
                 String toState = requirementToTargetStateMap.get(requirement.getId());
                 boolean isIPCReviewState = RequirementApprovalState.IPC_REVIEW.toString().equals(toState);
@@ -135,6 +131,7 @@ public class ApprovalService<E> {
                 List<RequirementChangeMap> requirementChangeMaps = Lists.newArrayList();
                 if (forward) {
                     //Add APPROVE events to fdp request
+                    log.info("Adding APPROVE events to fdp request");
                     requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.STATE.toString(), fromState, toState, FdpRequirementEventType.APPROVE.toString(), "Moved to next state", userId));
                     if (toStateEntity.isPresent()) {
                         if(!isBizFinReviewState)
@@ -144,7 +141,6 @@ public class ApprovalService<E> {
                             toStateEntity.get().setQuantity(cdoStateEntity.get().getQuantity());
                         }
                         toStateEntity.get().setSupplier(requirement.getSupplier());
-                        toStateEntity.get().setMrp(requirement.getMrp());
                         toStateEntity.get().setApp(requirement.getApp());
                         toStateEntity.get().setSla(requirement.getSla());
                         toStateEntity.get().setCreatedBy(userId);
@@ -169,6 +165,7 @@ public class ApprovalService<E> {
                     eventType = EventType.APPROVAL;
                 } else {
                     //Add CANCEL events to fdp request
+                    log.info("Adding CANCEL events to fdp request");
                     requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.STATE.toString(), fromState, toState, FdpRequirementEventType.CANCEL.toString(), "Moved to previous state", userId));
                     toStateEntity.ifPresent(e -> { // this will always be present
                         e.setCurrent(true);
@@ -182,8 +179,7 @@ public class ApprovalService<E> {
                 requirementChangeRequestList.add(requirementChangeRequest);
             }
             //appovalEmailHelper.send(createStencilParamsMap(groupName, userId, getCurrentTimestamp(), nextState), fromState, forward, stencilConfigModel);
-            log.info("Updating Projections tables for Requirements");
-            requirementRepository.updateProjections(requirements, groupToTargetState);
+
             //Push APPROVE and CANCEL events to fdp
             log.debug("Pushing APPROVE and CANCEL events to fdp");
             fdpRequirementIngestor.pushToFdp(requirementChangeRequestList);
@@ -191,10 +187,9 @@ public class ApprovalService<E> {
             eventLogger.insertEvent(requirementChangeRequestList, eventType);
         }
 
-
         private Map<Long, String> getGroupToTargetStateMap(String fromState, boolean forward) {
-            List<RequirementApprovalTransition> transitionList = requirementApprovalStateTransitionRepository.getApprovalTransition(fromState, forward);
-            return transitionList.stream().collect(Collectors.toMap(RequirementApprovalTransition::getGroupId, RequirementApprovalTransition::getToState));
+            List<RequirementApprovalTransitionV2> transitionList = requirementApprovalStateTransitionRepository.getApprovalTransition(fromState, forward);
+            return transitionList.stream().collect(Collectors.toMap(RequirementApprovalTransitionV2::getGroupId, RequirementApprovalTransitionV2::getToState));
         }
 
         private Map<String,String> getRequirementToTargetStateMap(Map<Long, String> groupToTargetState, List<Requirement> requirements) {
@@ -240,4 +235,5 @@ public class ApprovalService<E> {
         }
 
     }
+
 }

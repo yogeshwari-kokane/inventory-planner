@@ -1,9 +1,13 @@
 package fk.retail.ip.core.repository;
 
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 
 import fk.retail.ip.core.entities.IPGroup;
 import fk.sp.common.extensions.jpa.SimpleJpaGenericRepository;
+import org.springframework.util.CollectionUtils;
+
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import javax.inject.Provider;
@@ -37,6 +41,16 @@ public class JPAGroupRepository extends SimpleJpaGenericRepository<IPGroup, Long
         ipGroup.setSegmentationEnabled(false);
         this.persist(ipGroup);
         return ipGroup;
+    }
+
+    @Override
+    public List<IPGroup> findByGroupNames(Collection<String> groupNames) {
+        if (CollectionUtils.isEmpty(groupNames)) {
+            return Lists.newArrayList();
+        }
+        TypedQuery<IPGroup> query = getEntityManager().createNamedQuery("IPGroup.findByGroupNames",IPGroup.class);
+        query.setParameter("groupNames", groupNames);
+        return query.getResultList();
     }
 
 

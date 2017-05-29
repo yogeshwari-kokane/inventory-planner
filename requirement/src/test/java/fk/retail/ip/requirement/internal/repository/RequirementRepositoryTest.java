@@ -1,5 +1,6 @@
 package fk.retail.ip.requirement.internal.repository;
 
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import fk.retail.ip.requirement.config.TestDbModule;
 import fk.retail.ip.requirement.internal.entities.Requirement;
@@ -123,6 +124,41 @@ public class RequirementRepositoryTest extends TransactionalJpaRepositoryTest {
 
         List<Requirement> requirements = requirementRepository.findActiveRequirementForState(idsAsList, "proposed");
         Assert.assertEquals(9, requirements.size());
+    }
+
+    @Test
+    public void findCurrentRequirementsByStateFsns() {
+
+        List<String> fsns = Lists.newArrayList();
+        IntStream.rangeClosed(1, 20).forEach(i -> {
+            requirementRepository.persist(getRequirement(i));
+            fsns.add("fsn" + String.valueOf(i));
+        });
+        List<Requirement> requirements = requirementRepository.findCurrentRequirementsByStateFsns("proposed", fsns);
+        Assert.assertEquals(20, requirements.size());
+
+    }
+
+    @Test
+    public void findFsnsByStateFsns() {
+        List<String> fsns = Lists.newArrayList();
+        IntStream.rangeClosed(1, 20).forEach(i -> {
+            requirementRepository.persist(getRequirement(i));
+            fsns.add("fsn" + String.valueOf(i));
+        });
+        List<String> stateFsns = requirementRepository.findFsnsByStateFsns("proposed", fsns, 1, 10);
+        Assert.assertEquals(10, stateFsns.size());
+    }
+
+    @Test
+    public void findStateFsnsCount() {
+        List<String> fsns = Lists.newArrayList();
+        IntStream.rangeClosed(1, 20).forEach(i -> {
+            requirementRepository.persist(getRequirement(i));
+            fsns.add("fsn" + String.valueOf(i));
+        });
+        Long totalFsns = requirementRepository.findStateFsnsCount("proposed", fsns);
+        Assert.assertEquals((long)20, (long)totalFsns);
     }
 
     private Requirement getRequirement(int i) {

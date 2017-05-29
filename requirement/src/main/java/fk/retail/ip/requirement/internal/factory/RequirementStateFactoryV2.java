@@ -7,11 +7,10 @@ import fk.retail.ip.requirement.internal.exception.InvalidRequirementStateExcept
 import fk.retail.ip.requirement.internal.states.*;
 
 /**
- * Created by nidhigupta.m on 21/02/17.
+ * Created by yogeshwari.k on 25/05/17.
  */
-public class RequirementStateFactory {
+public class RequirementStateFactoryV2 {
 
-    private final PreProposedRequirementState preProposedRequirementState;
     private final ProposedRequirementState proposedRequirementState;
     private final BizFinRequirementState bizFinRequirementState;
     private final CDOReviewRequirementState cdoReviewRequirementState;
@@ -19,10 +18,9 @@ public class RequirementStateFactory {
     private final IPCFinalisedRequirementState ipcFinalisedRequirementState;
 
     @Inject
-    public RequirementStateFactory(PreProposedRequirementState preProposedRequirementState, ProposedRequirementState proposedRequirementState, BizFinRequirementState bizFinRequirementState,
+    public RequirementStateFactoryV2(ProposedRequirementState proposedRequirementState, BizFinRequirementState bizFinRequirementState,
                                    CDOReviewRequirementState cdoReviewRequirementState, IPCReviewRequirementState ipcReviewRequirementState,
                                    IPCFinalisedRequirementState ipcFinalisedRequirementState) {
-        this.preProposedRequirementState = preProposedRequirementState;
         this.proposedRequirementState = proposedRequirementState;
         this.cdoReviewRequirementState = cdoReviewRequirementState;
         this.bizFinRequirementState = bizFinRequirementState;
@@ -30,16 +28,14 @@ public class RequirementStateFactory {
         this.ipcFinalisedRequirementState = ipcFinalisedRequirementState;
     }
 
-    public RequirementState getRequirementState(String requirementState) throws InvalidRequirementStateException {
+    public RequirementState getRequirementState(String requirementState) throws  InvalidRequirementStateException {
 
-        RequirementApprovalState requirementApprovalState = RequirementApprovalState.fromString(requirementState);
+        RequirementApprovalStateV2 requirementApprovalState = RequirementApprovalStateV2.fromString(requirementState);
         if (requirementApprovalState == null) {
             throw new InvalidRequirementStateException(requirementState + " is not a valid requirement state");
 
         }
         switch (requirementApprovalState) {
-            case PRE_PROPOSED:
-                return preProposedRequirementState;
             case PROPOSED:
                 return proposedRequirementState;
             case CDO_REVIEW:
@@ -53,7 +49,6 @@ public class RequirementStateFactory {
         }
 
         return null;
-
     }
 
 }

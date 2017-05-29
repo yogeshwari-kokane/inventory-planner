@@ -128,7 +128,6 @@
         </query>
     </named-query>
 
-
     <named-query name="IPGroup.getGroupsForSegmentation">
         <query>
             <![CDATA[
@@ -210,8 +209,6 @@
                 ]]>
         </query>
     </named-query>
-
-    GroupFsn.getLastCreatedAt
 
 
     <named-query name="findCurrentRequirementsByState.count">
@@ -467,6 +464,19 @@
         </query>
     </named-query>
 
+    <named-query name="findByStateFsns">
+        <query>
+            <![CDATA[
+            SELECT distinct r.fsn
+            FROM Requirement r
+            WHERE
+                r.fsn IN :fsns AND
+                r.state = :state AND
+                r.current = 1
+            ]]>
+        </query>
+    </named-query>
+
     <named-query name="ProcPurchaseOrder.fetchVerticalByFsn">
         <query>
             <![CDATA[
@@ -526,6 +536,42 @@
         </query>
     </named-query>
 
+    <named-query name="RequirementApprovalTransitionV2.getApprovalStateTransition">
+        <query>
+            <![CDATA[
+            SELECT t
+            FROM RequirementApprovalTransitionV2 t
+            WHERE
+                t.fromState = :fromState and
+                t.forward = :forward
+                  ]]>
+        </query>
+    </named-query>
+
+    <named-query name="IPGroup.findByGroupNames">
+        <query>
+            <![CDATA[
+            SELECT g
+            FROM IPGroup g
+            WHERE
+                g.name IN :groupNames
+                ]]>
+        </query>
+    </named-query>
+
+    <named-query name="findStateFsnsCount">
+        <query>
+            <![CDATA[
+            SELECT count (distinct r.fsn)
+            FROM Requirement r
+            WHERE
+                r.fsn IN :fsns AND
+                r.state = :state AND
+                r.current = 1
+                ]]>
+        </query>
+    </named-query>
+
     <named-query name="findEmailDetailsByStencilId">
         <query>
             <![CDATA[
@@ -537,10 +583,5 @@
                   ]]>
         </query>
     </named-query>
-
-    findEmailDetailsByStencilId
-
-
-
 
 </entity-mappings>

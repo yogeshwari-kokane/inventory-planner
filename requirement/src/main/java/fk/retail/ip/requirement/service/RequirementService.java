@@ -18,6 +18,7 @@ import fk.retail.ip.requirement.internal.enums.OverrideKey;
 import fk.retail.ip.requirement.internal.enums.OverrideStatus;
 import fk.retail.ip.requirement.internal.enums.RequirementApprovalAction;
 import fk.retail.ip.requirement.internal.factory.RequirementStateFactory;
+import fk.retail.ip.requirement.internal.factory.RequirementStateFactoryV2;
 import fk.retail.ip.requirement.internal.repository.RequirementApprovalTransitionRepository;
 import fk.retail.ip.requirement.internal.repository.RequirementEventLogRepository;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
@@ -50,6 +51,7 @@ public class RequirementService {
     private final RequirementRepository requirementRepository;
     private final RequirementApprovalTransitionRepository requirementApprovalStateTransitionRepository;
     private final RequirementStateFactory requirementStateFactory;
+    private final RequirementStateFactoryV2 requirementStateFactoryV2;
     private final ApprovalService approvalService;
     private final Provider<TriggerRequirementCommand> triggerRequirementCommandProvider;
     private final Provider<CalculateRequirementCommand> calculateRequirementCommandProvider;
@@ -67,6 +69,7 @@ public class RequirementService {
     @Inject
     public RequirementService(RequirementRepository requirementRepository,
                               RequirementStateFactory requirementStateFactory,
+                              RequirementStateFactoryV2 requirementStateFactoryV2,
                               ApprovalService approvalService,
                               Provider<CalculateRequirementCommand> calculateRequirementCommandProvider,
                               RequirementApprovalTransitionRepository requirementApprovalStateTransitionRepository,
@@ -82,6 +85,7 @@ public class RequirementService {
 
         this.requirementRepository = requirementRepository;
         this.requirementStateFactory = requirementStateFactory;
+        this.requirementStateFactoryV2 = requirementStateFactoryV2;
         this.approvalService = approvalService;
         this.calculateRequirementCommandProvider = calculateRequirementCommandProvider;
         this.requirementApprovalStateTransitionRepository = requirementApprovalStateTransitionRepository;
@@ -160,7 +164,7 @@ public class RequirementService {
                 uploadResponse.setSuccessfulRowCount(0);
                 return uploadResponse;
             } else {
-                RequirementState state = requirementStateFactory.getRequirementState(requirementState);
+                RequirementState state = requirementStateFactoryV2.getRequirementState(requirementState);
                 try {
 
                     UploadOverrideResult uploadOverrideResult = state.upload(requirements, requirementUploadLineItems, userId, requirementState);
