@@ -103,7 +103,7 @@ public class ManagerModule extends AbstractModule {
     @Named("inventory-planner")
     @Provides
     @javax.inject.Singleton
-    ExecutorService provideExecutorServiceForSsl(Environment e) {
+    ExecutorService provideExecutorService(Environment e) {
         return e.lifecycle()
                 .executorService("inventory-planner")
                 .maxThreads(50)
