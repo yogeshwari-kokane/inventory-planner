@@ -15,9 +15,9 @@ dataSource:
   # the SQL query to run when validating a connection's liveness
   validationQuery: "/* MyService Health Check */ SELECT 1"
   # the minimum number of connections to keep open
-  minSize: 8
+  minSize: 50
   # the maximum number of connections to keep open
-  maxSize: 32
+  maxSize: 200
   # whether or not idle connections should be validated
   checkConnectionWhileIdle: true
   # how long a connection must be held before it can be validated
@@ -60,8 +60,6 @@ server:
   adminConnectors:
   - type: http
     port: 32001
-  minThreads: 150
-  maxThreads: 150
   gzip:
     enabled: true
     minimumEntitySize: 256 bytes
