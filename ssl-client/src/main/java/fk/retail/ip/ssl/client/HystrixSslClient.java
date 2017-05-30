@@ -9,6 +9,7 @@ import fk.retail.ip.ssl.model.SupplierSelectionRequest;
 import javax.inject.Provider;
 import com.google.inject.Inject;
 import fk.retail.ip.ssl.model.SupplierSelectionResponse;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.concurrent.*;
@@ -16,6 +17,7 @@ import java.util.concurrent.*;
 /**
  * Created by yogeshwari.k on 01/03/17.
  */
+@Slf4j
 public class HystrixSslClient implements SslClient{
 
     private final Provider<GetSupplierDetailsCommand> getSupplierDetailsCommandProvider;
@@ -42,6 +44,7 @@ public class HystrixSslClient implements SslClient{
             throws ExecutionException, InterruptedException {
         List<Future<List<SupplierSelectionResponse>>> futureList = Lists.newArrayList();
         List<SupplierSelectionResponse> supplierSelectionResponses = Lists.newArrayList();
+        int threadCount = 0;
         for(List<SupplierSelectionRequest> requestList : Lists.partition(requests, sslClientConfiguration.getBatchSize())) {
             Callable<List<SupplierSelectionResponse>> callable = null;
             callable = () -> {
@@ -49,6 +52,8 @@ public class HystrixSslClient implements SslClient{
                 return supplierSelectionResponseList;
             };
             Future<List<SupplierSelectionResponse>> futureResponse = executorService.submit(callable);
+            threadCount = threadCount+1;
+            log.info("Thread number:" + threadCount);
             futureList.add(futureResponse);
         }
         for(Future<List<SupplierSelectionResponse>> future : futureList) {
