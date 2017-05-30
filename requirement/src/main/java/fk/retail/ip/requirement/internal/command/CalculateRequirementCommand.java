@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import fk.retail.ip.requirement.internal.Constants;
@@ -258,7 +259,14 @@ public class CalculateRequirementCommand {
 
     private void populateSupplier(List<Requirement> requirements, List<RequirementChangeRequest> requirementChangeRequestList) {
         List<SupplierSelectionRequest> requests = requirementHelper.createSupplierSelectionRequest(requirements);
-        List<SupplierSelectionResponse> responses = sslClient.getSupplierSelectionResponse(requests);
+        List<SupplierSelectionResponse> responses = null;
+        try {
+            responses = sslClient.getSupplierSelectionResponse(requests);
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         if (requests.size() != responses.size()) {
             requirements.forEach(requirement -> {
                 requirement.setState(RequirementApprovalState.ERROR.toString());
