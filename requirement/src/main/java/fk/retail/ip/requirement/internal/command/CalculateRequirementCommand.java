@@ -263,9 +263,9 @@ public class CalculateRequirementCommand {
         try {
             responses = sslClient.getSupplierSelectionResponse(requests);
         } catch (ExecutionException e) {
-            e.printStackTrace();
+            log.warn("Execution exception while calling ssl client" + e.getMessage());
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            log.warn("Interrupted exception while calling ssl client" + e.getMessage());
         }
         if (requests.size() != responses.size()) {
             requirements.forEach(requirement -> {
