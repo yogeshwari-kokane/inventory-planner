@@ -106,6 +106,7 @@ public class ManagerModule extends AbstractModule {
     ExecutorService provideExecutorServiceForSsl(Environment e) {
         return e.lifecycle()
                 .executorService("inventory-planner")
+                .maxThreads(50)
                 .build();
     }
 }
