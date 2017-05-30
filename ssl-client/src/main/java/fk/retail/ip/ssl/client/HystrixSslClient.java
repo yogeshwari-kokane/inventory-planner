@@ -53,7 +53,7 @@ public class HystrixSslClient implements SslClient{
             };
             Future<List<SupplierSelectionResponse>> futureResponse = executorService.submit(callable);
             threadCount = threadCount+1;
-            log.info("Thread number:" + threadCount);
+            log.debug("Thread number:" + threadCount);
             futureList.add(futureResponse);
         }
         for(Future<List<SupplierSelectionResponse>> future : futureList) {
