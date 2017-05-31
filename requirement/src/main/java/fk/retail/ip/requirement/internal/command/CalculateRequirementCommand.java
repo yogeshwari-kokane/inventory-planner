@@ -284,7 +284,7 @@ public class CalculateRequirementCommand {
         Map<String, String> fsnToVerticalMap = productInfos.stream().collect(Collectors.toMap(ProductInfo::getFsn, ProductInfo::getVertical, (k1, k2) -> k1));
         requirements.forEach(requirement -> {
             SupplierSelectionResponse supplierResponse = fsnWhSupplierTable.get(requirement.getFsn(), requirement.getWarehouse());
-            if (supplierResponse != null) {
+            if (isSupplierPresent(supplierResponse)) {
                 RequirementChangeRequest requirementChangeRequest = new RequirementChangeRequest();
                 List<RequirementChangeMap> requirementChangeMaps = Lists.newArrayList();
                 SupplierView supplier = supplierResponse.getSuppliers().get(0);
@@ -304,7 +304,19 @@ public class CalculateRequirementCommand {
                 requirementChangeRequest.setRequirementChangeMaps(requirementChangeMaps);
                 requirementChangeRequestList.add(requirementChangeRequest);
             }
+            else {
+                requirement.setState(RequirementApprovalState.ERROR.toString());
+                requirement.setOverrideComment(Constants.SUPPLIER_NOT_FOUND);
+                requirement.setEnabled(true);
+                requirement.setCurrent(true);
+            }
         });
+    }
+
+    public boolean isSupplierPresent(SupplierSelectionResponse supplierResponse) {
+        if(supplierResponse != null && supplierResponse.getSuppliers()!=null && !supplierResponse.getSuppliers().isEmpty())
+            return true;
+        return false;
     }
 
     public Map<String, String> getWarehouseCodeMap() {
