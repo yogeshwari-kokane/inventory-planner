@@ -15,9 +15,9 @@ dataSource:
   # the SQL query to run when validating a connection's liveness
   validationQuery: "/* MyService Health Check */ SELECT 1"
   # the minimum number of connections to keep open
-  minSize: 8
+  minSize: 50
   # the maximum number of connections to keep open
-  maxSize: 32
+  maxSize: 200
   # whether or not idle connections should be validated
   checkConnectionWhileIdle: true
   # how long a connection must be held before it can be validated
@@ -35,10 +35,10 @@ rotationManagementConfig:
 logging:
   level: INFO
   loggers:
-    "org.hibernate.ejb.HibernatePersistence": ERROR
-    "org.hibernate.SQL": ERROR
-    "org.hibernate.type": ERROR
-    "com.flipkart.mmq.Dispatcher": ERROR
+    "org.hibernate.ejb.HibernatePersistence": INFO
+    "org.hibernate.SQL": INFO
+    "org.hibernate.type": INFO
+    "com.flipkart.mmq.Dispatcher": INFO
   appenders:
   - type: file-size-rolled
     threshold: ALL
@@ -58,8 +58,6 @@ server:
   adminConnectors:
   - type: http
     port: 32001
-  minThreads: 150
-  maxThreads: 150
   gzip:
     enabled: true
     minimumEntitySize: 256 bytes
@@ -87,6 +85,7 @@ zuluConfiguration:
 sslClientConfiguration:
   url: http://10.85.52.106
   viewPath: "/supplier_selection"
+  batchSize: 10
 
 fdpConfiguration:
   url: http://10.47.2.122:28223/ingestion/objects
@@ -123,6 +122,14 @@ triggerRequirementConfiguration:
   projectionQueueName: retail_rp_internal_projection
   fetchDataBatchSize: 10000
   createReqBatchSize: 10
+
+connektConfiguration:
+  url: http://10.47.4.150:80/v1/send/email/flipkart-promo
+  x-api-key: BM9kig6BGwN68aeJG2ESWkxt8
+
+emailConfiguration:
+  host: 10.85.169.122:39001
+  path: "/projection/"
 
 d42Configuration:
   accessKey: "EKBK5XNIHLM7E3290RBX"
