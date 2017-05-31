@@ -135,3 +135,7 @@ d42Configuration:
   accessKey: "EKBK5XNIHLM7E3290RBX"
   secretKey: "QGXi9BkrIArIb255tHRFR7trEcPSvxBi3X0LsBwP"
   url: "http://10.47.2.2"
+
+groupSegmentationConfiguration:
+  url: http://10.85.110.102:32000/v1/group
+  queueName: retail_ip_group_segmentation
