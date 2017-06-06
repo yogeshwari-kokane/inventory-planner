@@ -135,7 +135,8 @@ public class ApprovalService<E> {
                 List<RequirementChangeMap> requirementChangeMaps = Lists.newArrayList();
                 if (forward) {
                     //Add APPROVE events to fdp request
-                    requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.STATE.toString(), fromState, toState, FdpRequirementEventType.APPROVE.toString(), "Moved to next state", userId));
+                    requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.STATE.toString(), fromState,
+                            toState, FdpRequirementEventType.APPROVE.toString(), "Moved to next state", userId, requirement.getRequirementId()));
                     if (toStateEntity.isPresent()) {
                         if(!isBizFinReviewState)
                             toStateEntity.get().setQuantity(requirement.getQuantity());
@@ -169,7 +170,8 @@ public class ApprovalService<E> {
                     eventType = EventType.APPROVAL;
                 } else {
                     //Add CANCEL events to fdp request
-                    requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.STATE.toString(), fromState, toState, FdpRequirementEventType.CANCEL.toString(), "Moved to previous state", userId));
+                    requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.STATE.toString(), fromState,
+                            toState, FdpRequirementEventType.CANCEL.toString(), "Moved to previous state", userId, requirement.getRequirementId()));
                     toStateEntity.ifPresent(e -> { // this will always be present
                         e.setCurrent(true);
                         requirement.setCurrent(false);

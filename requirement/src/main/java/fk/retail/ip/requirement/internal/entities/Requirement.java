@@ -40,6 +40,9 @@ public class Requirement {
     @NotNull
     private String warehouse;
 
+    @NotNull
+    private String requirementId;
+
     //todo:cleanup
     @Column(name = "qty")
     private double quantity;
@@ -140,6 +143,7 @@ public class Requirement {
         current = other.current;
         requirementSnapshot = other.requirementSnapshot;
         poId = other.poId;
+        requirementId = other.requirementId;
 
         //TODO: legacy code
         projectionId = other.projectionId;

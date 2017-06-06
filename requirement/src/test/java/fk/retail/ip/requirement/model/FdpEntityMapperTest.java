@@ -14,6 +14,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -32,9 +33,8 @@ public class FdpEntityMapperTest {
     @Test
     public void convertToEntityPayloadTest() {
         Requirement requirement = getRequirement();
-        String requirementId= getRequirementId(requirement);
-        FdpEntityPayload<FdpRequirementEntityData> fdpEntityPayload = fdpEntityMapper.convertToEntityPayload(requirementId,requirement);
-        Assert.assertEquals(requirementId,fdpEntityPayload.getEntityId());
+        FdpEntityPayload<FdpRequirementEntityData> fdpEntityPayload = fdpEntityMapper.convertToEntityPayload(requirement);
+        Assert.assertEquals(requirement.getRequirementId(),fdpEntityPayload.getEntityId());
         Assert.assertEquals(fdpConfiguration.getRequirementEntitySchemaVersion(),fdpEntityPayload.getSchemaVersion());
         Assert.assertEquals(requirement.getUpdatedAt(),fdpEntityPayload.getUpdatedAt());
     }
@@ -69,12 +69,10 @@ public class FdpEntityMapperTest {
         requirement1.setSla(5);
         requirement1.setState("proposed");
         requirement1.setEnabled(true);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String requirementId = requirement1.getFsn()+"_"+requirement1.getWarehouse()+"_"+(sdf.format(requirement1.getCreatedAt()).toString());
+        requirement1.setRequirementId(requirementId);
         return requirement1;
-    }
-
-    private String getRequirementId(Requirement requirement) {
-        String requirementId = requirement.getFsn()+requirement.getWarehouse()+(requirement.getCreatedAt().toString());
-        return requirementId;
     }
 
 }

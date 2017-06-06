@@ -208,5 +208,12 @@ ALTER TABLE `projection_states`
 ALTER TABLE `projection_states` 
     ADD COLUMN `proc_type` VARCHAR(45) NULL AFTER `fsn`;
 
+ALTER TABLE `projection_states`
+    ADD COLUMN `requirement_id` VARCHAR(200) NOT NULL DEFAULT '';
 
+ALTER TABLE `requirement_event_log`
+    ADD COLUMN `requirement_id` VARCHAR(200) NOT NULL DEFAULT '';
 
+UPDATE projection_states
+    SET requirement_id = CONCAT(fsn,"_",warehouse,"_",SUBSTRING(created_at,1,10))
+    WHERE requirement_id='';

@@ -251,7 +251,9 @@ public class RequirementService {
         List<RequirementChangeMap> requirementChangeMaps = Lists.newArrayList();
         log.info("Adding PROC_CALLBACK_RECEIVED events to fdp request");
         requirementChangeRequest.setRequirement(requirement);
-        requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.PO_ID.toString(), null, requirement.getPoId().toString(), FdpRequirementEventType.PROC_CALLBACK_RECEIVED.toString(), "Proc callback received", userId));
+        requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.PO_ID.toString(), null,
+                requirement.getPoId().toString(), FdpRequirementEventType.PROC_CALLBACK_RECEIVED.toString(),
+                "Proc callback received", userId, requirement.getRequirementId()));
         requirementChangeRequest.setRequirementChangeMaps(requirementChangeMaps);
         requirementChangeRequestList.add(requirementChangeRequest);
         //Push PROC_CALLBACK_RECEIVED events to fdp

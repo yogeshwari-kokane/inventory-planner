@@ -57,7 +57,10 @@ public class CaseSizeApplicator extends PolicyApplicator {
         RequirementChangeRequest requirementChangeRequest = new RequirementChangeRequest();
         List<RequirementChangeMap> requirementChangeMaps = Lists.newArrayList();
         if(!RequirementApprovalState.ERROR.toString().equals(requirement.getState())) {
-            requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.QUANTITY.toString(), String.valueOf(oldQuantity), String.valueOf(requirement.getQuantity()), FdpRequirementEventType.CONTROL_POLICY_QUANTITY_OVERRIDE.toString(), "CaseSize policy applied", "system"));
+            requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.QUANTITY.toString(),
+                    String.valueOf(oldQuantity), String.valueOf(requirement.getQuantity()),
+                    FdpRequirementEventType.CONTROL_POLICY_QUANTITY_OVERRIDE.toString(),
+                    "CaseSize policy applied", "system", requirement.getRequirementId()));
             requirementChangeRequest.setRequirement(requirement);
             requirementChangeRequest.setRequirementChangeMaps(requirementChangeMaps);
             requirementChangeRequestList.add(requirementChangeRequest);

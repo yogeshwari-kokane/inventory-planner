@@ -57,7 +57,8 @@ public class FdpEventMapperTest {
 
     private List<RequirementChangeMap> getRequirementChangeMapList(Requirement requirement) {
         List<RequirementChangeMap> requirementChangeMapList = Lists.newArrayList();
-        requirementChangeMapList.add(PayloadCreationHelper.createChangeMap("Sla", requirement.getSla().toString(),"20", FdpRequirementEventType.CDO_SLA_OVERRIDE.toString(), "SLA overridden by CDO", "system"));
+        requirementChangeMapList.add(PayloadCreationHelper.createChangeMap("Sla", requirement.getSla().toString(),"20",
+                FdpRequirementEventType.CDO_SLA_OVERRIDE.toString(), "SLA overridden by CDO", "system", requirement.getRequirementId()));
         return requirementChangeMapList;
     }
 

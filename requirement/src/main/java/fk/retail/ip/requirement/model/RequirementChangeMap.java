@@ -7,6 +7,7 @@ import lombok.Data;
  */
 @Data
 public class RequirementChangeMap {
+    String eventId;
     String attribute;
     String oldValue;
     String newValue;

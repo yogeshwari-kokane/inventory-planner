@@ -40,7 +40,10 @@ public class MaxCoverageApplicator extends PolicyApplicator {
                     //Add CONTROL_POLICY_QUANTITY_OVERRIDE events to fdp request
                     RequirementChangeRequest requirementChangeRequest = new RequirementChangeRequest();
                     List<RequirementChangeMap> requirementChangeMaps = Lists.newArrayList();
-                    requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.QUANTITY.toString(), String.valueOf(requirement.getQuantity()), String.valueOf(reducedQuantity),FdpRequirementEventType.CONTROL_POLICY_QUANTITY_OVERRIDE.toString(), "MaxCoverage policy applied", "system"));
+                    requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.QUANTITY.toString(),
+                            String.valueOf(requirement.getQuantity()), String.valueOf(reducedQuantity),
+                            FdpRequirementEventType.CONTROL_POLICY_QUANTITY_OVERRIDE.toString(), "MaxCoverage policy applied",
+                            "system", requirement.getRequirementId()));
                     requirementChangeRequest.setRequirement(requirement);
                     requirementChangeRequest.setRequirementChangeMaps(requirementChangeMaps);
                     requirementChangeRequestList.add(requirementChangeRequest);

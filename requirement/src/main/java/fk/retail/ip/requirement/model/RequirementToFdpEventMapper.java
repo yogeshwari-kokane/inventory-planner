@@ -25,7 +25,7 @@ public class RequirementToFdpEventMapper {
         List<FdpEventPayload<FdpRequirementEventData>> fdpRequirementEventPayloadList = Lists.newArrayList();
         requirementChangeMaps.forEach(changeMap -> {
             FdpEventPayload fdpRequirementEventPayload =new FdpEventPayload();
-            fdpRequirementEventPayload.setEventId(getEventId(requirementId.toString()));
+            fdpRequirementEventPayload.setEventId(changeMap.getEventId());
             fdpRequirementEventPayload.setSchemaVersion(fdpConfiguration.getRequirementEventSchemaVersion());
             fdpRequirementEventPayload.setEventTime(new Date());
             fdpRequirementEventPayload.setData(getRequirementEventData(requirementId.toString(),changeMap));

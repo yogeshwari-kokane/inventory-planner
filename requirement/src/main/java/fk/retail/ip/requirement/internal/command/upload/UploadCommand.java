@@ -131,7 +131,7 @@ public abstract class UploadCommand {
                                         requirementChangeMaps.add(PayloadCreationHelper.createChangeMap
                                                 (OverrideKey.QUANTITY.toString(), String.valueOf(requirement.getQuantity()),
                                                         overriddenValues.get(OverrideKey.QUANTITY.toString()).toString(),
-                                                        eventType, overrideReason, userId));
+                                                        eventType, overrideReason, userId, requirement.getRequirementId()));
 
                                     requirement.setQuantity
                                             ((Integer) overriddenValues.get(OverrideKey.QUANTITY.toString()));
@@ -140,14 +140,14 @@ public abstract class UploadCommand {
                                 if (overriddenValues.containsKey(OverrideKey.SLA.toString())) {
                                     requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.SLA.toString(),
                                             String.valueOf(requirement.getSla()), overriddenValues.get(OverrideKey.SLA.toString()).toString(),
-                                            FdpRequirementEventType.CDO_SLA_OVERRIDE.toString(), "Sla overridden by CDO", userId));
+                                            FdpRequirementEventType.CDO_SLA_OVERRIDE.toString(), "Sla overridden by CDO", userId, requirement.getRequirementId()));
                                     requirement.setSla((Integer) overriddenValues.get(OverrideKey.SLA.toString()));
                                 }
 
                                 if (overriddenValues.containsKey(OverrideKey.APP.toString())) {
                                     requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.APP.toString(),
                                             String.valueOf(requirement.getApp()), overriddenValues.get(OverrideKey.APP.toString()).toString(),
-                                            FdpRequirementEventType.CDO_APP_OVERRIDE.toString(), row.getCdoPriceOverrideReason(), userId));
+                                            FdpRequirementEventType.CDO_APP_OVERRIDE.toString(), row.getCdoPriceOverrideReason(), userId, requirement.getRequirementId()));
                                     requirement.setApp((Double) overriddenValues.get(OverrideKey.APP.toString()));
                                 }
 
@@ -155,7 +155,7 @@ public abstract class UploadCommand {
                                     requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.SUPPLIER.toString(),
                                             String.valueOf(requirement.getSupplier()), row.getCdoSupplierOverride(),
                                             FdpRequirementEventType.CDO_SUPPLIER_OVERRIDE.toString(),
-                                            row.getCdoSupplierOverrideReason(), userId));
+                                            row.getCdoSupplierOverrideReason(), userId, requirement.getRequirementId()));
                                     requirement.setSupplier(row.getCdoSupplierOverride());
                                     SupplierView supplierView = (SupplierView) overriddenValues.get(OverrideKey.SUPPLIER.toString());
                                     requirement.setMrp(supplierView.getMrp());
@@ -175,7 +175,7 @@ public abstract class UploadCommand {
                                             row.getBizFinComment(),
                                             FdpRequirementEventType.BIZFIN_QUANTITY_RECOMMENDATION.toString(),
                                             FdpRequirementEventType.BIZFIN_COMMENT_RECOMMENDATION.toString(),
-                                            userId
+                                            userId, requirement.getRequirementId()
                                     ));
                                 }
 

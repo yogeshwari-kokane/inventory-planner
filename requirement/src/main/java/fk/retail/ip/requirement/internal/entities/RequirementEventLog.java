@@ -26,11 +26,12 @@ public class RequirementEventLog{
     @Temporal(TemporalType.TIMESTAMP)
     private Date timestamp;
     private String eventType;
+    private String requirementId;
 
     @PrePersist
     private void beforePersist() {
         timestamp = new Date();
-        id = UUID.randomUUID().toString().replace("-", "");
+        //id = UUID.randomUUID().toString().replace("-", "");
     }
 
 }

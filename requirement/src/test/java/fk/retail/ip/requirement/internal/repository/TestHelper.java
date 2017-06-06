@@ -2,6 +2,7 @@ package fk.retail.ip.requirement.internal.repository;
 
 import com.google.common.collect.Lists;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import fk.retail.ip.requirement.internal.entities.Forecast;
@@ -153,6 +154,7 @@ public class TestHelper {
         requirement.setState(state);
         requirement.setEnabled(enabled);
         requirement.setWarehouse(wh);
+        requirement.setCreatedAt(new Date());
         requirement.setRequirementSnapshot(snapshot);
         requirement.setQuantity(quantity);
         requirement.setSupplier(supplier);
@@ -162,6 +164,9 @@ public class TestHelper {
         requirement.setSla(sla);
         requirement.setOverrideComment(comment);
         requirement.setProcType(procType);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String requirementId = requirement.getFsn()+"_"+requirement.getWarehouse()+"_"+(sdf.format(requirement.getCreatedAt()).toString());
+        requirement.setRequirementId(requirementId);
         return requirement;
     }
 
@@ -175,6 +180,7 @@ public class TestHelper {
         requirement.setState(state);
         requirement.setEnabled(enabled);
         requirement.setWarehouse(wh);
+        requirement.setCreatedAt(new Date());
         requirement.setRequirementSnapshot(snapshot);
         requirement.setQuantity(quantity);
         requirement.setSupplier(supplier);
@@ -184,9 +190,13 @@ public class TestHelper {
         requirement.setSla(sla);
         requirement.setOverrideComment(comment);
         requirement.setProcType(procType);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String requirementId = requirement.getFsn()+"_"+requirement.getWarehouse()+"_"+(sdf.format(requirement.getCreatedAt()).toString());
+        requirement.setRequirementId(requirementId);
         return requirement;
 
     }
+
     public static RequirementSnapshot getRequirementSnapshot(String forecast, int inventory, int qoh, int po, int req, int intransit) {
         RequirementSnapshot snapshot = new RequirementSnapshot();
         snapshot.setForecast(forecast);

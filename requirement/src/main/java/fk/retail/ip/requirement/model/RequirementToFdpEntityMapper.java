@@ -26,22 +26,22 @@ public class RequirementToFdpEntityMapper {
         this.fdpConfiguration = fdpConfiguration;
     }
 
-    public FdpEntityPayload<FdpRequirementEntityData> convertToEntityPayload(Object requirementId, Requirement requirement) {
+    public FdpEntityPayload<FdpRequirementEntityData> convertToEntityPayload(Requirement requirement) {
         FdpEntityPayload<FdpRequirementEntityData> fdpRequirementEntityPayload= new FdpEntityPayload();
-        fdpRequirementEntityPayload.setEntityId(requirementId);
-        fdpRequirementEntityPayload.setData(getRequirementEntityData(requirementId.toString(),requirement));
+        fdpRequirementEntityPayload.setEntityId(requirement.getRequirementId());
+        fdpRequirementEntityPayload.setData(getRequirementEntityData(requirement));
         fdpRequirementEntityPayload.setSchemaVersion(fdpConfiguration.getRequirementEntitySchemaVersion());
         fdpRequirementEntityPayload.setUpdatedAt(requirement.getUpdatedAt());
         return fdpRequirementEntityPayload;
     }
 
-    private FdpRequirementEntityData getRequirementEntityData(String requirementId, Requirement requirement) {
+    private FdpRequirementEntityData getRequirementEntityData(Requirement requirement) {
         FdpRequirementEntityData fdpRequirementEntityData = new FdpRequirementEntityData();
         String partyId = "FKI";
         DateTime requiredBydate = DateTime.now();
         if(requirement.getSla()!=null)
             requiredBydate.plusDays(requirement.getSla());
-        fdpRequirementEntityData.setRequirementId(requirementId);
+        fdpRequirementEntityData.setRequirementId(requirement.getRequirementId());
         fdpRequirementEntityData.setPartyId(partyId);
         fdpRequirementEntityData.setFsn(requirement.getFsn());
         fdpRequirementEntityData.setWarehouse(requirement.getWarehouse());

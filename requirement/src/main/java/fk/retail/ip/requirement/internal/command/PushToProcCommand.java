@@ -122,7 +122,8 @@ public class PushToProcCommand {
         RequirementChangeRequest requirementChangeRequest = new RequirementChangeRequest();
         List<RequirementChangeMap> requirementChangeMaps = Lists.newArrayList();
         requirementChangeRequest.setRequirement(newEntity);
-        requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.STATE.toString(), requirement.getState(), newEntity.getState(), eventType, reason, userId));
+        requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.STATE.toString(), requirement.getState(),
+                newEntity.getState(), eventType, reason, userId, requirement.getRequirementId()));
         requirementChangeRequest.setRequirementChangeMaps(requirementChangeMaps);
         requirementChangeRequestList.add(requirementChangeRequest);
     }

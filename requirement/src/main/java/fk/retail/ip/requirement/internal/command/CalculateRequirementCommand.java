@@ -9,10 +9,8 @@ import com.google.inject.Inject;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -238,7 +236,9 @@ public class CalculateRequirementCommand {
             if(!requirement.getState().equals(RequirementApprovalState.ERROR.toString())) {
                 RequirementChangeRequest requirementChangeRequest = new RequirementChangeRequest();
                 List<RequirementChangeMap> requirementChangeMaps = Lists.newArrayList();
-                requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.STATE.toString(), null, RequirementApprovalState.PRE_PROPOSED.toString(), FdpRequirementEventType.PROJECTION_CREATED.toString(), "Projection created", "system"));
+                requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.STATE.toString(), null,
+                        RequirementApprovalState.PRE_PROPOSED.toString(), FdpRequirementEventType.PROJECTION_CREATED.toString(),
+                        "Projection created", "system",requirement.getRequirementId()));
                 requirementChangeRequest.setRequirement(requirement);
                 requirementChangeRequest.setRequirementChangeMaps(requirementChangeMaps);
                 requirementChangeRequestList.add(requirementChangeRequest);
@@ -298,8 +298,12 @@ public class CalculateRequirementCommand {
                 requirement.setInternational(!supplier.isLocal());
                 requirement.setSslId(supplierResponse.getEntityId());
                 //Add SUPPLIER_ASSIGNED and APP_ASSIGNED events to fdp request
-                requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.SUPPLIER.toString(), null, supplier.getSourceId(), FdpRequirementEventType.SUPPLIER_ASSIGNED.toString(), "Supplier assigned", "system"));
-                requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.APP.toString(), null, String.valueOf(supplier.getApp()), FdpRequirementEventType.APP_ASSIGNED.toString(), "App assigned", "system"));
+                requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.SUPPLIER.toString(), null,
+                        supplier.getSourceId(), FdpRequirementEventType.SUPPLIER_ASSIGNED.toString(), "Supplier assigned",
+                        "system", requirement.getRequirementId()));
+                requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.APP.toString(), null,
+                        String.valueOf(supplier.getApp()), FdpRequirementEventType.APP_ASSIGNED.toString(), "App assigned",
+                        "system", requirement.getRequirementId()));
                 requirementChangeRequest.setRequirement(requirement);
                 requirementChangeRequest.setRequirementChangeMaps(requirementChangeMaps);
                 requirementChangeRequestList.add(requirementChangeRequest);
@@ -333,6 +337,8 @@ public class CalculateRequirementCommand {
         Requirement requirement = new Requirement();
         requirement.setFsn(fsn);
         requirement.setWarehouse(warehouse);
+        requirement.setCreatedAt(new Date());
+        requirement.setRequirementId(getRequirementId(requirement));
         requirement.setState(RequirementApprovalState.PRE_PROPOSED.toString());
         requirement.setEnabled(true);
         requirement.setCurrent(true);
@@ -349,6 +355,12 @@ public class CalculateRequirementCommand {
         requirementSnapshot.setQoh((int) onHandQuantityContext.getOnHandInventoryQuantity(fsn, warehouse));
         requirement.setRequirementSnapshot(requirementSnapshot);
         return requirement;
+    }
+
+    private String getRequirementId(Requirement requirement) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String requirementId = requirement.getFsn()+"_"+requirement.getWarehouse()+"_"+(sdf.format(requirement.getCreatedAt()).toString());
+        return requirementId;
     }
 
     private ForecastContext getForecastContext(Set<String> fsns) {

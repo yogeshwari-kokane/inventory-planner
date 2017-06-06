@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.entities.RequirementEventLog;
 import fk.retail.ip.requirement.internal.enums.EventType;
+import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
 import fk.retail.ip.requirement.internal.repository.RequirementEventLogRepository;
 import fk.retail.ip.requirement.model.RequirementChangeMap;
 import fk.retail.ip.requirement.model.RequirementChangeRequest;
@@ -28,19 +29,23 @@ public class EventLogger {
     public void insertEvent(List<RequirementChangeRequest> requirementChangeRequestList, EventType eventType) {
         List<RequirementEventLog> requirementEventLogs = new ArrayList<>();
         requirementChangeRequestList.forEach(item -> {
-            List<RequirementChangeMap> requirementChangeMaps = item.getRequirementChangeMaps();
-            Requirement requirement = item.getRequirement();
-            requirementChangeMaps.forEach(changeMap -> {
-                RequirementEventLog requirementEventLog = new RequirementEventLog();
-                requirementEventLog.setUserId(changeMap.getUser());
-                requirementEventLog.setAttribute(changeMap.getAttribute());
-                requirementEventLog.setNewValue(changeMap.getNewValue());
-                requirementEventLog.setOldValue(changeMap.getOldValue());
-                requirementEventLog.setReason(changeMap.getReason());
-                requirementEventLog.setEntityId(requirement.getId());
-                requirementEventLogs.add(requirementEventLog);
-                requirementEventLog.setEventType(eventType.toString());
-            });
+            if(!item.getRequirement().getState().equals(RequirementApprovalState.ERROR.toString())) {
+                List<RequirementChangeMap> requirementChangeMaps = item.getRequirementChangeMaps();
+                Requirement requirement = item.getRequirement();
+                requirementChangeMaps.forEach(changeMap -> {
+                    RequirementEventLog requirementEventLog = new RequirementEventLog();
+                    requirementEventLog.setUserId(changeMap.getUser());
+                    requirementEventLog.setAttribute(changeMap.getAttribute());
+                    requirementEventLog.setNewValue(changeMap.getNewValue());
+                    requirementEventLog.setOldValue(changeMap.getOldValue());
+                    requirementEventLog.setReason(changeMap.getReason());
+                    requirementEventLog.setEntityId(requirement.getId());
+                    requirementEventLog.setRequirementId(requirement.getRequirementId());
+                    requirementEventLog.setId(changeMap.getEventId());
+                    requirementEventLogs.add(requirementEventLog);
+                    requirementEventLog.setEventType(eventType.toString());
+                });
+            }
         });
         requirementEventLogRepository.persist(requirementEventLogs);
     }
